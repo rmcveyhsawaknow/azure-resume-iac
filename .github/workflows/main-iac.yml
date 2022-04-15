@@ -12,11 +12,11 @@ on:
     - develop
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # build:
+  #   name: Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
       # - name: Bicep Build
       #   uses: aliencube/bicep-build-actions@v0.1
       #   with:
@@ -64,7 +64,7 @@ jobs:
         subscriptionId: ${{ steps.subs.outputs.subid }}
         # subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
         region: eastus
-        template: ./iac/main-dev.bicep
+        template: ./.iac/main-dev.bicep
         resourceGroupLocation: 'eastus'
         tagEnvironmentNameTier: 'development'
         rgBackendName: 'us1-resume-be-dev-v3-rg'

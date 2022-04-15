@@ -5,12 +5,12 @@ on:
     - develop
     paths:
     - '.iac/**'
-    paths-ignore:
-    - '**/*.md'
+    # paths-ignore:
+    # - '**/*.md'
   workflow_dispatch:
     branches:
     - develop
-    
+
 jobs:
   build:
     name: Build

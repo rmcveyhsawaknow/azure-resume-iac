@@ -85,7 +85,7 @@ jobs:
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
-                  tagGitActionIacRunAttemp=${{ github.run_attempt }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
                   resourceGroupLocation=eastus
                   tagEnvironmentNameTier=development
                   tagCostCenter=abc123

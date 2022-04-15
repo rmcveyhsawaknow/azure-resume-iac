@@ -8,9 +8,9 @@ on:
     - '.iac/**'
 
 env: 
-  stackVersion: 'v3'
-  stackLocation: 'eastus'
-  stackLocationCode: 'us1'
+  stackVersion: 'v4'
+  stackLocation: 'westus'
+  stackLocationCode: 'us2'
   AppName: 'resume'
   AppBackendName: 'resumecounter'
   tagCostCenter: 'xyz789'

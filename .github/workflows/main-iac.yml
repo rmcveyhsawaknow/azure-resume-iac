@@ -1,4 +1,5 @@
 name: IaC Full Stack
+
 on:
   push:
     branches:
@@ -9,16 +10,7 @@ on:
 env: 
   stackLocation: 'eastus'
 
-  # workflow_call:
-  #   inputs:
-  #     stackLocation:
-  #       description: 'Input the Azure Region to create resources'
-  #       type: string
-  #       required: true
-  #       default: 'eastus'
-
 jobs:
-
 
   # build:
   #   name: Build
@@ -97,7 +89,7 @@ jobs:
                   tagGitActionIacRunNumber=${{ github.run_number }}
                   tagGitActionIacRunAttempt=${{ github.run_attempt }}
                   tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-                  resourceGroupLocation=${{ env:stackLocation }}
+                  resourceGroupLocation=$stackLocation
                   tagEnvironmentNameTier=development
                   tagCostCenter=abc123
                   rgBackendName=us1-resume-be-dev-v3-rg

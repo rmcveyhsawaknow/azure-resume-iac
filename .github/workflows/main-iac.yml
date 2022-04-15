@@ -26,7 +26,7 @@ jobs:
       
     env:
       stackEnvironment: 'dev'
-      corsFriendlyDnsUriEnvironmental: https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
+      corsFriendlyDnsUriEnvironmental: https://$env.AppName$env.stackEnvironment$env.stackVersion.$env.dnsZone
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@main

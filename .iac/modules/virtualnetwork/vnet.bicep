@@ -11,7 +11,9 @@ param subnetPrefix1 string
 
 param tagEnvironmentNameTier string
 param tagCostCenter string
-param tagGitActionRunId string
+param tagGitActionIacRunId string
+param tagGitActionIacRunNumber string
+param tagGitActionIacRunAttempt string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: vnetName
@@ -19,7 +21,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   tags: {
     Environment: tagEnvironmentNameTier
     CostCenter: tagCostCenter
-    GitActionRunId : tagGitActionRunId
+    GitActionIaCRunId : tagGitActionIacRunId
+    GitActionIaCRunNumber : tagGitActionIacRunNumber 
+    GitActionIaCRunAttempt : tagGitActionIacRunAttempt
   }
   properties: {
     addressSpace: {

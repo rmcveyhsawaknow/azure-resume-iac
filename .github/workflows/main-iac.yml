@@ -50,19 +50,30 @@ jobs:
       uses: Azure/login@v1.1
       with:
         creds: ${{ secrets.RESUME_GITHUB_V3_SP }}   
-    - name: get subs
+    
+    - name: Get and Set Subscription Variable
       id: subs
       run: |
         SUBID=$(az account show --query id --output tsv)
         echo "::set-output name=SUBID::${SUBID}"
-    - name: Test1
+    - name: Echo SubscriptionId
       run: echo "${{ steps.subs.outputs.subid }}"      
-    - name: get runId
+    
+    - name: Echo Github.run_id
       id: runId
       run: |
-        echo "::set-output name=runId::${{ github.run_id }}"
-    - name: Test2
-      run: echo "${{ steps.runId.outputs.runId }}"   
+        echo "${{ github.run_id }}"
+
+    - name: Echo Github.run_number
+      id: runNumber
+      run: |
+        echo "${{ github.run_number }}"
+
+    - name: Echo Github.run_attempt
+      id: runAttempt
+      run: |
+        echo "${{ github.run_Attempt }}"
+ 
     - name: Deploy Azure Resource Manager (ARM) Template
       uses: Azure/arm-deploy@v1
       with:
@@ -72,10 +83,12 @@ jobs:
         region: eastus
         template: ./.iac/main-dev.bicep
         parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttemp=${{ github.run_attempt }}
                   resourceGroupLocation=eastus
                   tagEnvironmentNameTier=development
                   tagCostCenter=abc123
-                  tagGitActionRunId=${{ github.run_id }}
                   rgBackendName=us1-resume-be-dev-v3-rg
                   rgFrontendName=us1-resume-fe-dev-v3-rg
                   vnetName=vnet-d-eus-001

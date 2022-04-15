@@ -46,7 +46,7 @@ param tagCostCenterVnet string = '123'
 // param tagEnvironmentNameKv string = 'development'
 // param tagCostCenterKv string = '123'
 
-// resource group infra
+//// resource group infra
 resource rgBackend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: rgBackendName
   location: resourceGroupLocation

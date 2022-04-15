@@ -8,15 +8,20 @@ on:
     # paths-ignore:
     # - '**/*.md'
 
-  workflow_run:
+ 
+  workflow_call:
     inputs:
       stackLocation:
         description: 'Input the Azure Region to create resources'
+        type: string
         required: true
         default: 'eastus'
 
 
+
 jobs:
+
+
   # build:
   #   name: Build
   #   runs-on: ubuntu-latest

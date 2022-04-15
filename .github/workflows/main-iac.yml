@@ -10,11 +10,7 @@ on:
   workflow_dispatch:
     branches:
     - develop
-    paths:
-    - '.iac/**'
-    paths-ignore:
-    - '**/*.md'
-
+    
 jobs:
   build:
     name: Build

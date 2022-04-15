@@ -49,23 +49,20 @@ jobs:
     - name: Azure Login
       uses: Azure/login@v1.1
       with:
-        creds: ${{ secrets.RESUME_GITHUB_V3_SP }}
-   
+        creds: ${{ secrets.RESUME_GITHUB_V3_SP }}   
     - name: get subs
       id: subs
       run: |
         SUBID=$(az account show --query id --output tsv)
         echo "::set-output name=SUBID::${SUBID}"
     - name: Test echo output subId
-      run: echo "${{ steps.subs.outputs.subid }}"
-      
+      run: echo "${{ steps.subs.outputs.subid }}"      
       - name: get runId
       id: runId
       run: |
         echo "::set-output name=runId::${{ env.GITHUB_RUN_ID }}"
     - name: Test echo runId
-      run: echo "${{ steps.runId.outputs.runId }}"
-   
+      run: echo "${{ steps.runId.outputs.runId }}"   
     - name: Deploy Azure Resource Manager (ARM) Template
       uses: Azure/arm-deploy@v1
       with:

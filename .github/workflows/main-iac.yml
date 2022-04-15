@@ -68,6 +68,8 @@ jobs:
         parameters: 
                   resourceGroupLocation=eastus
                   tagEnvironmentNameTier=development
+                  tagCostCenter=abc123
+                  tagGitActionRunId=${{ env.GITHUB_RUN_ID }}
                   rgBackendName=us1-resume-be-dev-v3-rg
                   rgFrontendName=us1-resume-fe-dev-v3-rg
                   vnetName=vnet-d-eus-001

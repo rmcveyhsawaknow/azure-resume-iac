@@ -4,6 +4,8 @@ targetScope = 'subscription'
 param resourceGroupLocation string 
 param rgBackendName string
 param rgFrontendName string
+param tagCostCenter string
+param tagGitActionRunId string
 
 // virtual network parameters
 param vnetName string 
@@ -11,7 +13,7 @@ param vnetAddressPrefix string
 param subnetName1 string 
 param subnetPrefix1 string
 param tagEnvironmentNameTier string
-param tagCostCenterVnet string = '123'
+
 
 // // kubernetes parameters
 // param dnsPrefix string = 'aksdwe001'
@@ -50,12 +52,22 @@ param tagCostCenterVnet string = '123'
 resource rgBackend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: rgBackendName
   location: resourceGroupLocation
+  tags: {
+    Environment: tagEnvironmentNameTier
+    CostCenter: tagCostCenter
+    GitActionRunId : tagGitActionRunId
+  }
 }
 
 // resource group kubernetes
 resource rgFrontend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: rgFrontendName
   location: resourceGroupLocation
+  tags: {
+    Environment: tagEnvironmentNameTier
+    CostCenter: tagCostCenter
+    GitActionRunId : tagGitActionRunId
+  }
 }
 
 // module virtual network
@@ -69,7 +81,8 @@ module vnet './modules/virtualnetwork/vnet.bicep' = {
     subnetName1: subnetName1
     subnetPrefix1: subnetPrefix1
     tagEnvironmentNameTier: tagEnvironmentNameTier
-    tagCostCenterVnet: tagCostCenterVnet
+    tagCostCenter: tagCostCenter
+    tagGitActionRunId : tagGitActionRunId
   }
 }
 

@@ -30,7 +30,7 @@ param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
 
 param functionRuntime string
-param functionExtensionVersion string
+
 
 //key vault parameters
 param keyVaultName string
@@ -81,7 +81,6 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
     corsFriendlyDnsUri: corsFriendlyDnsUri
     corsCdnUri: corsCdnUri
     functionRuntime: functionRuntime
-    functionExtensionVersion: functionExtensionVersion
     functionAppKeySecretNamePrimary: functionAppKeySecretNamePrimary
     functionAppKeySecretNameSecondary: functionAppKeySecretNameSecondary
     keyVaultName: keyVaultName

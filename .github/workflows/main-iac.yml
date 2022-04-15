@@ -95,7 +95,6 @@ jobs:
                   corsFriendlyDnsUri=${{env.corsFriendlyDnsUriEnvironmental}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
                   functionRuntime=dotnet
-                  functionExtensionVersion=~3
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
   # DeployProduction:
   #   needs: deployDevelopment

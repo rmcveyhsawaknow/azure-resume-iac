@@ -18,7 +18,7 @@ param functionAppName string
 param functionName string
 
 param functionRuntime string
-param functionExtensionVersion string
+
 
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
@@ -146,7 +146,7 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
         }
         {
           name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: functionExtensionVersion
+          value: '~3'
         }
       ]
     }

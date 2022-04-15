@@ -27,7 +27,6 @@ param keyVaultName string
 
 
 
-
 resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: functionAppStorageAccountName
   location: resourceGroupLocation

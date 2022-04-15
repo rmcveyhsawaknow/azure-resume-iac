@@ -78,7 +78,6 @@ jobs:
                   tagCostCenter=${{env.tagCostCenter}}
                   resourceGroupLocation=${{env.stackLocation}}
                   rgBackendName=${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
-                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
                   cosmosName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
                   databaseName=azure-resume-click-count
                   containerName=Counter

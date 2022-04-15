@@ -80,3 +80,10 @@ resource accountName_databaseName_containerName 'Microsoft.DocumentDB/databaseAc
     }
   }
 }
+
+output cosmos_id string = cosmos_accountName_resource.id
+output cosmos_name string = cosmos_accountName_resource.name
+output cosmos_db_id string = cosmos_accountName_databaseName.id
+output cosmos_db_name string = cosmos_accountName_databaseName.name
+output cosmos_db_container_id string = accountName_databaseName_containerName.id
+output cosmos_db_container_name string = accountName_databaseName_containerName.name

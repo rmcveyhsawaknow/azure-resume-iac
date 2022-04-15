@@ -60,7 +60,7 @@ jobs:
     - name: get runId
       id: runId
       run: |
-        echo "::set-output name=runId::${{ env.GITHUB_RUN_ID }}"
+        echo "::set-output name=runId::${{ github.run.id }}"
     - name: Test2
       run: echo "${{ steps.runId.outputs.runId }}"   
     - name: Deploy Azure Resource Manager (ARM) Template

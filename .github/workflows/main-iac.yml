@@ -66,7 +66,7 @@ jobs:
         region: eastus
         template: ./.iac/main-dev.bicep
         parameters: 
-                  resourceGroupLocation=  eastus
+                  resourceGroupLocation=eastus
                   tagEnvironmentNameTier= development
                   rgBackendName=  us1-resume-be-dev-v3-rg
                   rgFrontendName= us1-resume-fe-dev-v3-rg

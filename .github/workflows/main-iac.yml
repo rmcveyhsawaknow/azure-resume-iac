@@ -8,6 +8,7 @@ on:
     - '.iac/**'
 
 env: 
+  dnsZone: 'ryanmcvey.me'
   stackVersion: 'v2'
   stackLocation: 'eastus'
   stackLocationCode: 'us2'
@@ -22,8 +23,10 @@ jobs:
     name: Deploy IaC to development
     environment:
       name: development
+      
     env:
       stackEnvironment: 'dev'
+      corsFriendlyDnsUriEnvironmental: 'https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@main
@@ -82,6 +85,18 @@ jobs:
                   databaseName=azure-resume-click-count
                   containerName=Counter
                   defaultConsistencyLevel=Eventual
+                  functionAppStorageAccountName=${{env.stackLocationCode}}${{env.AppBackendName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  functionAppAppInsightsName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+                  functionAppAppServicePlanName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-asp
+                  functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
+                  functionName=GetResumeCounter
+                  functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
+                  functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
+                  corsFriendlyDnsUri=${{corsFriendlyDnsUriEnvironmental}}
+                  corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
+                  functionRuntime=dotnet
+                  functionExtensionVersion=~3
+                  keyVaultName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
   # DeployProduction:
   #   needs: deployDevelopment
   #   name: Deploy to production

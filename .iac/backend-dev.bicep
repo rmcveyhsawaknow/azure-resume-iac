@@ -36,7 +36,6 @@ param functionExtensionVersion string
 param keyVaultName string
 
 
-
 // resource group backend
 resource rgBackend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: rgBackendName

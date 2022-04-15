@@ -67,13 +67,13 @@ jobs:
         template: ./.iac/main-dev.bicep
         parameters: 
                   resourceGroupLocation=eastus
-                  tagEnvironmentNameTier= development
-                  rgBackendName=  us1-resume-be-dev-v3-rg
-                  rgFrontendName= us1-resume-fe-dev-v3-rg
-                  vnetName= vnet-d-eus-001
-                  vnetAddressPrefix=  12.0.0.0/16
-                  subnetName1=  snet-d-eus-001-aks-pool01
-                  subnetPrefix1=  12.0.1.0/24
+                  tagEnvironmentNameTier=development
+                  rgBackendName=us1-resume-be-dev-v3-rg
+                  rgFrontendName=us1-resume-fe-dev-v3-rg
+                  vnetName=vnet-d-eus-001
+                  vnetAddressPrefix= 12.0.0.0/16
+                  subnetName1=snet-d-eus-001-aks-pool01
+                  subnetPrefix1=12.0.1.0/24
   # DeployProduction:
   #   needs: deployDevelopment
   #   name: Deploy to production

@@ -73,6 +73,14 @@ jobs:
       id: runAttempt
       run: |
         echo "${{ github.run_Attempt }}"
+    
+    - name: Echo Github Run Link
+      id: runLink
+      run: |
+        echo "${{ github.server_url }}/${{ github.repository }}/runs/${{ github.run_id }}"
+
+  # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+  # https://github.com/rmcveyhsawaknow/azure-resume-iac/runs/6040625577
  
     - name: Deploy Azure Resource Manager (ARM) Template
       uses: Azure/arm-deploy@v1

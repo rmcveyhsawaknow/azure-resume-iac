@@ -8,6 +8,7 @@ param tagCostCenter string
 param tagGitActionIacRunId string
 param tagGitActionIacRunNumber string
 param tagGitActionIacRunAttempt string
+param tagGitActionIacActionsLink string
 
 
 // virtual network parameters
@@ -61,6 +62,7 @@ resource rgBackend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
     GitActionIaCRunId : tagGitActionIacRunId
     GitActionIaCRunNumber : tagGitActionIacRunNumber 
     GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
   }
 }
 
@@ -74,6 +76,7 @@ resource rgFrontend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
     GitActionIaCRunId : tagGitActionIacRunId
     GitActionIaCRunNumber : tagGitActionIacRunNumber 
     GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
   }
 }
 
@@ -92,6 +95,7 @@ module vnet './modules/virtualnetwork/vnet.bicep' = {
     tagGitActionIacRunId : tagGitActionIacRunId
     tagGitActionIacRunNumber : tagGitActionIacRunNumber
     tagGitActionIacRunAttempt : tagGitActionIacRunAttempt 
+    tagGitActionIacActionsLink : tagGitActionIacActionsLink
   }
 }
 

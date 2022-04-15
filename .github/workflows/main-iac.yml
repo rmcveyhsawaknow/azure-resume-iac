@@ -74,10 +74,12 @@ jobs:
       run: |
         echo "${{ github.run_Attempt }}"
     
-    - name: Echo Github Run Link
-      id: runLink
+    - name: Echo and Set Github Run Link
+      id: IACACTIONSLINK
       run: |
-        echo "${{ github.server_url }}/${{ github.repository }}/runs/${{ github.run_id }}"
+        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/main-iac.yml"
+        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/main-iac.yml
+        echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
 
   # $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
   # https://github.com/rmcveyhsawaknow/azure-resume-iac/runs/6040625577
@@ -94,6 +96,7 @@ jobs:
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
                   tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
                   resourceGroupLocation=eastus
                   tagEnvironmentNameTier=development
                   tagCostCenter=abc123

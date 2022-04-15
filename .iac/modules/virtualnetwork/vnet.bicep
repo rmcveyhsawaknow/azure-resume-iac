@@ -14,6 +14,7 @@ param tagCostCenter string
 param tagGitActionIacRunId string
 param tagGitActionIacRunNumber string
 param tagGitActionIacRunAttempt string
+param tagGitActionIacActionsLink string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
   name: vnetName
@@ -24,6 +25,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-06-01' = {
     GitActionIaCRunId : tagGitActionIacRunId
     GitActionIaCRunNumber : tagGitActionIacRunNumber 
     GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
   }
   properties: {
     addressSpace: {

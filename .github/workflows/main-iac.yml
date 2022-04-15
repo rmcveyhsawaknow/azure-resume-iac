@@ -57,7 +57,7 @@ jobs:
         echo "::set-output name=SUBID::${SUBID}"
     - name: Test1
       run: echo "${{ steps.subs.outputs.subid }}"      
-      - name: get runId
+    - name: get runId
       id: runId
       run: |
         echo "::set-output name=runId::${{ env.GITHUB_RUN_ID }}"

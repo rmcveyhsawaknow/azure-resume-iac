@@ -92,7 +92,7 @@ jobs:
                   functionName=GetResumeCounter
                   functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
-                  corsFriendlyDnsUri=${{corsFriendlyDnsUriEnvironmental}}
+                  corsFriendlyDnsUri=${{env.corsFriendlyDnsUriEnvironmental}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
                   functionRuntime=dotnet
                   functionExtensionVersion=~3

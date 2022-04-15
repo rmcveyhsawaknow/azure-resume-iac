@@ -55,13 +55,13 @@ jobs:
       run: |
         SUBID=$(az account show --query id --output tsv)
         echo "::set-output name=SUBID::${SUBID}"
-    - name: Test echo output subId
+    - name: Test1
       run: echo "${{ steps.subs.outputs.subid }}"      
       - name: get runId
       id: runId
       run: |
         echo "::set-output name=runId::${{ env.GITHUB_RUN_ID }}"
-    - name: Test echo runId
+    - name: Test2
       run: echo "${{ steps.runId.outputs.runId }}"   
     - name: Deploy Azure Resource Manager (ARM) Template
       uses: Azure/arm-deploy@v1

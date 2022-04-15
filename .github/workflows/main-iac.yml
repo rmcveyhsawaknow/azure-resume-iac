@@ -89,7 +89,7 @@ jobs:
                   tagGitActionIacRunNumber=${{ github.run_number }}
                   tagGitActionIacRunAttempt=${{ github.run_attempt }}
                   tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-                  resourceGroupLocation=$stackLocation
+                  resourceGroupLocation=${{env.stackLocation}}
                   tagEnvironmentNameTier=development
                   tagCostCenter=abc123
                   rgBackendName=us1-resume-be-dev-v3-rg

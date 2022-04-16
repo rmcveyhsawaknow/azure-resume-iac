@@ -139,7 +139,7 @@ module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKey
   params: {
     keyVaultName: keyVaultName
     secretName: functionAppKeySecretNamePrimary
-    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[0].connectionString
+    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmos.name), '2021-10-15').connectionStrings[0].connectionString
   }
 }
 
@@ -153,8 +153,7 @@ module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createK
   params: {
     keyVaultName: keyVaultName
     secretName: functionAppKeySecretNameSecondary
-    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[1].connectionString
+    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmos.name), '2021-10-15').connectionStrings[1].connectionString
   }
 }
 
-output cosmosKeyVaultSecretPrimaryConnectionString string = cosmosKeyVaultSecretPrimaryConnectionString.outputs.keyVaultSecretName

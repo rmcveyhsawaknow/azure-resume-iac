@@ -128,7 +128,7 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
 //  }
 //}
 
-
+var cosmosPrimaryConnectionString = listConnectionStrings(cosmos.name, '2021-10-15').connectionStrings[0].connectionString
 module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
   dependsOn: [
     cosmos
@@ -139,21 +139,23 @@ module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKey
   params: {
     keyVaultName: keyVaultName
     secretName: functionAppKeySecretNamePrimary
-    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmos.name), '2021-10-15').connectionStrings[0].connectionString
+    secretValue: cosmosPrimaryConnectionString
   }
 }
 
-module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
-  dependsOn: [
-    cosmos
-    storageFunctionApp
-  ]
-  scope: resourceGroup(rgBackend.name)
-  name: 'cosmosKeyVaultSecretSecondaryConnectionString'
-  params: {
-    keyVaultName: keyVaultName
-    secretName: functionAppKeySecretNameSecondary
-    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmos.name), '2021-10-15').connectionStrings[1].connectionString
-  }
-}
+// module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
+//   dependsOn: [
+//     cosmos
+//     storageFunctionApp
+//   ]
+//   scope: resourceGroup(rgBackend.name)
+//   name: 'cosmosKeyVaultSecretSecondaryConnectionString'
+//   params: {
+//     keyVaultName: keyVaultName
+//     secretName: functionAppKeySecretNameSecondary
+//     secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmos.name), '2021-10-15').connectionStrings[1].connectionString
+//   }
+// }
+
+
 

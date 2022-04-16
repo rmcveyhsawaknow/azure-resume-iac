@@ -156,3 +156,5 @@ module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createK
     secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[1].connectionString
   }
 }
+
+output cosmosKeyVaultSecretPrimaryConnectionString string = cosmosKeyVaultSecretPrimaryConnectionString.outputs.keyVaultSecretName

@@ -128,7 +128,7 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
 //  }
 //}
 
-var cosmosPrimaryConnectionString = listConnectionStrings(cosmos.name, '2021-10-15').connectionStrings[0].connectionString
+//var cosmosPrimaryConnectionString = listConnectionStrings(cosmos.name, '2021-10-15').connectionStrings[0].connectionString
 module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
   dependsOn: [
     cosmos
@@ -139,7 +139,7 @@ module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKey
   params: {
     keyVaultName: keyVaultName
     secretName: functionAppKeySecretNamePrimary
-    secretValue: cosmosPrimaryConnectionString
+    secretValue: listConnectionStrings(cosmos.name, '2021-10-15').connectionStrings[0].connectionString
   }
 }
 

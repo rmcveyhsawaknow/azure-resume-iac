@@ -32,7 +32,7 @@ param functionAppKeySecretNameSecondary string
 param functionRuntime string
 
 
-//key vault parameters
+////key vault parameters
 param keyVaultName string
 param keyVaultSku string
 

@@ -11,7 +11,7 @@ env:
   dnsZone: 'ryanmcvey.me'
   stackVersion: 'v2'
   stackLocation: 'eastus'
-  stackLocationCode: 'us2'
+  stackLocationCode: 'us1'
   AppName: 'resume'
   AppBackendName: 'resumecounter'
   tagCostCenter: 'a1b2c3'
@@ -95,7 +95,7 @@ jobs:
                   corsFriendlyDnsUri=${{env.corsFriendlyDnsUriEnvironmental}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
                   functionRuntime=dotnet
-                  keyVaultName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
+                  keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
                   keyVaultSku=standard
   # DeployProduction:
   #   needs: deployDevelopment

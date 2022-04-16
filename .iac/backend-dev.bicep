@@ -128,6 +128,7 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
 //  }
 //}
 
+
 module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
   scope: resourceGroup(rgBackend.name)
   name: 'cosmosKeyVaultSecretPrimaryConnectionString'

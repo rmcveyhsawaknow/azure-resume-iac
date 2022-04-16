@@ -164,14 +164,6 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
         ]
       }
       appSettings: [
-        // {
-        //   name: functionAppKeySecretNamePrimary
-        //   value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
-        // }
-        // {
-        //   name: functionAppKeySecretNameSecondary
-        //   value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
-        // }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: functionAppAppInsights.properties.InstrumentationKey

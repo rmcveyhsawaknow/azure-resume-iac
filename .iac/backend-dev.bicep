@@ -73,6 +73,9 @@ module cosmos './modules/cosmos/cosmos.bicep' = {
 module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
   name: 'storageFunctionApp01'
   scope: resourceGroup(rgBackend.name)
+  dependsOn: [
+    cosmos
+  ]
   params: {
     functionAppStorageAccountName: functionAppStorageAccountName
     resourceGroupLocation: rgBackend.location
@@ -88,6 +91,7 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
     keyVaultName: keyVaultName
     keyVaultSku: keyVaultSku
     aadTenant: subscription().tenantId
+    cosmosName: cosmosName
     tagEnvironmentNameTier: tagEnvironmentNameTier
     tagCostCenter: tagCostCenter
     tagGitActionIacRunId : tagGitActionIacRunId
@@ -128,34 +132,8 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
 //  }
 //}
 
-//var cosmosPrimaryConnectionString = listConnectionStrings(cosmos.name, '2021-10-15').connectionStrings[0].connectionString
-module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
-  dependsOn: [
-    cosmos
-    storageFunctionApp
-  ]
-  scope: resourceGroup(rgBackend.name)
-  name: 'cosmosKeyVaultSecretPrimaryConnectionString'
-  params: {
-    keyVaultName: keyVaultName
-    secretName: functionAppKeySecretNamePrimary
-    secretValue: listConnectionStrings(cosmos.name, '2021-10-15').connectionStrings[0].connectionString
-  }
-}
 
-// module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
-//   dependsOn: [
-//     cosmos
-//     storageFunctionApp
-//   ]
-//   scope: resourceGroup(rgBackend.name)
-//   name: 'cosmosKeyVaultSecretSecondaryConnectionString'
-//   params: {
-//     keyVaultName: keyVaultName
-//     secretName: functionAppKeySecretNameSecondary
-//     secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmos.name), '2021-10-15').connectionStrings[1].connectionString
-//   }
-// }
+
 
 
 

@@ -24,6 +24,7 @@ param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
 
 param keyVaultName string
+param cosmosName string
 
 
 resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
@@ -245,6 +246,28 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
         tenantId: functionApp.identity.tenantId
       }
     ]
+  }
+}
+
+module cosmosKeyVaultSecretPrimaryConnectionString '../keyvault/createKeyVaultSecret.bicep' = {
+  dependsOn: [
+  ]
+  name: 'cosmosKeyVaultSecretPrimaryConnectionString'
+  params: {
+    keyVaultName: keyVaultName
+    secretName: functionAppKeySecretNamePrimary
+    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[0].connectionString
+  }
+}
+
+module cosmosKeyVaultSecretSecondaryConnectionString '../keyvault/createKeyVaultSecret.bicep' = {
+  dependsOn: [
+  ]
+  name: 'cosmosKeyVaultSecretSecondaryConnectionString'
+  params: {
+    keyVaultName: keyVaultName
+    secretName: functionAppKeySecretNameSecondary
+    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[1].connectionString
   }
 }
 

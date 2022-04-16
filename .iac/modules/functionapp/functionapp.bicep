@@ -251,6 +251,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
 
 module cosmosKeyVaultSecretPrimaryConnectionString '../keyvault/createKeyVaultSecret.bicep' = {
   dependsOn: [
+  keyvault
   ]
   name: 'cosmosKeyVaultSecretPrimaryConnectionString'
   params: {
@@ -262,6 +263,7 @@ module cosmosKeyVaultSecretPrimaryConnectionString '../keyvault/createKeyVaultSe
 
 module cosmosKeyVaultSecretSecondaryConnectionString '../keyvault/createKeyVaultSecret.bicep' = {
   dependsOn: [
+  keyvault
   ]
   name: 'cosmosKeyVaultSecretSecondaryConnectionString'
   params: {

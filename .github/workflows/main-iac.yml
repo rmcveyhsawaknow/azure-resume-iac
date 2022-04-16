@@ -9,7 +9,7 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v2'
+  stackVersion: 'v4'
   stackLocation: 'eastus'
   stackLocationCode: 'us1'
   AppName: 'resume'

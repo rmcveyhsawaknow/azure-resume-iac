@@ -130,6 +130,10 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
 
 
 module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
+  dependsOn: [
+    cosmos
+    storageFunctionApp
+  ]
   scope: resourceGroup(rgBackend.name)
   name: 'cosmosKeyVaultSecretPrimaryConnectionString'
   params: {
@@ -140,6 +144,10 @@ module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKey
 }
 
 module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
+  dependsOn: [
+    cosmos
+    storageFunctionApp
+  ]
   scope: resourceGroup(rgBackend.name)
   name: 'cosmosKeyVaultSecretSecondaryConnectionString'
   params: {

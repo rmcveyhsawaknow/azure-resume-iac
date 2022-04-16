@@ -1,5 +1,6 @@
 
 // common parameters
+param aadTenant string
 param resourceGroupLocation string
 param tagEnvironmentNameTier string
 param tagCostCenter string
@@ -16,16 +17,62 @@ param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
 param functionName string
-
 param functionRuntime string
-
-
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
-
 param keyVaultName string
+param keyVaultSku string
 param cosmosName string
 
+resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+  name: keyVaultName
+  location: resourceGroupLocation
+  tags: {
+    Environment: tagEnvironmentNameTier
+    CostCenter: tagCostCenter
+    GitActionIaCRunId : tagGitActionIacRunId
+    GitActionIaCRunNumber : tagGitActionIacRunNumber 
+    GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
+  }
+  properties: {
+    tenantId: aadTenant
+    sku: {
+      family: 'A'
+      name: keyVaultSku
+    }
+    createMode: 'default'
+    enabledForDeployment: false
+    enabledForDiskEncryption: false
+    enabledForTemplateDeployment: false
+    enablePurgeProtection: true
+    enableRbacAuthorization: false
+    enableSoftDelete: false
+    softDeleteRetentionInDays: 7
+    accessPolicies: [
+      {
+        // applicationId: functionApp.identity.principalId
+        objectId: functionApp.identity.principalId
+        permissions: {
+          // certificates: [
+          //   'string'
+          // ]
+          // keys: [
+          //   'string'
+          // ]
+          secrets: [
+            'get'
+            'list'
+          ]
+          // storage: [
+          //   'string'
+          // ]
+        }
+        tenantId: functionApp.identity.tenantId
+      }
+    ]
+  }
+}
 
 resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: functionAppStorageAccountName
@@ -117,14 +164,14 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
         ]
       }
       appSettings: [
-        {
-          name: functionAppKeySecretNamePrimary
-          value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
-        }
-        {
-          name: functionAppKeySecretNameSecondary
-          value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
-        }
+        // {
+        //   name: functionAppKeySecretNamePrimary
+        //   value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
+        // }
+        // {
+        //   name: functionAppKeySecretNameSecondary
+        //   value: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
+        // }
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: functionAppAppInsights.properties.InstrumentationKey
@@ -163,6 +210,21 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
   }
 }
 
+resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
+  name: 'appsettings'
+  dependsOn: [
+    cosmosKeyVaultSecretPrimaryConnectionString
+    cosmosKeyVaultSecretSecondaryConnectionString
+  ]
+  parent: functionApp
+  properties: {
+    functionAppKeySecretNamePrimary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
+    functionAppKeySecretNameSecondary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
+  }
+}
+
+
+
 resource function 'Microsoft.Web/sites/functions@2020-12-01' = {
   name: '${functionApp.name}/${functionName}'
   properties: {
@@ -195,59 +257,7 @@ resource function 'Microsoft.Web/sites/functions@2020-12-01' = {
 //key vault parameters
 // need to fix this and move into module - https://stackoverflow.com/questions/69577692/assign-managedid-to-keyvault-access-policy
 
-param keyVaultSku string
-param aadTenant string
 
-
-resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: keyVaultName
-  location: resourceGroupLocation
-  tags: {
-    Environment: tagEnvironmentNameTier
-    CostCenter: tagCostCenter
-    GitActionIaCRunId : tagGitActionIacRunId
-    GitActionIaCRunNumber : tagGitActionIacRunNumber 
-    GitActionIaCRunAttempt : tagGitActionIacRunAttempt
-    GitActionIacActionsLink : tagGitActionIacActionsLink
-  }
-  properties: {
-    tenantId: aadTenant
-    sku: {
-      family: 'A'
-      name: keyVaultSku
-    }
-    createMode: 'default'
-    enabledForDeployment: false
-    enabledForDiskEncryption: false
-    enabledForTemplateDeployment: false
-    enablePurgeProtection: true
-    enableRbacAuthorization: false
-    enableSoftDelete: false
-    softDeleteRetentionInDays: 7
-    accessPolicies: [
-      {
-        // applicationId: functionApp.identity.principalId
-        objectId: functionApp.identity.principalId
-        permissions: {
-          // certificates: [
-          //   'string'
-          // ]
-          // keys: [
-          //   'string'
-          // ]
-          secrets: [
-            'get'
-            'list'
-          ]
-          // storage: [
-          //   'string'
-          // ]
-        }
-        tenantId: functionApp.identity.tenantId
-      }
-    ]
-  }
-}
 
 module cosmosKeyVaultSecretPrimaryConnectionString '../keyvault/createKeyVaultSecret.bicep' = {
   dependsOn: [

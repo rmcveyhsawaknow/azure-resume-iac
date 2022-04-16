@@ -96,6 +96,7 @@ jobs:
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
                   functionRuntime=dotnet
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
+                  keyVaultSku=standard
   # DeployProduction:
   #   needs: deployDevelopment
   #   name: Deploy to production

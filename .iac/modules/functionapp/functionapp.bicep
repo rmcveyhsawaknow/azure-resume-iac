@@ -190,3 +190,62 @@ resource function 'Microsoft.Web/sites/functions@2020-12-01' = {
     // }
   }
 }
+
+//key vault parameters
+// need to fix this and move into module - https://stackoverflow.com/questions/69577692/assign-managedid-to-keyvault-access-policy
+
+param keyVaultSku string
+param aadTenant string
+
+
+resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+  name: keyVaultName
+  location: resourceGroupLocation
+  tags: {
+    Environment: tagEnvironmentNameTier
+    CostCenter: tagCostCenter
+    GitActionIaCRunId : tagGitActionIacRunId
+    GitActionIaCRunNumber : tagGitActionIacRunNumber 
+    GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
+  }
+  properties: {
+    tenantId: aadTenant
+    sku: {
+      family: 'A'
+      name: keyVaultSku
+    }
+    createMode: 'default'
+    enabledForDeployment: false
+    enabledForDiskEncryption: false
+    enabledForTemplateDeployment: false
+    enablePurgeProtection: true
+    enableRbacAuthorization: false
+    enableSoftDelete: false
+    softDeleteRetentionInDays: 7
+    accessPolicies: [
+      {
+        // applicationId: functionApp.identity.principalId
+        objectId: functionApp.identity.principalId
+        permissions: {
+          // certificates: [
+          //   'string'
+          // ]
+          // keys: [
+          //   'string'
+          // ]
+          secrets: [
+            'get'
+            'list'
+          ]
+          // storage: [
+          //   'string'
+          // ]
+        }
+        tenantId: functionApp.identity.tenantId
+      }
+    ]
+  }
+}
+
+output functionAppSCMI string = functionApp.identity.principalId

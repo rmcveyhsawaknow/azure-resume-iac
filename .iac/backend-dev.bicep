@@ -34,6 +34,8 @@ param functionRuntime string
 
 //key vault parameters
 param keyVaultName string
+param keyVaultSku string
+
 
 // resource group backend
 resource rgBackend 'Microsoft.Resources/resourceGroups@2020-06-01' = {
@@ -84,6 +86,8 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
     functionAppKeySecretNamePrimary: functionAppKeySecretNamePrimary
     functionAppKeySecretNameSecondary: functionAppKeySecretNameSecondary
     keyVaultName: keyVaultName
+    keyVaultSku: keyVaultSku
+    aadTenant: subscription().tenantId
     tagEnvironmentNameTier: tagEnvironmentNameTier
     tagCostCenter: tagCostCenter
     tagGitActionIacRunId : tagGitActionIacRunId
@@ -93,20 +97,25 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
   }
 }
 
-// // module keyvault
+// module keyvault
 // module kv './modules/keyvault/kv.bicep' = {
-//   name: 'kv01'
-//   scope: resourceGroup(rgInfra.name)
+//   name: 'keyvault01'
+//   scope: resourceGroup(rgBackend.name)
 //   params: {
-//     vaultName: vaultName
-//     location: kvLocation
-//     sku: sku
-//     tenant: tenant
-//     accessPolicies: accessPolicies
-//     tagEnvironmentNameKv: tagEnvironmentNameKv
-//     tagCostCenterKv: tagCostCenterKv
+//     keyVaultName: keyVaultName
+//     resourceGroupLocation: resourceGroupLocation
+//     keyVaultSku: keyVaultSku
+//     aadTenant: subscription().tenantId
+//     tagEnvironmentNameTier: tagEnvironmentNameTier
+//     tagCostCenter: tagCostCenter
+//     tagGitActionIacRunId : tagGitActionIacRunId
+//     tagGitActionIacRunNumber : tagGitActionIacRunNumber
+//     tagGitActionIacRunAttempt : tagGitActionIacRunAttempt 
+//     tagGitActionIacActionsLink : tagGitActionIacActionsLink
 //   }
 // }
+
+
 
 // create secret in existing KeyVault
 //resource secret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
@@ -118,3 +127,23 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
 //    value: secretValue
 //  }
 //}
+
+module cosmosKeyVaultSecretPrimaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
+  scope: resourceGroup(rgBackend.name)
+  name: 'cosmosKeyVaultSecretPrimaryConnectionString'
+  params: {
+    keyVaultName: keyVaultName
+    secretName: functionAppKeySecretNamePrimary
+    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[0].connectionString
+  }
+}
+
+module cosmosKeyVaultSecretSecondaryConnectionString './modules/keyvault/createKeyVaultSecret.bicep' = {
+  scope: resourceGroup(rgBackend.name)
+  name: 'cosmosKeyVaultSecretSecondaryConnectionString'
+  params: {
+    keyVaultName: keyVaultName
+    secretName: functionAppKeySecretNameSecondary
+    secretValue: listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', cosmosName), '2021-10-15').connectionStrings[1].connectionString
+  }
+}

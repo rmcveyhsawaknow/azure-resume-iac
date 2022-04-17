@@ -65,58 +65,58 @@ jobs:
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/main-iac.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
  
-    - name: Bicep - Backend
-      uses: Azure/arm-deploy@v1
-      with:
-        scope: subscription
-        subscriptionId: ${{ steps.subs.outputs.subid }}
-        region: ${{env.stackLocation}}
-        template: ./.iac/backend-dev.bicep
-        parameters: 
-                  tagGitActionIacRunId=${{ github.run_id }}
-                  tagGitActionIacRunNumber=${{ github.run_number }}
-                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
-                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-                  tagEnvironmentNameTier=${{env.stackEnvironment}}
-                  tagCostCenter=${{env.tagCostCenter}}
-                  resourceGroupLocation=${{env.stackLocation}}
-                  rgBackendName=${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
-                  cosmosName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
-                  databaseName=azure-resume-click-count
-                  containerName=Counter
-                  defaultConsistencyLevel=Eventual
-                  functionAppStorageAccountName=${{env.stackLocationCode}}${{env.AppBackendName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
-                  functionAppAppInsightsName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
-                  functionAppAppServicePlanName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-asp
-                  functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
-                  functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
-                  functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
-                  corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
-                  corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
-                  functionRuntime=dotnet
-                  keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
-                  keyVaultSku=standard
+  #   - name: Bicep - Backend
+  #     uses: Azure/arm-deploy@v1
+  #     with:
+  #       scope: subscription
+  #       subscriptionId: ${{ steps.subs.outputs.subid }}
+  #       region: ${{env.stackLocation}}
+  #       template: ./.iac/backend-dev.bicep
+  #       parameters: 
+  #                 tagGitActionIacRunId=${{ github.run_id }}
+  #                 tagGitActionIacRunNumber=${{ github.run_number }}
+  #                 tagGitActionIacRunAttempt=${{ github.run_attempt }}
+  #                 tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+  #                 tagEnvironmentNameTier=${{env.stackEnvironment}}
+  #                 tagCostCenter=${{env.tagCostCenter}}
+  #                 resourceGroupLocation=${{env.stackLocation}}
+  #                 rgBackendName=${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+  #                 cosmosName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
+  #                 databaseName=azure-resume-click-count
+  #                 containerName=Counter
+  #                 defaultConsistencyLevel=Eventual
+  #                 functionAppStorageAccountName=${{env.stackLocationCode}}${{env.AppBackendName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+  #                 functionAppAppInsightsName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+  #                 functionAppAppServicePlanName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-asp
+  #                 functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
+  #                 functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
+  #                 functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
+  #                 corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
+  #                 corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
+  #                 functionRuntime=dotnet
+  #                 keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
+  #                 keyVaultSku=standard
   
-  #                functionName=GetResumeCounter
+  # #                functionName=GetResumeCounter
   
-    - name: Bicep - Frontend
-      uses: Azure/arm-deploy@v1
-      with:
-        scope: subscription
-        subscriptionId: ${{ steps.subs.outputs.subid }}
-        region: ${{env.stackLocation}}
-        template: ./.iac/frontend-dev.bicep
-        parameters: 
-                  tagGitActionIacRunId=${{ github.run_id }}
-                  tagGitActionIacRunNumber=${{ github.run_number }}
-                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
-                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-                  tagEnvironmentNameTier=${{env.stackEnvironment}}
-                  tagCostCenter=${{env.tagCostCenter}}
-                  resourceGroupLocation=${{env.stackLocation}}
-                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
-                  staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
-                  staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+  #   - name: Bicep - Frontend
+      # uses: Azure/arm-deploy@v1
+      # with:
+      #   scope: subscription
+      #   subscriptionId: ${{ steps.subs.outputs.subid }}
+      #   region: ${{env.stackLocation}}
+      #   template: ./.iac/frontend-dev.bicep
+      #   parameters: 
+      #             tagGitActionIacRunId=${{ github.run_id }}
+      #             tagGitActionIacRunNumber=${{ github.run_number }}
+      #             tagGitActionIacRunAttempt=${{ github.run_attempt }}
+      #             tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+      #             tagEnvironmentNameTier=${{env.stackEnvironment}}
+      #             tagCostCenter=${{env.tagCostCenter}}
+      #             resourceGroupLocation=${{env.stackLocation}}
+      #             rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+      #             staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+      #             staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
     - name: Enable Storage Account Frontend Static Website
       uses: azure/CLI@v1
@@ -127,7 +127,7 @@ jobs:
     - name: Get Static Site Endpoint
       id: staticSiteEndPoint
       run: |
-        ssEndPoint=$(az storage account show --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
         echo "::set-output name=ssEndPoint::${ssEndPoint}"
     - name: Echo Static Site Endpoint
       run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"

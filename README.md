@@ -37,7 +37,7 @@ az ad sp create-for-rbac --name <somethingThatMakesSenseToYou> --role contributo
 
     env: 
     dnsZone: 'ryanmcvey.me'
-    stackVersion: 'v5'
+    stackVersion: 'v1'
     stackEnvironment: 'dev'
     stackLocation: 'eastus'
     stackLocationCode: 'us1'

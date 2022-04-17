@@ -13,7 +13,7 @@ param staticSiteStorageAccountAppInsightsName string
 
 @allowed([
   'Standard_LRS'
-  // 'Standard_GRS'
+  'Standard_GRS'
   // 'Standard_RAGRS'
   // 'Standard_ZRS'
   // 'Premium_LRS'

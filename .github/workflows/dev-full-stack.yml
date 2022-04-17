@@ -23,8 +23,30 @@ env:
 
 jobs:
 
+# JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      iac: ${{ steps.filter.outputs.iac }}
+      backendApp: ${{ steps.filter.outputs.backendApp }}
+      frontendSite: ${{ steps.filter.outputs.frontendSite }}
+    steps:
+    - uses: actions/checkout@main
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          iac:
+            - '.iac/**'
+          backendApp:
+            - 'backend/**'
+          frontendSite:
+            - 'frontend/**'
+
   deployDevelopmentIac:
-    # needs: build
+    needs: changes
     name: Deploy IaC to development
     environment:
       name: development
@@ -160,7 +182,8 @@ jobs:
         failOnStdErr: false 
 
   buildDeployDevelopmentBackend:
-    needs: deployDevelopmentIac
+    # needs: deployDevelopmentIac
+    needs: changes
     name: Build and Deploy Backend App to Development - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -201,7 +224,8 @@ jobs:
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
 
   buildDeployDevelopmentFrontend:
-    needs: buildDeployDevelopmentBackend
+    # needs: buildDeployDevelopmentBackend
+    needs: changes
     name: Deploy Frontend Static App to Development
     environment:
       name: development

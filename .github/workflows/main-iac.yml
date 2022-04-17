@@ -99,6 +99,30 @@ jobs:
   
   #                functionName=GetResumeCounter
   
+    - name: Bicep - Frontend
+      uses: Azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/frontend-dev.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+    - name: Enable Storage Account Frontend Static Website
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document index.html --index-document index.html
+
   # DeployProduction:
   #   needs: deployDevelopment
   #   name: Deploy to production

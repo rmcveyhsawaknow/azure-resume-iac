@@ -143,7 +143,7 @@ resource cdnRoute 'Microsoft.Cdn/profiles/afdEndpoints/routes@2020-09-01' = {
   }
 }
 
-output customDomainValidationDnsTxtRecordName string = '_dnsauth.${customDomain.properties.hostName}'
+output customDomainValidationDnsTxtRecordName string = '_dnsauth.${cNameValue}'
 output customDomainValidationDnsTxtRecordValue string = customDomain.properties.validationProperties.validationToken
 output customDomainValidationExpiry string = customDomain.properties.validationProperties.expirationDate
 output frontDoorEndpointHostName string = cdnProfileEndpoint.properties.hostName

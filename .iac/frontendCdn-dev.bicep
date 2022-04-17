@@ -11,8 +11,6 @@ param tagGitActionIacActionsLink string
 param tagEnvironmentNameTier string
 
 ////storage account static site parameters
-// param staticSiteStorageAccountName string
-// param staticSiteStorageAccountAppInsightsName string
 param staticSiteOriginHostName string
 
 //cdn parameters

@@ -1,14 +1,6 @@
-// common parameters
-// param resourceGroupLocation string
-
-
 //Dns parameters
-// param rgDnsName string
 param cNameValue string
 param dnsZoneValue string
-// var customDomainName = '${cNameValue}.${dnsZoneValue}'
-// Create a valid resource name for the custom domain. Resource names don't include periods. :)  :(  ;)
-// var customDomainResourceName = replace(customDomainName, '.', '-')
 
 param frontDoorEndpointHostName string
 param customDomainValidationDnsTxtRecordName string

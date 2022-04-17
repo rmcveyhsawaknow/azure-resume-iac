@@ -1,5 +1,4 @@
 // common parameters
-// param resourceGroupLocation string
 param tagEnvironmentNameTier string
 param tagCostCenter string
 param tagGitActionIacRunId string
@@ -29,7 +28,6 @@ param skuName string = 'Standard_AzureFrontDoor'
 
 
 //Dns parameters
-// param rgDnsName string
 param cNameValue string
 param dnsZoneValue string
 var customDomainName = '${cNameValue}.${dnsZoneValue}'
@@ -70,28 +68,6 @@ resource cdnProfileEndpoint 'Microsoft.Cdn/profiles/afdEndpoints@2020-09-01' = {
     GitActionIacActionsLink : tagGitActionIacActionsLink
   }
 }
-
-// resource dnsZoneLookup 'Microsoft.Network/dnsZones@2018-05-01' = {
-//   name: dnsZoneValue
-//   location: 'global'
-//   properties: {
-//     zoneType: 'Public'
-//   }
-// }
-
-// //create the dns cname record
-
-// resource dnsCname 'Microsoft.Network/dnsZones/CNAME@2018-05-01' = {
-//   //name: '${dnsZoneValue}/${cNameValue}'
-//   name: cNameValue
-//   parent: dnsZoneLookup
-//   properties: {
-//     TTL: 1800
-//     CNAMERecord: {
-//       cname: cdnProfileEndpoint.properties.hostName
-//     }
-//   }
-// }
 
 resource cdnOriginGroup 'Microsoft.Cdn/profiles/originGroups@2020-09-01' = {
   name: cdnOriginGroupName
@@ -171,15 +147,3 @@ output customDomainValidationDnsTxtRecordName string = '_dnsauth.${customDomain.
 output customDomainValidationDnsTxtRecordValue string = customDomain.properties.validationProperties.validationToken
 output customDomainValidationExpiry string = customDomain.properties.validationProperties.expirationDate
 output frontDoorEndpointHostName string = cdnProfileEndpoint.properties.hostName
-
-
-// resource customDomainValidationDnsTxtRecord 'Microsoft.Network/dnsZones/TXT@2018-05-01' = {
-//   name: '_dnsauth.${customDomain.properties.hostName}'
-//   parent: dnsZoneLookup
-//   properties: {
-//     TTL: 1800
-//     CNAMERecord: {
-//       cname: cdnProfileEndpoint.properties.hostName
-//     }
-//   }
-// }

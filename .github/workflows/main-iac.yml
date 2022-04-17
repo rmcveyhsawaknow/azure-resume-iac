@@ -15,6 +15,7 @@ env:
   AppName: 'resume'
   AppBackendName: 'resumecounter'
   tagCostCenter: 'a1b2c3'
+  rgDns: 'glbl-ryanmcveyme-v1-rg'
 
 jobs:
 
@@ -122,28 +123,39 @@ jobs:
       with:
         inlineScript: |
             az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document index.html --index-document index.html
-
-    # - name: Bicep - Frontend CDN and DNS
-    #   uses: azure/arm-deploy@v1
-    #   with:
-    #     scope: subscription
-    #     subscriptionId: ${{ steps.subs.outputs.subid }}
-    #     region: ${{env.stackLocation}}
-    #     template: ./.iac/frontendCdn-dev.bicep
-    #     parameters: 
-    #               cNameValue=${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
-    #               dnsZoneValue=${{env.dnsZone}}
-    #               tagGitActionIacRunId=${{ github.run_id }}
-    #               tagGitActionIacRunNumber=${{ github.run_number }}
-    #               tagGitActionIacRunAttempt=${{ github.run_attempt }}
-    #               tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-    #               tagEnvironmentNameTier=${{env.stackEnvironment}}
-    #               tagCostCenter=${{env.tagCostCenter}}
-    #               resourceGroupLocation=${{env.stackLocation}}
-    #               rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
-    #               staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
-    #               staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
-    #     failOnStdErr: false 
+                
+    - name: Get Static Site Endpoint
+      id: staticSiteEndPoint
+      run: |
+        ssEndPoint=$(az storage account show --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        echo "::set-output name=ssEndPoint::${ssEndPoint}"
+    - name: Echo Static Site Endpoint
+      run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
+    
+    - name: Bicep - Frontend CDN and DNS
+      uses: azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/frontendCdn-dev.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  rgDnsName=${{env.rgDns}}
+                  cNameValue=${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
+                  dnsZoneValue=${{env.dnsZone}}
+                  staticSiteOriginHostName=${{steps.staticSiteEndPoint.outputs.ssEndPoint}}
+                  cdnProfileName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
+                  cdnProfileEndpointName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep
+                  cdnOriginGroupName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnorgrp
+        failOnStdErr: false 
  
  
  

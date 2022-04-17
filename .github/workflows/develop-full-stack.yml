@@ -197,7 +197,7 @@ jobs:
       uses: Azure/functions-action@v1
       id: fa
       with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
 
   buildDeployDevelopmentFrontend:

@@ -1,40 +1,40 @@
-name: Development Full Stack
+name: Production Full Stack
 
 on:
   push:
     branches:
-    - develop
+    - main
     paths:
-    - '.github/workflows/**'
+    - '.github/workflows/prod-full-stack.yml'
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v5'
-  stackEnvironment: 'dev'
+  stackVersion: 'v1'
+  stackEnvironment: 'prod'
   stackLocation: 'eastus'
   stackLocationCode: 'us1'
   AppName: 'resume'
   AppBackendName: 'resumecounter'
-  tagCostCenter: 'a1b2c3'
+  tagCostCenter: 'z9y8x7'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
 
 jobs:
 
-  deployDevelopmentIac:
+  deployProductionIac:
     # needs: build
-    name: Deploy IaC to development
+    name: Deploy IaC to production
     environment:
-      name: development
+      name: production
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@main
     - name: Azure Login
       uses: Azure/login@v1.1
       with:
-        creds: ${{ secrets.RESUME_GITHUB_V3_SP }}   
+        creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}   
     
     - name: Get and Set Subscription Variable
       id: subs
@@ -62,8 +62,8 @@ jobs:
     - name: Echo and Set Github Run Link
       id: IACACTIONSLINK
       run: |
-        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/main-iac.yml"
-        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/main-iac.yml
+        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml"
+        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
  
     - name: Bicep - Backend
@@ -72,7 +72,7 @@ jobs:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
         region: ${{env.stackLocation}}
-        template: ./.iac/backend-dev.bicep
+        template: ./.iac/backend.bicep
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
@@ -106,7 +106,7 @@ jobs:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
         region: ${{env.stackLocation}}
-        template: ./.iac/frontend-dev.bicep
+        template: ./.iac/frontend.bicep
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
@@ -139,7 +139,7 @@ jobs:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
         region: ${{env.stackLocation}}
-        template: ./.iac/frontendCdn-dev.bicep
+        template: ./.iac/frontendCdn.bicep
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
@@ -150,7 +150,7 @@ jobs:
                   resourceGroupLocation=${{env.stackLocation}}
                   rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
                   rgDnsName=${{env.rgDns}}
-                  cNameValue=${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
+                  cNameValue=${{env.AppName}}
                   dnsZoneValue=${{env.dnsZone}}
                   staticSiteOriginHostName=${{steps.staticSiteEndPoint.outputs.ssEndPoint}}
                   cdnProfileName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
@@ -159,14 +159,14 @@ jobs:
                   cdnOriginName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa-web-endpoint
         failOnStdErr: false 
 
-  buildDeployDevelopmentBackend:
-    needs: deployDevelopmentIac
-    name: Build and Deploy Backend App to Development - aspnetcore31_cs
+  buildDeployProductionBackend:
+    needs: deployProductionIac
+    name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
       DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
     environment:
-      name: development
+      name: production
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
@@ -175,7 +175,7 @@ jobs:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
-          creds: ${{ secrets.RESUME_GITHUB_V3_SP }}  
+          creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}  
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
       uses: actions/setup-dotnet@v1
@@ -200,11 +200,11 @@ jobs:
         app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
 
-  buildDeployDevelopmentFrontend:
-    needs: buildDeployDevelopmentBackend
-    name: Deploy Frontend Static App to Development
+  buildDeployProductionFrontend:
+    needs: buildDeployProductionBackend
+    name: Deploy Frontend Static App to Production
     environment:
-      name: development
+      name: production
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout GitHub Action'
@@ -213,7 +213,7 @@ jobs:
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
-          creds: ${{ secrets.RESUME_GITHUB_V3_SP }} 
+          creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }} 
     
     - name: Upload to blob storage
       uses: azure/CLI@v1

@@ -25,7 +25,6 @@ param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
-// param functionName string
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
 
@@ -100,37 +99,6 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
     tagGitActionIacActionsLink : tagGitActionIacActionsLink
   }
 }
-
-// module keyvault
-// module kv './modules/keyvault/kv.bicep' = {
-//   name: 'keyvault01'
-//   scope: resourceGroup(rgBackend.name)
-//   params: {
-//     keyVaultName: keyVaultName
-//     resourceGroupLocation: resourceGroupLocation
-//     keyVaultSku: keyVaultSku
-//     aadTenant: subscription().tenantId
-//     tagEnvironmentNameTier: tagEnvironmentNameTier
-//     tagCostCenter: tagCostCenter
-//     tagGitActionIacRunId : tagGitActionIacRunId
-//     tagGitActionIacRunNumber : tagGitActionIacRunNumber
-//     tagGitActionIacRunAttempt : tagGitActionIacRunAttempt 
-//     tagGitActionIacActionsLink : tagGitActionIacActionsLink
-//   }
-// }
-
-
-
-// create secret in existing KeyVault
-//resource secret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
-//  name: '${vaultName.name}/${secretName}'
-//  properties: {
-//    attributes: {
-//      enabled: true
-//    }
-//    value: secretValue
-//  }
-//}
 
 
 

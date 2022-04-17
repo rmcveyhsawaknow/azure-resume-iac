@@ -16,7 +16,6 @@ param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
-// param functionName string
 param functionRuntime string
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
@@ -186,8 +185,8 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
   ]
   parent: functionApp
   properties: {
-    functionAppKeySecretNamePrimary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
-    functionAppKeySecretNameSecondary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
+    AzureResumeConnectionStringPrimary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
+    AzureResumeConnectionStringSecondary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
     APPINSIGHTS_INSTRUMENTATIONKEY: functionAppAppInsights.properties.InstrumentationKey
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=${functionAppAppInsights.properties.InstrumentationKey}'
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
@@ -197,42 +196,6 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
     WEBSITE_CONTENTSHARE: functionAppName
   }
 }
-
-
-
-// resource function 'Microsoft.Web/sites/functions@2020-12-01' = {
-//   name: '${functionApp.name}/${functionName}'
-//   properties: {
-//     config: {
-//       disabled: false
-//       bindings: [
-//         {
-//           name: 'req'
-//           type: 'httpTrigger'
-//           direction: 'in'
-//           authLevel: 'function'
-//           methods: [
-//             'get'
-//             'post'
-//           ]
-//         }
-//         // {
-//         //   name: '$return'
-//         //   type: 'http'
-//         //   direction: 'out'
-//         // }
-//       ]
-//     }
-//     // files: {
-//     //   'run.csx': loadTextContent('run.csx')
-//     // }
-//   }
-// }
-
-//key vault parameters
-// need to fix this and move into module - https://stackoverflow.com/questions/69577692/assign-managedid-to-keyvault-access-policy
-
-
 
 module cosmosKeyVaultSecretPrimaryConnectionString '../keyvault/createKeyVaultSecret.bicep' = {
   dependsOn: [

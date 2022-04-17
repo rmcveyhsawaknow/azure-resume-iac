@@ -176,7 +176,7 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
   }
 }
 
-param guidValue string = newGuid()
+//param guidValue string = newGuid()
 
 resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
   name: 'appsettings'
@@ -194,7 +194,7 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
     FUNCTIONS_WORKER_RUNTIME: functionRuntime
     FUNCTIONS_EXTENSION_VERSION: '~3'
-    WEBSITE_CONTENTSHARE: '${functionAppName}-${guidValue}'
+    WEBSITE_CONTENTSHARE: functionAppName
   }
 }
 

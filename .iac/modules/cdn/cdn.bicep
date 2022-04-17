@@ -10,6 +10,8 @@ param tagGitActionIacActionsLink string
 
 //storage account static site parameters
 param staticSiteOriginHostName string
+var staticSiteOriginFlattenedHostNameInit = replace(staticSiteOriginHostName, 'https://', '')
+var staticSiteOriginFlattenedHostNameFinal = replace(staticSiteOriginFlattenedHostNameInit, '/', '')
 
 
 //cdn parameters
@@ -127,10 +129,10 @@ resource cdnOrigin 'Microsoft.Cdn/profiles/originGroups/origins@2020-09-01' = {
   name: cdnOriginName
   parent: cdnOriginGroup
   properties: {
-    hostName: staticSiteOriginHostName
+    hostName: staticSiteOriginFlattenedHostNameFinal
     httpPort: 80
     httpsPort: 443
-    originHostHeader: staticSiteOriginHostName
+    originHostHeader: staticSiteOriginFlattenedHostNameFinal
     priority: 1
     weight: 1000
   }

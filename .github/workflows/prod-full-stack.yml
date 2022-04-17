@@ -23,8 +23,30 @@ env:
 
 jobs:
 
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      iac: ${{ steps.filter.outputs.iac }}
+      backendApp: ${{ steps.filter.outputs.backendApp }}
+      frontendSite: ${{ steps.filter.outputs.frontendSite }}
+    steps:
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          iac:
+            - '.iac/**'
+          backendApp:
+            - 'backend/**'
+          frontendSite:
+            - 'frontend/**'
+
   deployProductionIac:
-    # needs: build
+    needs: changes
+    if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to production
     environment:
       name: production
@@ -65,7 +87,7 @@ jobs:
         echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml"
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
- 
+     
     - name: Bicep - Backend
       uses: Azure/arm-deploy@v1
       with:
@@ -160,7 +182,9 @@ jobs:
         failOnStdErr: false 
 
   buildDeployProductionBackend:
-    needs: deployProductionIac
+    # needs: deployProductionIac
+    needs: changes
+    if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -201,7 +225,9 @@ jobs:
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
 
   buildDeployProductionFrontend:
-    needs: buildDeployProductionBackend
+    # needs: buildDeployProductionBackend
+    needs: changes
+    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:
       name: production

@@ -16,7 +16,7 @@ param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
-param functionName string
+// param functionName string
 param functionRuntime string
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
@@ -200,34 +200,34 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
 
 
 
-resource function 'Microsoft.Web/sites/functions@2020-12-01' = {
-  name: '${functionApp.name}/${functionName}'
-  properties: {
-    config: {
-      disabled: false
-      bindings: [
-        {
-          name: 'req'
-          type: 'httpTrigger'
-          direction: 'in'
-          authLevel: 'function'
-          methods: [
-            'get'
-            'post'
-          ]
-        }
-        // {
-        //   name: '$return'
-        //   type: 'http'
-        //   direction: 'out'
-        // }
-      ]
-    }
-    // files: {
-    //   'run.csx': loadTextContent('run.csx')
-    // }
-  }
-}
+// resource function 'Microsoft.Web/sites/functions@2020-12-01' = {
+//   name: '${functionApp.name}/${functionName}'
+//   properties: {
+//     config: {
+//       disabled: false
+//       bindings: [
+//         {
+//           name: 'req'
+//           type: 'httpTrigger'
+//           direction: 'in'
+//           authLevel: 'function'
+//           methods: [
+//             'get'
+//             'post'
+//           ]
+//         }
+//         // {
+//         //   name: '$return'
+//         //   type: 'http'
+//         //   direction: 'out'
+//         // }
+//       ]
+//     }
+//     // files: {
+//     //   'run.csx': loadTextContent('run.csx')
+//     // }
+//   }
+// }
 
 //key vault parameters
 // need to fix this and move into module - https://stackoverflow.com/questions/69577692/assign-managedid-to-keyvault-access-policy

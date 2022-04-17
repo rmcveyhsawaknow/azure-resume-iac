@@ -25,7 +25,7 @@ param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
-param functionName string
+// param functionName string
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
 
@@ -82,7 +82,7 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
     functionAppAppInsightsName: functionAppAppInsightsName
     functionAppAppServicePlanName: functionAppAppServicePlanName
     functionAppName: functionAppName
-    functionName: functionName
+    // functionName: functionName
     corsFriendlyDnsUri: corsFriendlyDnsUri
     corsCdnUri: corsCdnUri
     functionRuntime: functionRuntime

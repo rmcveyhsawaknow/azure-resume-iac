@@ -1,5 +1,5 @@
 
-// common parameters
+//// common parameters
 param aadTenant string
 param resourceGroupLocation string
 param tagEnvironmentNameTier string

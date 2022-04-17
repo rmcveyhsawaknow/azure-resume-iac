@@ -132,7 +132,7 @@ jobs:
     - name: Echo Static Site Endpoint
       run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
     
-    - name: Bicep - Frontend CDN and DNS
+    - name: Bicep - Frontend CDN
       uses: azure/arm-deploy@v1
       with:
         scope: subscription
@@ -158,6 +158,25 @@ jobs:
                   cdnOriginName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa-web-endpoint
         failOnStdErr: false 
  
+    # - name: Bicep - Frontend Custom DNS for CDN
+    #   uses: azure/arm-deploy@v1
+    #   with:
+    #     scope: subscription
+    #     subscriptionId: ${{ steps.subs.outputs.subid }}
+    #     region: ${{env.stackLocation}}
+    #     template: ./.iac/frontendDns-dev.bicep
+    #     parameters: 
+    #               tagGitActionIacRunId=${{ github.run_id }}
+    #               tagGitActionIacRunNumber=${{ github.run_number }}
+    #               tagGitActionIacRunAttempt=${{ github.run_attempt }}
+    #               tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+    #               tagEnvironmentNameTier=${{env.stackEnvironment}}
+    #               tagCostCenter=${{env.tagCostCenter}}
+    #               resourceGroupLocation=${{env.stackLocation}}
+    #               rgDnsName=${{env.rgDns}}
+    #               cNameValue=${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
+    #               dnsZoneValue=${{env.dnsZone}}
+    #     failOnStdErr: false 
  
  
   # DeployProduction:

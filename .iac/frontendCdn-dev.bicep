@@ -75,6 +75,19 @@ module frontendCdn './modules/cdn/cdn.bicep' = {
   }
 }
 
+// module dns
+module frontendDns './modules/dns/azuredns.bicep' = {
+  name: 'frontendDns01'
+  scope: resourceGroup(rgDns.name)
+  params: {
+    cNameValue: cNameValue
+    dnsZoneValue: dnsZoneValue
+    frontDoorEndpointHostName: frontendCdn.outputs.frontDoorEndpointHostName
+    customDomainValidationDnsTxtRecordName: frontendCdn.outputs.customDomainValidationDnsTxtRecordName
+    customDomainValidationDnsTxtRecordValue: frontendCdn.outputs.customDomainValidationDnsTxtRecordValue
+  }
+}
+
 
 
 

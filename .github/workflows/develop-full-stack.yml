@@ -225,4 +225,4 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-           az cdn endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+           az afd endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --endpoint-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg

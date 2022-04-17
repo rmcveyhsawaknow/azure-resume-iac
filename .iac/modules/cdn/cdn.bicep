@@ -1,4 +1,4 @@
-//// common parameters
+// common parameters
 // param resourceGroupLocation string
 param tagEnvironmentNameTier string
 param tagCostCenter string

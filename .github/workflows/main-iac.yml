@@ -155,6 +155,7 @@ jobs:
                   cdnProfileName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
                   cdnProfileEndpointName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep
                   cdnOriginGroupName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnorgrp
+                  cdnOriginName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa-web-endpoint
         failOnStdErr: false 
  
  

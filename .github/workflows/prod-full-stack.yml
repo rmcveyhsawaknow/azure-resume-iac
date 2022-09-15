@@ -184,7 +184,7 @@ jobs:
 
   buildDeployProductionBackend:
     # needs: deployProductionIac
-    needs: changes
+    needs: [changes, deployDevelopmentIac]
     if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
@@ -227,7 +227,7 @@ jobs:
 
   buildDeployProductionFrontend:
     # needs: buildDeployProductionBackend
-    needs: changes
+    needs: [changes, buildDeployDevelopmentBackend]
     if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:

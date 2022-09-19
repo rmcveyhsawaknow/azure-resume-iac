@@ -15,8 +15,8 @@ param staticSiteOriginHostName string
 
 //cdn parameters
 param cdnProfileName string
-// // // // // // // // // // // // // // // // // // // // // // param cdnProfileEndpointName string
-// // // // // // // // // // // // // // // // // // // // // // param cdnOriginGroupName string
+param cdnProfileEndpointName string
+param cdnOriginGroupName string
 param cdnOriginName string
 
 //Dns parameters
@@ -65,8 +65,8 @@ module frontendCdn './modules/cdn/cdnClassic.bicep' = {
     tagGitActionIacActionsLink : tagGitActionIacActionsLink
     staticSiteOriginHostName: staticSiteOriginHostName
     cdnProfileName: cdnProfileName
-    // // // // // // // // // // // // // // // // // // // // // // cdnProfileEndpointName: cdnProfileEndpointName 
-    // // // // // // // // // // // // // // // // // // // // // // cdnOriginGroupName: cdnOriginGroupName 
+    cdnProfileEndpointName: cdnProfileEndpointName 
+    cdnOriginGroupName: cdnOriginGroupName 
     cdnOriginName: cdnOriginName 
     cNameValue: cNameValue
     dnsZoneValue: dnsZoneValue

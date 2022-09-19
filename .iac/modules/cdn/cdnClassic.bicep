@@ -15,8 +15,8 @@ var staticSiteOriginFlattenedHostNameFinal = replace(staticSiteOriginFlattenedHo
 
 //cdn parameters
 param cdnProfileName string
-// param cdnProfileEndpointName string
-// param cdnOriginGroupName string
+param cdnProfileEndpointName string
+param cdnOriginGroupName string
 param cdnOriginName string
 param cdnRouteName string = 'MainRoute'
 

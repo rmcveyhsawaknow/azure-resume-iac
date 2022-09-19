@@ -15,8 +15,8 @@ param staticSiteOriginHostName string
 
 //cdn parameters
 param cdnProfileName string
-param cdnProfileEndpointName string
-param cdnOriginGroupName string
+// // // // // // // // // // // // // // // // // // // // // // param cdnProfileEndpointName string
+// // // // // // // // // // // // // // // // // // // // // // param cdnOriginGroupName string
 param cdnOriginName string
 
 //Dns parameters
@@ -53,7 +53,7 @@ resource rgDns 'Microsoft.Resources/resourceGroups@2020-06-01' = {
 }
 
 // module cdn
-module frontendCdn './modules/cdn/cdn.bicep' = {
+module frontendCdn './modules/cdn/cdnClassic.bicep' = {
   name: 'frontendCdn01'
   scope: resourceGroup(rgFrontend.name)
   params: {
@@ -65,8 +65,8 @@ module frontendCdn './modules/cdn/cdn.bicep' = {
     tagGitActionIacActionsLink : tagGitActionIacActionsLink
     staticSiteOriginHostName: staticSiteOriginHostName
     cdnProfileName: cdnProfileName
-    cdnProfileEndpointName: cdnProfileEndpointName 
-    cdnOriginGroupName: cdnOriginGroupName 
+    // // // // // // // // // // // // // // // // // // // // // // cdnProfileEndpointName: cdnProfileEndpointName 
+    // // // // // // // // // // // // // // // // // // // // // // cdnOriginGroupName: cdnOriginGroupName 
     cdnOriginName: cdnOriginName 
     cNameValue: cNameValue
     dnsZoneValue: dnsZoneValue

@@ -188,7 +188,7 @@ jobs:
       uses: rez0n/create-dns-record@v2.1
       with:
         type: "CNAME"
-        name: ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
+        name: ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
         content: ${{steps.staticSiteEndPoint.outputs.ssEndPoint}}
         ttl: 1
         proxied: true

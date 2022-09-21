@@ -152,8 +152,11 @@ jobs:
   #     run: |
   #       ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
   #       echo "::set-output name=ssEndPoint::${ssEndPoint}"
-  #   - name: Echo Static Site Endpoint
-      run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
+    # - name: Echo Static Site Endpoint
+    #   run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
+    
+
+
     
     # - name: Bicep - Frontend CDN
     #   uses: azure/arm-deploy@v1

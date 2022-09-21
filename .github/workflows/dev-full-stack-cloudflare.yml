@@ -194,7 +194,6 @@ jobs:
         proxied: true
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
         zone: ${{ secrets.CLOUDFLARE_ZONE }}
-        failOnStdErr: false
 
 
 

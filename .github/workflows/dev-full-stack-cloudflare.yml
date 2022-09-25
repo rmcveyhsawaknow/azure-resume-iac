@@ -165,11 +165,7 @@ jobs:
     - name: Echo Static Site Endpoint Domain
       run: echo "${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}"
    
-    
-
-
-
-    # - name: Bicep - Frontend CDN
+      # - name: Bicep - Frontend CDN
     #   uses: azure/arm-deploy@v1
     #   with:
     #     scope: subscription
@@ -195,16 +191,13 @@ jobs:
     #               cdnOriginName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa-web-endpoint
     #     failOnStdErr: false 
 
-
-
-
     - name: Cloudflare - Frontend DNS
+      continue-on-error: true
       uses: rez0n/create-dns-record@v2.2
       with:
         type: "CNAME"
         name: ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
         content: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-        # content: "us1resumedevv1sa.z13.web.core.windows.net"
         ttl: 1
         proxied: true
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
@@ -212,18 +205,22 @@ jobs:
 
     
     - name: Cloudflare - Frontend DNS Verify
+      continue-on-error: true
       uses: rez0n/create-dns-record@v2.2
       with:
         type: "CNAME"
         name: asverify.${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
         content: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-        # content: "asverify.us1resumedevv1sa.z13.web.core.windows.net"
         ttl: 1
         proxied: false
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
         zone: ${{ secrets.CLOUDFLARE_ZONE }}
 
-
+    - name: Enable Storage Account Frontend Cloudflare Custom Domain 
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}} --use-subdomain true
 
 
   buildDeployDevelopmentBackend:

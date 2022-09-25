@@ -12,8 +12,8 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.net'
-  stackVersion: 'v1'
-  stackEnvironment: 'dev'
+  stackVersion: 'v10'
+  stackEnvironment: 'ftr'
   stackLocation: 'eastus'
   stackLocationCode: 'us1'
   AppName: 'resume'
@@ -88,76 +88,87 @@ jobs:
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-cloudflare.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
  
-  #   - name: Bicep - Backend
-  #     uses: Azure/arm-deploy@v1
-  #     with:
-  #       scope: subscription
-  #       subscriptionId: ${{ steps.subs.outputs.subid }}
-  #       region: ${{env.stackLocation}}
-  #       template: ./.iac/backend.bicep
-  #       parameters: 
-  #                 tagGitActionIacRunId=${{ github.run_id }}
-  #                 tagGitActionIacRunNumber=${{ github.run_number }}
-  #                 tagGitActionIacRunAttempt=${{ github.run_attempt }}
-  #                 tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-  #                 tagEnvironmentNameTier=${{env.stackEnvironment}}
-  #                 tagCostCenter=${{env.tagCostCenter}}
-  #                 resourceGroupLocation=${{env.stackLocation}}
-  #                 rgBackendName=${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
-  #                 cosmosName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
-  #                 databaseName=azure-resume-click-count
-  #                 containerName=Counter
-  #                 defaultConsistencyLevel=Eventual
-  #                 functionAppStorageAccountName=${{env.stackLocationCode}}${{env.AppBackendName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
-  #                 functionAppAppInsightsName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
-  #                 functionAppAppServicePlanName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-asp
-  #                 functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
-  #                 functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
-  #                 functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
-  #                 corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
-  #                 corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
-  #                 functionRuntime=dotnet
-  #                 keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
-  #                 keyVaultSku=standard
+    - name: Bicep - Backend
+      uses: Azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/backend.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgBackendName=${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  cosmosName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
+                  databaseName=azure-resume-click-count
+                  containerName=Counter
+                  defaultConsistencyLevel=Eventual
+                  functionAppStorageAccountName=${{env.stackLocationCode}}${{env.AppBackendName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  functionAppAppInsightsName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+                  functionAppAppServicePlanName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-asp
+                  functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
+                  functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
+                  functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
+                  corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
+                  corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
+                  functionRuntime=dotnet
+                  keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
+                  keyVaultSku=standard
   
-  # #                functionName=GetResumeCounter
+  #                functionName=GetResumeCounter
   
-  #   - name: Bicep - Frontend
-  #     uses: Azure/arm-deploy@v1
-  #     with:
-  #       scope: subscription
-  #       subscriptionId: ${{ steps.subs.outputs.subid }}
-  #       region: ${{env.stackLocation}}
-  #       template: ./.iac/frontend.bicep
-  #       parameters: 
-  #                 tagGitActionIacRunId=${{ github.run_id }}
-  #                 tagGitActionIacRunNumber=${{ github.run_number }}
-  #                 tagGitActionIacRunAttempt=${{ github.run_attempt }}
-  #                 tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
-  #                 tagEnvironmentNameTier=${{env.stackEnvironment}}
-  #                 tagCostCenter=${{env.tagCostCenter}}
-  #                 resourceGroupLocation=${{env.stackLocation}}
-  #                 rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
-  #                 staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
-  #                 staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+    - name: Bicep - Frontend
+      uses: Azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/frontend.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
-  #   - name: Enable Storage Account Frontend Static Website
-  #     uses: azure/CLI@v1
-  #     with:
-  #       inlineScript: |
-  #           az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document index.html --index-document index.html
+    - name: Enable Storage Account Frontend Static Website
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document error.html --index-document index.html
                 
-  #   - name: Get Static Site Endpoint
-  #     id: staticSiteEndPoint
-  #     run: |
-  #       ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
-  #       echo "::set-output name=ssEndPoint::${ssEndPoint}"
-    # - name: Echo Static Site Endpoint
-    #   run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
+    - name: Get Static Site Endpoint
+      id: staticSiteEndPoint
+      run: |
+        ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        echo "::set-output name=ssEndPoint::${ssEndPoint}"
+  
+    - name: Echo Static Site Endpoint
+      run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
+   
+    - name: Convert Enpoint URL to Domain
+      id: convert_url_domain
+      run: |
+          export ssEndpoint_url=$(echo ${{ steps.staticSiteEndPoint.outputs.ssEndPoint }} |  awk -F[/:] '{print $4}')
+          echo ::set-output name=ssEndpoint_domain::$ssEndpoint_url
+
+    - name: Echo Static Site Endpoint Domain
+      run: echo "${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}"
+   
     
 
 
-    
+
     # - name: Bicep - Frontend CDN
     #   uses: azure/arm-deploy@v1
     #   with:
@@ -192,10 +203,23 @@ jobs:
       with:
         type: "CNAME"
         name: ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
-        # content: ${{steps.staticSiteEndPoint.outputs.ssEndPoint}}
-        content: "us1resumedevv1sa.z13.web.core.windows.net"
+        content: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
+        # content: "us1resumedevv1sa.z13.web.core.windows.net"
         ttl: 1
         proxied: true
+        token: ${{ secrets.CLOUDFLARE_TOKEN }}
+        zone: ${{ secrets.CLOUDFLARE_ZONE }}
+
+    
+    - name: Cloudflare - Frontend DNS Verify
+      uses: rez0n/create-dns-record@v2.1
+      with:
+        type: "CNAME"
+        name: asverify.${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
+        content: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
+        # content: "asverify.us1resumedevv1sa.z13.web.core.windows.net"
+        ttl: 1
+        proxied: false
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
         zone: ${{ secrets.CLOUDFLARE_ZONE }}
 
@@ -266,8 +290,8 @@ jobs:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
     
-    - name: Purge CDN endpoint
-      uses: azure/CLI@v1
-      with:
-        inlineScript: |
-           az afd endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --endpoint-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+    # - name: Purge CDN endpoint
+    #   uses: azure/CLI@v1
+    #   with:
+    #     inlineScript: |
+    #        az afd endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --endpoint-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg

@@ -1,11 +1,11 @@
-name: Production Full Stack
+name: Development Full Stack Azure CDN
 
 on:
   push:
     branches:
-    - main
+    - develop
     paths:
-    - '.github/workflows/prod-full-stack.yml'
+    - '.github/workflows/dev-full-stack-azureCDN.yml'
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
@@ -13,17 +13,17 @@ on:
 env: 
   dnsZone: 'ryanmcvey.me'
   stackVersion: 'v1'
-  stackEnvironment: 'prod'
+  stackEnvironment: 'dev'
   stackLocation: 'eastus'
-  stackLocationCode: 'us1'
+  stackLocationCode: 'zus1'
   AppName: 'resume'
   AppBackendName: 'resumecounter'
-  tagCostCenter: 'z9y8x7'
+  tagCostCenter: 'azCDN'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
 
 jobs:
 
-  # JOB to run change detection
+# JOB to run change detection
   changes:
     runs-on: ubuntu-latest
     # Set job outputs to values from filter step
@@ -45,12 +45,12 @@ jobs:
           frontendSite:
             - 'frontend/**'
 
-  deployProductionIac:
+  deployDevelopmentIac:
     needs: changes
     if: ${{ needs.changes.outputs.iac == 'true' }}
-    name: Deploy IaC to production
+    name: Deploy IaC to development
     environment:
-      name: production
+      name: development
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@main
@@ -85,10 +85,10 @@ jobs:
     - name: Echo and Set Github Run Link
       id: IACACTIONSLINK
       run: |
-        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml"
-        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml
+        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml"
+        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
-     
+ 
     - name: Bicep - Backend
       uses: Azure/arm-deploy@v1
       with:
@@ -115,7 +115,7 @@ jobs:
                   functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
                   functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
-                  corsFriendlyDnsUri=https://${{env.AppName}}.${{env.dnsZone}}
+                  corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
                   functionRuntime=dotnet
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
@@ -173,7 +173,7 @@ jobs:
                   resourceGroupLocation=${{env.stackLocation}}
                   rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
                   rgDnsName=${{env.rgDns}}
-                  cNameValue=${{env.AppName}}
+                  cNameValue=${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
                   dnsZoneValue=${{env.dnsZone}}
                   staticSiteOriginHostName=${{steps.staticSiteEndPoint.outputs.ssEndPoint}}
                   cdnProfileName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
@@ -182,16 +182,16 @@ jobs:
                   cdnOriginName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa-web-endpoint
         failOnStdErr: false 
 
-  buildDeployProductionBackend:
-    # needs: deployProductionIac
+  buildDeployDevelopmentBackend:
+    # needs: deployDevelopmentIac
     needs: [changes, deployDevelopmentIac]
     if: ${{ needs.changes.outputs.backendApp == 'true' }}
-    name: Build and Deploy Backend App to Production - aspnetcore31_cs
+    name: Build and Deploy Backend App to Development - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
       DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
     environment:
-      name: production
+      name: development
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
@@ -225,13 +225,13 @@ jobs:
         app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
 
-  buildDeployProductionFrontend:
-    # needs: buildDeployProductionBackend
+  buildDeployDevelopmentFrontend:
+    # needs: buildDeployDevelopmentBackend
     needs: [changes, buildDeployDevelopmentBackend]
     if: ${{ needs.changes.outputs.frontendSite == 'true' }}
-    name: Deploy Frontend Static App to Production
+    name: Deploy Frontend Static App to Development
     environment:
-      name: production
+      name: development
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout GitHub Action'

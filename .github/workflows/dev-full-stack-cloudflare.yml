@@ -271,7 +271,7 @@ jobs:
     - name: 'PS Module CosmosDB'
       shell: pwsh
       run: |
-        Install-Module -Name CosmosDB -Verbose -Confirm
+        Install-Module -Name CosmosDB -Verbose -Confirm -Force
         Import-Module -Name CosmosDB
 
   buildDeployDevelopmentFrontend:

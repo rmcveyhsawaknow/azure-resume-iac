@@ -5,7 +5,7 @@ on:
     branches:
     - develop
     paths:
-    - '.github/workflows/dev-full-stack.yml'
+    - '.github/workflows/dev-full-stack-azureCDN.yml'
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
@@ -15,10 +15,10 @@ env:
   stackVersion: 'v1'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
-  stackLocationCode: 'us1'
+  stackLocationCode: 'zus1'
   AppName: 'resume'
   AppBackendName: 'resumecounter'
-  tagCostCenter: 'a1b2c3'
+  tagCostCenter: 'azCDN'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
 
 jobs:
@@ -47,6 +47,7 @@ jobs:
 
   deployDevelopmentIac:
     needs: changes
+    if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to development
     environment:
       name: development
@@ -84,8 +85,8 @@ jobs:
     - name: Echo and Set Github Run Link
       id: IACACTIONSLINK
       run: |
-        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack.yml"
-        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack.yml
+        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml"
+        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
  
     - name: Bicep - Backend
@@ -184,6 +185,7 @@ jobs:
   buildDeployDevelopmentBackend:
     # needs: deployDevelopmentIac
     needs: [changes, deployDevelopmentIac]
+    if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Development - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -226,6 +228,7 @@ jobs:
   buildDeployDevelopmentFrontend:
     # needs: buildDeployDevelopmentBackend
     needs: [changes, buildDeployDevelopmentBackend]
+    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Development
     environment:
       name: development

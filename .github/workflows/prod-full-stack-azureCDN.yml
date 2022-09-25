@@ -5,7 +5,7 @@ on:
     branches:
     - main
     paths:
-    - '.github/workflows/prod-full-stack.yml'
+    - '.github/workflows/prod-full-stack-azureCDN.yml'
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
@@ -15,10 +15,10 @@ env:
   stackVersion: 'v1'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
-  stackLocationCode: 'us1'
+  stackLocationCode: 'zus1'
   AppName: 'resume'
   AppBackendName: 'resumecounter'
-  tagCostCenter: 'z9y8x7'
+  tagCostCenter: 'azCDN'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
 
 jobs:
@@ -85,8 +85,8 @@ jobs:
     - name: Echo and Set Github Run Link
       id: IACACTIONSLINK
       run: |
-        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml"
-        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml
+        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack-azureCDN.yml"
+        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack-azureCDN.yml
         echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
      
     - name: Bicep - Backend
@@ -184,7 +184,7 @@ jobs:
 
   buildDeployProductionBackend:
     # needs: deployProductionIac
-    needs: [changes, deployDevelopmentIac]
+    needs: [changes, deployProductionIac]
     if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
@@ -227,7 +227,7 @@ jobs:
 
   buildDeployProductionFrontend:
     # needs: buildDeployProductionBackend
-    needs: [changes, buildDeployDevelopmentBackend]
+    needs: [changes, buildDeployProductionBackend]
     if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:

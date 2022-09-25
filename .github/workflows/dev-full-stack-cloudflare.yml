@@ -268,6 +268,12 @@ jobs:
         app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
         package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
 
+    - name: 'PS Module CosmosDB'
+      shell: pwsh
+      run: |
+        Install-Module -Name CosmosDB -Verbose
+        Import-Module -Name CosmosDB
+
   buildDeployDevelopmentFrontend:
     # needs: buildDeployDevelopmentBackend
     needs: [changes, buildDeployDevelopmentBackend]

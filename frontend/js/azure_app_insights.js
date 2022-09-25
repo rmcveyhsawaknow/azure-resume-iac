@@ -7,6 +7,6 @@ src: "https://js.monitor.azure.com/scripts/b/ai.2.min.js", // The SDK URL Source
 crossOrigin: "anonymous", // When supplied this will add the provided value as the cross origin attribute on the script tag
 // onInit: null, // Once the application insights instance has loaded and initialized this callback function will be called with 1 argument -- the sdk instance (DO NOT ADD anything to the sdk.queue -- As they won't get called)
 cfg: { // Application Insights Configuration
-    connectionString: "InstrumentationKey=6044d7b4-60c3-46fe-a16c-06188957026d;IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
+    connectionString: "InstrumentationKey=5ba6a4ad-7b7c-41fd-b332-c6f71fbd4918;IngestionEndpoint=https://eastus-5.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/"
     /* ...Other Configuration Options... */
 }});

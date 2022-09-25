@@ -288,7 +288,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login -d '$web' -s frontend/ --overwrite
+            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
     
     # - name: Purge CDN endpoint
     #   uses: azure/CLI@v1

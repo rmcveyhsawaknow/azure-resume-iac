@@ -12,7 +12,7 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.net'
-  stackVersion: 'v20'
+  stackVersion: 'v21'
   stackEnvironment: 'ftr'
   stackLocation: 'eastus'
   stackLocationCode: 'us1'
@@ -215,6 +215,9 @@ jobs:
         proxied: false
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
         zone: ${{ secrets.CLOUDFLARE_ZONE }}
+
+    - name: DNS Propagation Sleeper
+      run: sleep 90s
 
     - name: Enable Storage Account Frontend Cloudflare Custom Domain 
       uses: azure/CLI@v1

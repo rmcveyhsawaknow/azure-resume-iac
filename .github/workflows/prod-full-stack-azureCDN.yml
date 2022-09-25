@@ -1,4 +1,4 @@
-name: Production Full Stack
+name: Production Full Stack Azure CDN
 
 on:
   push:

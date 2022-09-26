@@ -32,7 +32,7 @@ jobs:
       backendApp: ${{ steps.filter.outputs.backendApp }}
       frontendSite: ${{ steps.filter.outputs.frontendSite }}
     steps:
-    - uses: actions/checkout@main
+    - uses: actions/checkout@develop
     # For pull requests it's not necessary to checkout the code
     - uses: dorny/paths-filter@v2
       id: filter

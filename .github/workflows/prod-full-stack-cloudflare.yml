@@ -12,6 +12,7 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.me'
+  dnsZone2: 'ryanmcvey.net'
   stackVersion: 'v1'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
@@ -117,6 +118,7 @@ jobs:
                   functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
                   corsFriendlyDnsUri=https://${{env.AppName}}.${{env.dnsZone}}
+                  corsFriendlyDnsUri2=https://${{env.AppName}}.${{env.dnsZone2}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
                   functionRuntime=dotnet
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
@@ -142,8 +144,10 @@ jobs:
                   resourceGroupLocation=${{env.stackLocation}}
                   rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
                   staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  staticSiteStorageAccountName2=${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa
                   staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
+    ### static site #1 - Begin
     - name: Enable Storage Account Frontend Static Website
       uses: azure/CLI@v1
       with:
@@ -193,16 +197,76 @@ jobs:
         proxied: false
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
         zone: ${{ secrets.CLOUDFLARE_ZONE }}
+    ### static site #1 - End
+    ### static site #2 - Begin
+    - name: Enable Storage Account Frontend Static Website2
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document error.html --index-document index.html
+                
+    - name: Get Static Site Endpoint2
+      id: staticSiteEndPoint2
+      run: |
+        ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        echo "::set-output name=ssEndPoint2::${ssEndPoint2}"
+  
+    - name: Echo Static Site Endpoint2
+      run: echo "${{ steps.staticSiteEndPoint2.outputs.ssEndPoint2 }}"
+   
+    - name: Convert Enpoint URL to Domain2
+      id: convert_url_domain2
+      run: |
+          export ssEndpoint_url2=$(echo ${{ steps.staticSiteEndPoint2.outputs.ssEndPoint2 }} |  awk -F[/:] '{print $4}')
+          echo ::set-output name=ssEndpoint_domain2::$ssEndpoint_url2
+
+    - name: Echo Static Site Endpoint Domain2
+      run: echo "${{ steps.convert_url_domain2outputs.ssEndpoint_domain2 }}"
+   
+
+    - name: Cloudflare - Frontend DNS 2
+      continue-on-error: true
+      uses: rez0n/create-dns-record@v2.2
+      with:
+        type: "CNAME"
+        name: ${{env.AppName}}
+        content: ${{ steps.convert_url_domain2.outputs.ssEndpoint_domain2 }}
+        ttl: 1
+        proxied: true
+        token: ${{ secrets.CLOUDFLARE_TOKEN }}
+        zone: ${{ secrets.CLOUDFLARE_ZONE2 }}
+
+    
+    - name: Cloudflare - Frontend DNS Verify 2
+      continue-on-error: true
+      uses: rez0n/create-dns-record@v2.2
+      with:
+        type: "CNAME"
+        name: asverify.${{env.AppName}}
+        content: asverify.${{ steps.convert_url_domain2.outputs.ssEndpoint_domain2 }}
+        ttl: 1
+        proxied: false
+        token: ${{ secrets.CLOUDFLARE_TOKEN }}
+        zone: ${{ secrets.CLOUDFLARE_ZONE2 }}
+    
+    ### static site #2 - End
 
     - name: DNS Propagation Sleeper
       run: sleep 90s
 
+    ### static site #1 - custom domain
     - name: Enable Storage Account Frontend Cloudflare Custom Domain 
       uses: azure/CLI@v1
       with:
         inlineScript: |
             az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}.${{env.dnsZone}} --use-subdomain true
 
+    ### static site #2 - custom domain
+    - name: Enable Storage Account Frontend Cloudflare Custom Domain2
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}.${{env.dnsZone2}} --use-subdomain true
 
   buildDeployProductionBackend:
     # needs: deployProductionIac

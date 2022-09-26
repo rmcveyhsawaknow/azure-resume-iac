@@ -249,7 +249,7 @@ jobs:
 
 
   buildDeployProductionFrontend:
-    # needs: buildDeployProductionBackend
+    needs: changes
     # needs: [changes, buildDeployProductionBackend]
     if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production

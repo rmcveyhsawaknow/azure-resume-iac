@@ -52,7 +52,9 @@ resource rgDns 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   }
 }
 
-// module cosmos
+
+// module cdn
+
 module frontendCdn './modules/cdn/cdn.bicep' = {
   name: 'frontendCdn01'
   scope: resourceGroup(rgFrontend.name)

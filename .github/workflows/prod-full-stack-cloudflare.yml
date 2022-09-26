@@ -208,7 +208,7 @@ jobs:
     - name: Get Static Site Endpoint2
       id: staticSiteEndPoint2
       run: |
-        ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        ssEndPoint2=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
         echo "::set-output name=ssEndPoint2::${ssEndPoint2}"
   
     - name: Echo Static Site Endpoint2

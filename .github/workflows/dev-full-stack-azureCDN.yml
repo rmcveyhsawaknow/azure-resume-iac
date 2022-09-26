@@ -47,7 +47,7 @@ jobs:
 
   deployDevelopmentIac:
     needs: changes
-    if: ${{ needs.changes.outputs.iac == 'true' }}
+    # if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to development
     environment:
       name: development
@@ -231,7 +231,7 @@ jobs:
   buildDeployDevelopmentFrontend:
     # needs: buildDeployDevelopmentBackend
     needs: [changes, buildDeployDevelopmentBackend]
-    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Development
     environment:
       name: development

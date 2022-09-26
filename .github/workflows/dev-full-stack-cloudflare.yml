@@ -11,8 +11,8 @@ on:
     - 'frontend/**'
 
 env: 
-  dnsZone: 'ryanmcvey.net'
-  stackVersion: 'v20'
+  dnsZone: 'ryanmcvey.me'
+  stackVersion: 'v1'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'

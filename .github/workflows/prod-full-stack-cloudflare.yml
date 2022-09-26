@@ -11,7 +11,7 @@ on:
     - 'frontend/**'
 
 env: 
-  dnsZone: 'ryanmcvey.net'
+  dnsZone: 'ryanmcvey.me'
   stackVersion: 'v20'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
@@ -47,7 +47,7 @@ jobs:
 
   deployProductionIac:
     needs: changes
-    if: ${{ needs.changes.outputs.iac == 'true' }}
+    # if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to production
     environment:
       name: production
@@ -207,7 +207,7 @@ jobs:
   buildDeployProductionBackend:
     # needs: deployProductionIac
     needs: [changes, deployProductionIac]
-    if: ${{ needs.changes.outputs.backendApp == 'true' }}
+    # if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -249,9 +249,9 @@ jobs:
 
 
   buildDeployProductionFrontend:
-    needs: changes
-    # needs: [changes, buildDeployProductionBackend]
-    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    # needs: changes
+    needs: [changes, buildDeployProductionBackend]
+    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:
       name: production

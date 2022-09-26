@@ -12,7 +12,7 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.net'
-  stackVersion: 'v1'
+  stackVersion: 'v20'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'

@@ -12,7 +12,7 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v2'
+  stackVersion: 'v5'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'zus1'
@@ -96,6 +96,7 @@ jobs:
         subscriptionId: ${{ steps.subs.outputs.subid }}
         region: ${{env.stackLocation}}
         template: ./.iac/backend.bicep
+        deploymentName: backend-azureCDN-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
@@ -130,6 +131,7 @@ jobs:
         subscriptionId: ${{ steps.subs.outputs.subid }}
         region: ${{env.stackLocation}}
         template: ./.iac/frontend.bicep
+        deploymentName: frontend-azureCDN-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
@@ -163,6 +165,7 @@ jobs:
         subscriptionId: ${{ steps.subs.outputs.subid }}
         region: ${{env.stackLocation}}
         template: ./.iac/frontendCdn.bicep
+        deploymentName: frontendCDN-azureCDN-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
         parameters: 
                   tagGitActionIacRunId=${{ github.run_id }}
                   tagGitActionIacRunNumber=${{ github.run_number }}
@@ -185,7 +188,7 @@ jobs:
   buildDeployDevelopmentBackend:
     # needs: deployDevelopmentIac
     needs: [changes, deployDevelopmentIac]
-    if: ${{ needs.changes.outputs.backendApp == 'true' }}
+    # if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Development - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root

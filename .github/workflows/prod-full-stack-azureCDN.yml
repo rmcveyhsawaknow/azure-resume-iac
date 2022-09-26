@@ -17,7 +17,7 @@ env:
   stackLocation: 'eastus'
   stackLocationCode: 'zus1'
   AppName: 'resume'
-  AppBackendName: 'resumecounter'
+  AppBackendName: 'resumectr'
   tagCostCenter: 'azCDN'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
 

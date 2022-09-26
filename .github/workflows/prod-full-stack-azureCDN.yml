@@ -47,7 +47,7 @@ jobs:
 
   deployProductionIac:
     needs: changes
-    if: ${{ needs.changes.outputs.iac == 'true' }}
+    # if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to production
     environment:
       name: production
@@ -231,7 +231,7 @@ jobs:
   buildDeployProductionFrontend:
     # needs: buildDeployProductionBackend
     needs: [changes, buildDeployProductionBackend]
-    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:
       name: production

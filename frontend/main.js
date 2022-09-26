@@ -3,7 +3,7 @@ window.addEventListener('DOMContentLoaded', (event) =>{
 })
 
 
-const functionApiUrl = 'https://cus1-resumectr-prod-v20-fa.azurewebsites.net/api/GetResumeCounter?code=TZsAom8PufJgHqpCcAnVNDCHM4wqqKCXO5BczapEBypHAzFugnMYDA==';
+const functionApiUrl = 'https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter?code=M4ohKtXdNpeequpYibByW4KR8xXkrGHkCaxsTqsGATtFAzFuDvxeag==';
 
 
 

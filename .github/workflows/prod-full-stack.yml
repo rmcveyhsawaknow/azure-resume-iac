@@ -1,0 +1,255 @@
+name: Production Full Stack
+
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - '.github/workflows/prod-full-stack.yml'
+    - '.iac/**'
+    - 'backend/**'
+    - 'frontend/**'
+
+env: 
+  dnsZone: 'ryanmcvey.me'
+  stackVersion: 'v1'
+  stackEnvironment: 'prod'
+  stackLocation: 'eastus'
+  stackLocationCode: 'us1'
+  AppName: 'resume'
+  AppBackendName: 'resumecounter'
+  tagCostCenter: 'z9y8x7'
+  rgDns: 'glbl-ryanmcveyme-v1-rg'
+
+jobs:
+
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    # Set job outputs to values from filter step
+    outputs:
+      iac: ${{ steps.filter.outputs.iac }}
+      backendApp: ${{ steps.filter.outputs.backendApp }}
+      frontendSite: ${{ steps.filter.outputs.frontendSite }}
+    steps:
+    - uses: actions/checkout@main
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          iac:
+            - '.iac/**'
+          backendApp:
+            - 'backend/**'
+          frontendSite:
+            - 'frontend/**'
+
+  deployProductionIac:
+    needs: changes
+    if: ${{ needs.changes.outputs.iac == 'true' }}
+    name: Deploy IaC to production
+    environment:
+      name: production
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@main
+    - name: Azure Login
+      uses: Azure/login@v1.1
+      with:
+        creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}   
+    
+    - name: Get and Set Subscription Variable
+      id: subs
+      run: |
+        SUBID=$(az account show --query id --output tsv)
+        echo "::set-output name=SUBID::${SUBID}"
+    - name: Echo SubscriptionId
+      run: echo "${{ steps.subs.outputs.subid }}"      
+    
+    - name: Echo Github.run_id
+      id: runId
+      run: |
+        echo "${{ github.run_id }}"
+
+    - name: Echo Github.run_number
+      id: runNumber
+      run: |
+        echo "${{ github.run_number }}"
+
+    - name: Echo Github.run_attempt
+      id: runAttempt
+      run: |
+        echo "${{ github.run_Attempt }}"
+    
+    - name: Echo and Set Github Run Link
+      id: IACACTIONSLINK
+      run: |
+        echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml"
+        IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack.yml
+        echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
+     
+    - name: Bicep - Backend
+      uses: Azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/backend.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgBackendName=${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  cosmosName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
+                  databaseName=azure-resume-click-count
+                  containerName=Counter
+                  defaultConsistencyLevel=Eventual
+                  functionAppStorageAccountName=${{env.stackLocationCode}}${{env.AppBackendName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  functionAppAppInsightsName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+                  functionAppAppServicePlanName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-asp
+                  functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
+                  functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
+                  functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
+                  corsFriendlyDnsUri=https://${{env.AppName}}.${{env.dnsZone}}
+                  corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
+                  functionRuntime=dotnet
+                  keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
+                  keyVaultSku=standard
+  
+  #                functionName=GetResumeCounter
+  
+    - name: Bicep - Frontend
+      uses: Azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/frontend.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
+    
+    - name: Enable Storage Account Frontend Static Website
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document index.html --index-document index.html
+                
+    - name: Get Static Site Endpoint
+      id: staticSiteEndPoint
+      run: |
+        ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        echo "::set-output name=ssEndPoint::${ssEndPoint}"
+    - name: Echo Static Site Endpoint
+      run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
+    
+    - name: Bicep - Frontend CDN
+      uses: azure/arm-deploy@v1
+      with:
+        scope: subscription
+        subscriptionId: ${{ steps.subs.outputs.subid }}
+        region: ${{env.stackLocation}}
+        template: ./.iac/frontendCdn.bicep
+        parameters: 
+                  tagGitActionIacRunId=${{ github.run_id }}
+                  tagGitActionIacRunNumber=${{ github.run_number }}
+                  tagGitActionIacRunAttempt=${{ github.run_attempt }}
+                  tagGitActionIacActionsLink=${{ steps.iacactionslink.outputs.iacactionslink}}
+                  tagEnvironmentNameTier=${{env.stackEnvironment}}
+                  tagCostCenter=${{env.tagCostCenter}}
+                  resourceGroupLocation=${{env.stackLocation}}
+                  rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+                  rgDnsName=${{env.rgDns}}
+                  cNameValue=${{env.AppName}}
+                  dnsZoneValue=${{env.dnsZone}}
+                  staticSiteOriginHostName=${{steps.staticSiteEndPoint.outputs.ssEndPoint}}
+                  cdnProfileName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn
+                  cdnProfileEndpointName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep
+                  cdnOriginGroupName=glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnorgrp
+                  cdnOriginName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa-web-endpoint
+        failOnStdErr: false 
+
+  buildDeployProductionBackend:
+    # needs: deployProductionIac
+    needs: changes
+    if: ${{ needs.changes.outputs.backendApp == 'true' }}
+    name: Build and Deploy Backend App to Production - aspnetcore31_cs
+    env: 
+      AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
+      DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
+    environment:
+      name: production
+    runs-on: windows-latest
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}  
+
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api'
+        dotnet build --configuration Release --output ./output
+        popd
+    - name: 'Run unit test'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/tests'
+        dotnet test
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1.4.4
+      id: fa
+      with:
+        app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
+        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
+
+  buildDeployProductionFrontend:
+    # needs: buildDeployProductionBackend
+    needs: changes
+    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    name: Deploy Frontend Static App to Production
+    environment:
+      name: production
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@main
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }} 
+    
+    - name: Upload to blob storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
+    
+    - name: Purge CDN endpoint
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+           az afd endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --endpoint-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg

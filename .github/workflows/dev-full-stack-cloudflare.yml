@@ -2,6 +2,8 @@ name: Development Full Stack Cloudflare
 
 on:
   push:
+    tags:
+      - cloudflare
     branches:
     - develop
     paths:

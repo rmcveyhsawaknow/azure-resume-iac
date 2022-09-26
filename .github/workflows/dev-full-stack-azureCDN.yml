@@ -2,6 +2,8 @@ name: Development Full Stack Azure CDN
 
 on:
   push:
+    tags:
+      - azureCDN
     branches:
     - develop
     paths:

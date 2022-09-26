@@ -3,7 +3,7 @@ name: Production Full Stack Azure CDN
 on:
   push:
     branches:
-    - main
+    - disabled
     paths:
     - '.github/workflows/prod-full-stack-azureCDN.yml'
     - '.iac/**'

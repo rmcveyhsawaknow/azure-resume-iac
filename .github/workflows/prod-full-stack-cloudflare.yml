@@ -13,6 +13,7 @@ on:
 env: 
   dnsZone: 'ryanmcvey.me'
   dnsZone2: 'ryanmcvey.net'
+  dnsZone3: 'ryanmcvey.cloud'
   stackVersion: 'v1'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
@@ -48,7 +49,7 @@ jobs:
 
   deployProductionIac:
     needs: changes
-    if: ${{ needs.changes.outputs.iac == 'true' }}
+    # if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to production
     environment:
       name: production
@@ -119,6 +120,7 @@ jobs:
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
                   corsFriendlyDnsUri=https://${{env.AppName}}.${{env.dnsZone}}
                   corsFriendlyDnsUri2=https://${{env.AppName}}.${{env.dnsZone2}}
+                  corsFriendlyDnsUri3=https://${{env.AppName}}.${{env.dnsZone3}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
                   functionRuntime=dotnet
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
@@ -145,6 +147,7 @@ jobs:
                   rgFrontendName=${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
                   staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
                   staticSiteStorageAccountName2=${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa
+                  staticSiteStorageAccountName3=${{env.stackLocationCode}}${{env.AppName}}3${{env.stackEnvironment}}${{env.stackVersion}}sa
                   staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
     ### static site #1 - Begin
@@ -248,11 +251,61 @@ jobs:
         proxied: false
         token: ${{ secrets.CLOUDFLARE_TOKEN }}
         zone: ${{ secrets.CLOUDFLARE_ZONE2 }}
+    ### static site #2 - End
+    ### static site #3 - Begin
+    - name: Enable Storage Account Frontend Static Website3
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}3${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document error.html --index-document index.html
+                
+    - name: Get Static Site Endpoint3
+      id: staticSiteEndPoint3
+      run: |
+        ssEndPoint3=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}3${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
+        echo "::set-output name=ssEndPoint3::${ssEndPoint3}"
+  
+    - name: Echo Static Site Endpoint3
+      run: echo "${{ steps.staticSiteEndPoint3.outputs.ssEndPoint3 }}"
+   
+    - name: Convert Enpoint URL to Domain3
+      id: convert_url_domain3
+      run: |
+          export ssEndpoint_url3=$(echo ${{ steps.staticSiteEndPoint3.outputs.ssEndPoint3 }} |  awk -F[/:] '{print $4}')
+          echo ::set-output name=ssEndpoint_domain3::$ssEndpoint_url3
+
+    - name: Echo Static Site Endpoint Domain3
+      run: echo "${{ steps.convert_url_domain3.outputs.ssEndpoint_domain3 }}"
+   
+
+    - name: Cloudflare - Frontend DNS 3
+      continue-on-error: true
+      uses: rez0n/create-dns-record@v2.2
+      with:
+        type: "CNAME"
+        name: ${{env.AppName}}
+        content: ${{ steps.convert_url_domain3.outputs.ssEndpoint_domain3 }}
+        ttl: 1
+        proxied: true
+        token: ${{ secrets.CLOUDFLARE_TOKEN }}
+        zone: ${{ secrets.CLOUDFLARE_ZONE3 }}
+
     
+    - name: Cloudflare - Frontend DNS Verify 3
+      continue-on-error: true
+      uses: rez0n/create-dns-record@v2.2
+      with:
+        type: "CNAME"
+        name: asverify.${{env.AppName}}
+        content: asverify.${{ steps.convert_url_domain3.outputs.ssEndpoint_domain3 }}
+        ttl: 1
+        proxied: false
+        token: ${{ secrets.CLOUDFLARE_TOKEN }}
+        zone: ${{ secrets.CLOUDFLARE_ZONE3 }}
     ### static site #2 - End
 
     - name: DNS Propagation Sleeper
-      run: sleep 90s
+      run: sleep 60s
 
     ### static site #1 - custom domain
     - name: Enable Storage Account Frontend Cloudflare Custom Domain 
@@ -268,10 +321,17 @@ jobs:
         inlineScript: |
             az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}.${{env.dnsZone2}} --use-subdomain true
 
+    ### static site #3 - custom domain
+    - name: Enable Storage Account Frontend Cloudflare Custom Domain2
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}3${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}.${{env.dnsZone3}} --use-subdomain true
+
   buildDeployProductionBackend:
     # needs: deployProductionIac
     needs: [changes, deployProductionIac]
-    if: ${{ needs.changes.outputs.backendApp == 'true' }}
+    # if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -313,9 +373,9 @@ jobs:
 
 
   buildDeployProductionFrontend:
-    # needs: [changes, buildDeployProductionBackend]
-    needs: changes
-    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    needs: [changes, buildDeployProductionBackend]
+    # needs: changes
+    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:
       name: production
@@ -335,3 +395,4 @@ jobs:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
+            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}3${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite

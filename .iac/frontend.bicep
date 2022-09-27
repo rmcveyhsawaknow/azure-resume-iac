@@ -14,6 +14,7 @@ param tagEnvironmentNameTier string
 //storage account static site parameters
 param staticSiteStorageAccountName string
 param staticSiteStorageAccountName2 string
+param staticSiteStorageAccountName3 string
 param staticSiteStorageAccountAppInsightsName string
 
 
@@ -52,6 +53,21 @@ module frontendStaticSite2 './modules/storageaccount/sa_staticsite.bicep' = {
   scope: resourceGroup(rgFrontend.name)
   params: {
     staticSiteStorageAccountName: staticSiteStorageAccountName2
+    resourceGroupLocation: rgFrontend.location
+    tagEnvironmentNameTier: tagEnvironmentNameTier
+    tagCostCenter: tagCostCenter
+    tagGitActionIacRunId : tagGitActionIacRunId
+    tagGitActionIacRunNumber : tagGitActionIacRunNumber
+    tagGitActionIacRunAttempt : tagGitActionIacRunAttempt 
+    tagGitActionIacActionsLink : tagGitActionIacActionsLink
+  }
+}
+
+module frontendStaticSite3 './modules/storageaccount/sa_staticsite.bicep' = {
+  name: 'staticSiteStorageAccountName03'
+  scope: resourceGroup(rgFrontend.name)
+  params: {
+    staticSiteStorageAccountName: staticSiteStorageAccountName3
     resourceGroupLocation: rgFrontend.location
     tagEnvironmentNameTier: tagEnvironmentNameTier
     tagCostCenter: tagCostCenter

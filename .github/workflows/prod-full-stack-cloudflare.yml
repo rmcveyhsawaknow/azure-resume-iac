@@ -48,7 +48,7 @@ jobs:
 
   deployProductionIac:
     needs: changes
-    # if: ${{ needs.changes.outputs.iac == 'true' }}
+    if: ${{ needs.changes.outputs.iac == 'true' }}
     name: Deploy IaC to production
     environment:
       name: production
@@ -221,7 +221,7 @@ jobs:
           echo ::set-output name=ssEndpoint_domain2::$ssEndpoint_url2
 
     - name: Echo Static Site Endpoint Domain2
-      run: echo "${{ steps.convert_url_domain2outputs.ssEndpoint_domain2 }}"
+      run: echo "${{ steps.convert_url_domain2.outputs.ssEndpoint_domain2 }}"
    
 
     - name: Cloudflare - Frontend DNS 2
@@ -271,7 +271,7 @@ jobs:
   buildDeployProductionBackend:
     # needs: deployProductionIac
     needs: [changes, deployProductionIac]
-    # if: ${{ needs.changes.outputs.backendApp == 'true' }}
+    if: ${{ needs.changes.outputs.backendApp == 'true' }}
     name: Build and Deploy Backend App to Production - aspnetcore31_cs
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -313,9 +313,9 @@ jobs:
 
 
   buildDeployProductionFrontend:
-    needs: [changes, buildDeployProductionBackend]
-    # needs: changes
-    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    # needs: [changes, buildDeployProductionBackend]
+    needs: changes
+    if: ${{ needs.changes.outputs.frontendSite == 'true' }}
     name: Deploy Frontend Static App to Production
     environment:
       name: production
@@ -334,3 +334,4 @@ jobs:
       with:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
+            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}2${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite

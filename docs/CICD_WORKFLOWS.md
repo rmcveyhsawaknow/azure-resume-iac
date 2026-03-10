@@ -168,6 +168,8 @@ az ad sp create-for-rbac \
 - `content`: Azure Storage static site endpoint domain
 - `proxied: true` for main records (enables Cloudflare CDN/TLS), `false` for `asverify` verification records
 
+> **⚠️ Supply Chain Risk:** This third-party action is pinned to a mutable tag (`v2.2`), not a commit SHA. It runs with `CLOUDFLARE_TOKEN` and has DNS edit access. If the upstream tag is repointed to malicious code, an attacker could exfiltrate the token or hijack DNS records. **Remediation:** Pin the action to a specific commit SHA in all workflow files, or replace it with direct `curl` calls to the Cloudflare API.
+
 ## GitHub Environments
 
 The workflows reference two GitHub environments that can be configured with protection rules:
@@ -201,7 +203,7 @@ Use this checklist when verifying or rotating credentials:
 | `Azure/functions-action` | `@v1.4.4` | ⚠️ Current is `@v2` |
 | `actions/setup-dotnet` | `@v1` | ⚠️ Current is `@v4` |
 | `dorny/paths-filter` | `@v2` | Current version |
-| `rez0n/create-dns-record` | `@v2.2` | Community action; verify maintenance status |
+| `rez0n/create-dns-record` | `@v2.2` | ⚠️ Third-party action pinned to mutable tag; pin to commit SHA or replace with direct API calls (supply chain risk — runs with `CLOUDFLARE_TOKEN`) |
 
 ## Deprecated Syntax
 

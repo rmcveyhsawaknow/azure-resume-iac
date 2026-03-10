@@ -14,15 +14,24 @@ This repository follows a structured, multi-session agent workflow to build out 
 ├─────────────────────────────────────────────────────────────┤
 │  Session 2: Backlog Research                                │
 │  Agent reads assessment output → produces                   │
-│  BACKLOG_PLANNING.md + 59 issue .md files                   │
+│  BACKLOG_PLANNING.md + issue .md files                      │
 ├─────────────────────────────────────────────────────────────┤
-│  Session 3: Issue Population (this session)                 │
+│  Session 3: Issue Population                                │
 │  Human + Agent in Codespace → runs scripts to create        │
-│  labels, issues, project, and views via gh CLI              │
+│  labels, milestones, issues, project, and views via gh CLI  │
 ├─────────────────────────────────────────────────────────────┤
-│  Session 4+: Backlog Burn-Down                              │
+│  Session 4: Phase 0 Assessment Execution                    │
+│  Agent runs assessment commands → produces resource         │
+│  inventory, actual-vs-expected, gaps → creates new issues   │
+├─────────────────────────────────────────────────────────────┤
+│  Session 5+: Backlog Burn-Down                              │
 │  Human works issues using feature branches + Codespaces     │
 │  Agent assists with Copilot-suitable tasks                  │
+│  Technologist runs setup-codespace-auth.sh at session start │
+├─────────────────────────────────────────────────────────────┤
+│  Phase Boundary: Retrospective                              │
+│  PM runs generate-phase-retrospective.sh → commits report   │
+│  → posts to issue → closes milestone                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -185,15 +194,133 @@ GitHub Projects V2 views cannot be fully configured via API. After running the p
 | Size | `S` – `XL` | `#C2E0C6` (light green) | Sprint planning |
 | Copilot | `Yes`, `Partial`, `No` | Purple shades | Agent task queue |
 | Area | `infrastructure`, `backend`, etc. | `#1D76DB` (blue) | Domain filtering |
+| Source | `gap-analysis-finding`, `phase-retrospective` | `#FEF2C0` (gold) | Origin tracking |
 | Status | `backlog`, `ready`, `blocked` | Gray / Green / Red | Board columns |
+
+## Gap Analysis Cycle
+
+After initial assessment (Session 4), a gap analysis cycle may identify additional tasks:
+
+1. **Run assessment commands** — Execute `docs/ASSESSMENT_COMMANDS.md` commands against live infrastructure
+2. **Generate artifacts** — Resource inventory, actual-vs-expected comparison, gaps & recommendations
+3. **Create new issue files** — Write `.md` files in `scripts/backlog-issues/` with `gap-analysis-finding` label
+4. **Update BACKLOG_PLANNING.md** — Add new tasks to the appropriate phase tables
+5. **Run issue creation for new files only** — `./scripts/create-backlog-issues.sh scripts/backlog-issues/{new_files}`
+
+This cycle can repeat at any phase boundary when new gaps are discovered.
+
+## Phase Retrospective (AgentGitOps)
+
+Each phase concludes with a retrospective that captures metrics, KPIs, and lessons learned.
+
+### Setup (One-Time)
+
+```bash
+# Create milestones for all phases
+./scripts/setup-github-milestones.sh
+
+# Assign issues to milestones (via GitHub UI or gh CLI)
+```
+
+### At Phase Completion
+
+```bash
+# Generate retrospective report
+./scripts/generate-phase-retrospective.sh <phase_number>
+
+# The script:
+# 1. Collects issue/PR/commit stats from the milestone date range
+# 2. Calculates Human vs Copilot AI Productivity KPI
+# 3. Writes docs/retrospectives/phase-{N}-retrospective.md
+# 4. Posts the report as a comment on the retrospective issue
+```
+
+### Human vs Copilot AI Productivity KPI
+
+The retrospective tracks AI leverage at two levels:
+
+- **Task-level:** Closed issues labeled `Copilot: Yes` ÷ total closed issues
+- **Commit-level:** Commits with `Co-authored-by` Copilot trailers ÷ total commits
+
+### Artifacts
+
+| Artifact | Location | Purpose |
+|---|---|---|
+| Committed report | `docs/retrospectives/phase-{N}-retrospective.md` | Persistent git record |
+| Issue comment | Retrospective issue for the phase | Full data for Copilot context |
+| Milestone | GitHub Milestones | Date boundaries and issue grouping |
+
+## Session 5+: Technologist Bootstrap (Backlog Burn-Down)
+
+When working `Copilot: Partial` issues in a Codespace, the **Technologist role** follows a repeatable bootstrap pattern — parallel to the PM's retrospective prompt.
+
+### Prerequisites (One-Time)
+
+Configure **Codespace Secrets** at [github.com/settings/codespaces](https://github.com/settings/codespaces) so credentials are auto-injected into every new Codespace:
+
+| Secret | Source | Purpose |
+|---|---|---|
+| `AZURE_SP_APP_ID` | `az ad sp show --id <app-id>` | Azure Service Principal login |
+| `AZURE_SP_PASSWORD` | SP client secret value | Azure Service Principal login |
+| `AZURE_SP_TENANT` | `az account show --query tenantId` | Azure AD Tenant |
+| `AZURE_SUBSCRIPTION_ID` | `az account show --query id` | Azure subscription context |
+| `CF_API_TOKEN` | Cloudflare Dashboard → API Tokens | Cloudflare DNS operations |
+
+### Workflow
+
+1. **Human assigns issue** to Copilot via GitHub UI → selects `develop` branch
+2. **Copilot creates feature branch** (e.g., `copilot/fix-issue-24`)
+3. **Human opens Codespace** on the feature branch
+4. **Human pastes the Technologist Session Start prompt** into Copilot Chat
+5. Copilot runs auth setup, reads issue context, proposes implementation plan
+6. Human reviews plan → Copilot implements → Human validates
+7. Copilot creates PR to `develop` when work is complete
+
+### Standard Technologist Session Start Prompt
+
+> Paste this into Copilot Chat at the start of each Codespace session, replacing `{ISSUE_NUMBER}`:
+
+```
+Set up this Codespace for working on issue #{ISSUE_NUMBER}:
+
+1. Run `bash scripts/setup-codespace-auth.sh` to authenticate Azure CLI, GitHub CLI, and Cloudflare API
+2. Fetch the issue details: `gh issue view {ISSUE_NUMBER} --repo rmcveyhsawaknow/azure-resume-iac`
+3. Read the issue acceptance criteria and identify the first actionable step
+4. Check current branch and confirm it tracks the correct feature branch
+5. Review the relevant source files mentioned in the issue
+6. Propose an implementation plan based on the acceptance criteria
+
+Start with step 1 and proceed through each step, pausing after the implementation plan for review.
+```
+
+### Role Comparison
+
+| Aspect | PM Role (Retrospective) | Technologist Role (Burn-Down) |
+|---|---|---|
+| Trigger | Phase boundary | Issue assignment |
+| Branch | `develop` | Feature branch (Copilot-created) |
+| Auth needs | `gh` CLI only | Azure + GitHub + Cloudflare |
+| Script | `generate-phase-retrospective.sh` | `setup-codespace-auth.sh` |
+| Prompt location | Retrospective issue body | This section / issue body |
+| Output | Report + milestone close | Code changes + PR |
+
+### Codespace Configuration
+
+The `.devcontainer/devcontainer.json` ensures consistent tooling:
+- Azure CLI, .NET 8 SDK, Node.js pre-installed
+- VS Code extensions: Bicep, Azure Functions, C# Dev Kit, Copilot
+- Reminder to run auth script on start
 
 ## Scripts Reference
 
 | Script | Purpose | Auth Required |
 |---|---|---|
-| `scripts/setup-github-labels.sh` | Create/update all 27 labels | `GITHUB_TOKEN` (Codespace) |
+| `scripts/setup-github-labels.sh` | Create/update all labels | `GITHUB_TOKEN` (Codespace) |
 | `scripts/create-backlog-issues.sh` | Create issues from `.md` files | `GITHUB_TOKEN` (Codespace) |
 | `scripts/setup-github-project.sh` | Create project, fields, add issues | `project` scope token |
+| `scripts/setup-github-milestones.sh` | Create milestones for each phase | `GITHUB_TOKEN` (Codespace) |
+| `scripts/generate-phase-retrospective.sh` | Generate phase retrospective report | `GITHUB_TOKEN` (Codespace) |
+| `scripts/setup-codespace-auth.sh` | Authenticate Azure, GitHub, Cloudflare | Codespace Secrets |
 
 ## Adapting This Workflow for Other Repos
 
@@ -205,7 +332,8 @@ This entire workflow is repository-agnostic. To reuse it:
 4. **Run backlog research** — agent session to produce phase plan + issue files
 5. **Customize labels** in `scripts/setup-github-labels.sh` for your taxonomy
 6. **Generate issue files** in `scripts/backlog-issues/` with YAML frontmatter
-7. **Run scripts** in sequence: labels → issues → project → views
+7. **Run scripts** in sequence: labels → milestones → issues → project → views
+8. **Set up retrospectives** — create milestone dates, run `generate-phase-retrospective.sh` at each phase end
 
 ### Key Design Decisions
 

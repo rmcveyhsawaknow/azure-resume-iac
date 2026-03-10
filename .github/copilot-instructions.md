@@ -85,9 +85,12 @@ This repository uses a structured backlog-to-issues workflow:
 
 1. **Backlog planning** lives in `docs/BACKLOG_PLANNING.md` with 6 phases (0–5)
 2. **Issue template** at `.github/ISSUE_TEMPLATE/backlog-task.yml` captures task metadata
-3. **Backlog issue files** in `scripts/backlog-issues/` contain individual task definitions
-4. **Label scripts** at `scripts/setup-github-labels.sh` create required labels
-5. **Issue creation** at `scripts/create-backlog-issues.sh` creates issues via `gh` CLI
+3. **Retrospective template** at `.github/ISSUE_TEMPLATE/phase-retrospective.yml` captures phase wrap-up data
+4. **Backlog issue files** in `scripts/backlog-issues/` contain individual task definitions
+5. **Label scripts** at `scripts/setup-github-labels.sh` create required labels
+6. **Milestone scripts** at `scripts/setup-github-milestones.sh` create phase milestones for date tracking
+7. **Issue creation** at `scripts/create-backlog-issues.sh` creates issues via `gh` CLI
+8. **Retrospective generator** at `scripts/generate-phase-retrospective.sh` produces phase reports
 
 ### Label Taxonomy for Project Views
 
@@ -98,6 +101,7 @@ This repository uses a structured backlog-to-issues workflow:
 | Size | `S (half-day)`, `M (1–2 days)`, `L (3–5 days)`, `XL (1 week+)` | Sprint planning |
 | Copilot | `Copilot: Yes`, `Copilot: Partial`, `Copilot: No` | Copilot queue view |
 | Area | `area: infrastructure`, `area: backend`, `area: frontend`, `area: ci-cd`, `area: dns-cdn`, `area: documentation`, `area: credentials` | Domain-based filtering |
+| Source | `gap-analysis-finding`, `phase-retrospective` | Origin tracking |
 | Status | `backlog`, `ready`, `blocked` | Board view columns |
 
 ### Copilot Suitability Guide
@@ -124,6 +128,32 @@ This workflow can be adapted for any repository by:
 - Adjusting the label taxonomy in `scripts/setup-github-labels.sh`
 - Regenerating issue files in `scripts/backlog-issues/`
 - Running `scripts/create-backlog-issues.sh` to populate the project
+
+## Phase Retrospective & AgentGitOps
+
+At the conclusion of each phase, a retrospective is generated to capture planned-vs-actual metrics, Human/Copilot AI productivity KPIs, and gap analysis findings.
+
+### Workflow
+
+1. **Milestones** provide date boundaries for each phase — created by `scripts/setup-github-milestones.sh`
+2. **Pre-planned retrospective issues** exist for each phase (labeled `phase-retrospective`)
+3. At phase end, run `scripts/generate-phase-retrospective.sh <phase_number>` to auto-generate the report
+4. Report is committed to `docs/retrospectives/phase-{N}-retrospective.md` and posted as a comment on the retrospective issue
+5. Milestone is closed after review
+
+### Human vs Copilot AI Productivity KPI
+
+The retrospective tracks AI leverage at two levels:
+
+- **Task-level:** Issues labeled `Copilot: Yes` that were closed vs total closed issues
+- **Commit-level:** Commits with `Co-authored-by` Copilot trailers vs total commits
+
+### Key Scripts
+
+| Script | Purpose |
+|---|---|
+| `scripts/setup-github-milestones.sh` | Create milestones for each phase |
+| `scripts/generate-phase-retrospective.sh` | Generate stats report at phase end |
 
 ## Security Reminders
 

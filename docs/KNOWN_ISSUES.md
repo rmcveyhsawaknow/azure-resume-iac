@@ -122,11 +122,11 @@ This document catalogs known issues, broken functionality, and technical debt in
 | Font Awesome | 4.x | 6.x |
 | Modernizr | Unknown (custom build) | 3.x |
 
-### 6. Multi-Storage Account Architecture
+### 6. Multi-Storage Account Architecture (Resolved)
 
-**Impact:** Low — Three storage accounts serve identical content for three domains
+**Impact:** Resolved — Previously, three storage accounts served identical content for three domains
 
-The Cloudflare workflow deploys the same frontend content to three separate storage accounts, one for each domain. This adds complexity and cost. Consider whether a single storage account with Cloudflare routing to one origin would suffice.
+The Cloudflare workflow previously deployed the same frontend content to three separate storage accounts, one for each domain (`ryanmcvey.me`, `ryanmcvey.net`, `ryanmcvey.cloud`). The architecture has been consolidated to use a single storage account and single domain (`ryanmcvey.me`).
 
 ### 7. Azure Service Principal Credential Format
 

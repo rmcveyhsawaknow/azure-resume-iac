@@ -7,7 +7,7 @@ This document provides a detailed reference of the Azure Resume IaC architecture
 ```
                     ┌──────────────────────────────────────────────────┐
                     │              Cloudflare (Free Plan)              │
-                    │  DNS zones: ryanmcvey.me / .net / .cloud        │
+                    │  DNS zone: ryanmcvey.me                          │
                     │  CNAME: resume → storage static site endpoint    │
                     │  Proxy: enabled (orange cloud) for TLS + CDN    │
                     │  asverify CNAME: DNS-only for domain validation  │
@@ -17,12 +17,12 @@ This document provides a detailed reference of the Azure Resume IaC architecture
         │              Frontend Resource Group                  │
         │         cus1-resume-fe-prod-v1-rg                    │
         │                                                       │
-        │  ┌─────────────────┐  ┌───────────────┐             │
-        │  │  Storage Acct 1 │  │ Storage Acct 2│  + Acct 3   │
-        │  │  Static Website │  │ Static Website│             │
-        │  │  (cus1resume     │  │ (cus1resume2  │             │
-        │  │   prodv1sa)      │  │  prodv1sa)    │             │
-        │  └─────────────────┘  └───────────────┘             │
+        │  ┌─────────────────┐                                │
+        │  │  Storage Acct   │                                │
+        │  │  Static Website │                                │
+        │  │  (cus1resume     │                                │
+        │  │   prodv1sa)      │                                │
+        │  └─────────────────┘                                │
         │                                                       │
         │  ┌─────────────────┐                                 │
         │  │  App Insights   │  (frontend monitoring)          │
@@ -86,7 +86,7 @@ All resources follow a consistent naming pattern:
 | Resource Group | Purpose |
 |---|---|
 | `cus1-resume-be-prod-v1-rg` | Backend: Cosmos DB, Function App, Key Vault, Storage, App Insights |
-| `cus1-resume-fe-prod-v1-rg` | Frontend: 3× Storage Accounts (static sites), App Insights |
+| `cus1-resume-fe-prod-v1-rg` | Frontend: Storage Account (static site), App Insights |
 | `glbl-ryanmcveyme-v1-rg` | DNS zones (pre-existing, shared) |
 
 ### Backend Resources
@@ -106,9 +106,7 @@ All resources follow a consistent naming pattern:
 
 | Resource | Name | Type | Custom Domain |
 |---|---|---|---|
-| Storage Acct #1 | `cus1resumeprodv1sa` | Static Website | `resume.ryanmcvey.me` |
-| Storage Acct #2 | `cus1resume2prodv1sa` | Static Website | `resume.ryanmcvey.net` |
-| Storage Acct #3 | `cus1resume3prodv1sa` | Static Website | `resume.ryanmcvey.cloud` |
+| Storage Acct | `cus1resumeprodv1sa` | Static Website | `resume.ryanmcvey.me` |
 | App Insights | `cus1-resume-prod-v1-ai` | `Microsoft.Insights/components` | — |
 
 ### DNS Configuration (Cloudflare)
@@ -117,8 +115,6 @@ All resources follow a consistent naming pattern:
 |---|---|---|---|---|
 | `ryanmcvey.me` | CNAME | `resume` | `cus1resumeprodv1sa.z13.web.core.windows.net` | Proxied (orange) |
 | `ryanmcvey.me` | CNAME | `asverify.resume` | `asverify.cus1resumeprodv1sa...` | DNS only |
-| `ryanmcvey.net` | CNAME | `resume` | `cus1resume2prodv1sa...` | Proxied |
-| `ryanmcvey.cloud` | CNAME | `resume` | `cus1resume3prodv1sa...` | Proxied |
 
 ## Development Stack (v66)
 
@@ -130,7 +126,7 @@ The development environment uses different naming to avoid conflicts:
 | `stackEnvironment` | `prod` | `dev` |
 | `AppName` | `resume` | `bevis` |
 | Branch trigger | `main` | `develop` |
-| DNS subdomain | `resume.{zone}` | `bevisdevv66.{zone}` |
+| DNS subdomain | `resume.ryanmcvey.me` | `bevisdevv66.ryanmcvey.me` |
 
 ## Bicep Module Reference
 
@@ -147,14 +143,14 @@ Orchestrates all backend resources:
 **Key Parameters:**
 - Resource group name, Cosmos DB configuration
 - Function App naming (storage, App Insights, ASP, function app, Key Vault)
-- CORS URIs (up to 3 custom domains + CDN endpoint)
+- CORS URIs (ryanmcvey.me custom domain + CDN endpoint)
 - Tagging (Git Action run metadata, environment, cost center)
 
 #### `frontend.bicep` (Subscription Scope)
 
 Orchestrates frontend resources:
 - Creates the frontend resource group
-- Deploys 3 storage accounts via `modules/storageaccount/sa_staticsite.bicep`
+- Deploys storage account via `modules/storageaccount/sa_staticsite.bicep`
 - Deploys App Insights via `modules/apm/appinsights.bicep`
 
 > **Note:** Static website hosting is enabled post-deployment by the GitHub Actions workflow using `az storage blob service-properties update`, not by Bicep.

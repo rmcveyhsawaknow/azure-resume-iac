@@ -124,8 +124,6 @@ The following GitHub repository secrets must be configured:
 | `AZURE_RESUME_GITHUB_SP` | Azure Service Principal (JSON) | `az ad sp create-for-rbac --name <name> --role contributor --scopes /subscriptions/<subId> --sdk-auth` |
 | `CLOUDFLARE_TOKEN` | Cloudflare API token | Cloudflare Dashboard → My Profile → API Tokens |
 | `CLOUDFLARE_ZONE` | Zone ID for `ryanmcvey.me` | Cloudflare Dashboard → Zone Overview (right sidebar) |
-| `CLOUDFLARE_ZONE2` | Zone ID for `ryanmcvey.net` | Same as above for second domain |
-| `CLOUDFLARE_ZONE3` | Zone ID for `ryanmcvey.cloud` | Same as above for third domain |
 
 > **⚠️ Credential Status:** The Azure SP credential and Cloudflare tokens likely need to be verified or rotated. The SP credential uses the legacy `--sdk-auth` format which has been deprecated by `Azure/login`. See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for migration guidance.
 
@@ -143,7 +141,7 @@ See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for the full secrets and cr
 | `stackLocationCode` | `cus1` | Location code prefix for resource names |
 | `AppName` | `resume` | Application name (used in resource naming) |
 | `AppBackendName` | `resumectr` | Backend function app name component |
-| `dnsZone` / `dnsZone2` / `dnsZone3` | `ryanmcvey.me` / `.net` / `.cloud` | Custom domain zones |
+| `dnsZone` | `ryanmcvey.me` | Custom domain zone |
 | `tagCostCenter` | `azCF` | Cost center tag value |
 | `rgDns` | `glbl-ryanmcveyme-v1-rg` | Pre-existing DNS resource group |
 
@@ -156,9 +154,7 @@ See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for the full secrets and cr
 | Cosmos DB | `cus1-resume-prod-v1-cmsdb` | Cosmos DB Account |
 | Function App | `cus1-resumectr-prod-v1-fa` | Function App |
 | Key Vault | `cus1-resume-prod-v1-kv` | Key Vault |
-| Storage (FE #1) | `cus1resumeprodv1sa` | Storage Account (static site) |
-| Storage (FE #2) | `cus1resume2prodv1sa` | Storage Account (static site) |
-| Storage (FE #3) | `cus1resume3prodv1sa` | Storage Account (static site) |
+| Storage (FE) | `cus1resumeprodv1sa` | Storage Account (static site) |
 
 **Resource Naming Convention:** `{locationCode}-{appName}-{environment}-{version}-{resourceType}`
 

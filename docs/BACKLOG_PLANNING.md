@@ -14,7 +14,7 @@ This document provides a phased planning framework for the resume site content a
 
 | Phase | Name | Description | Dependencies |
 |---|---|---|---|
-| 0 | Assessment | Harvest current Azure and Cloudflare state, verify credentials, document actuals | None |
+| 0 | Assessment | Harvest current Azure and Cloudflare state for ryanmcvey.me, verify credentials, document actuals | None |
 | 1 | Fix Function App | Restore the visitor counter (runtime upgrade, connectivity, data verification) | Phase 0 |
 | 2 | Content Update | Update resume site HTML/CSS/JS with GitHub profile content | Phase 0 |
 | 3 | Dev Deployment | Deploy updated stack to development environment, validate end-to-end | Phases 1, 2 |
@@ -44,7 +44,7 @@ This document provides a phased planning framework for the resume site content a
 | Task ID | Task | Description | CLI Reference |
 |---|---|---|---|
 | 0.8 | Verify Cloudflare token | Test API token, check permissions | [ASSESSMENT_COMMANDS.md → Cloudflare](ASSESSMENT_COMMANDS.md#cloudflare-assessment) |
-| 0.9 | Inventory DNS records | List all DNS records for all three zones | Same as above |
+| 0.9 | Inventory DNS records | List all DNS records for ryanmcvey.me zone | Same as above |
 | 0.10 | Check SSL/TLS settings | Verify encryption mode and certificate status | Same as above |
 
 ### Workstream: GitHub Assessment
@@ -77,7 +77,7 @@ This document provides a phased planning framework for the resume site content a
 | 1.5 | Update test project | Migrate `tests.csproj` to match new target framework | 1.4 |
 | 1.6 | Verify Cosmos DB data | Ensure counter document `{"id": "1", "count": N}` exists | 1.1 |
 | 1.7 | Verify Key Vault access | Confirm Function App managed identity has Key Vault read access | 1.1 |
-| 1.8 | Update CORS settings | Verify allowed origins match custom domains | 1.1 |
+| 1.8 | Update CORS settings | Verify allowed origins match ryanmcvey.me custom domain | 1.1 |
 | 1.9 | Update function key in main.js | Retrieve current function key and update `frontend/main.js` | 1.3 |
 | 1.10 | Test function locally | Run Function App locally with `func start` and verify counter | 1.5 |
 | 1.11 | Update workflow dotnet version | Change `DOTNET_VERSION` from `3.1` to `8.0` in workflow files | 1.3 |
@@ -146,7 +146,7 @@ This document provides a phased planning framework for the resume site content a
 | 4.4 | Verify IaC deployment | Confirm all resources created successfully | 4.3 |
 | 4.5 | Verify Function App | Test counter endpoint on production | 4.4 |
 | 4.6 | Verify frontend | Access `resume.ryanmcvey.me` and confirm content | 4.4 |
-| 4.7 | Verify DNS resolution | Confirm all three domains resolve correctly | 4.4 |
+| 4.7 | Verify DNS resolution | Confirm ryanmcvey.me domain resolves correctly | 4.4 |
 | 4.8 | Verify Cloudflare proxy | Confirm proxied CNAME records are active | 4.7 |
 | 4.9 | End-to-end production validation | Full test on production URLs | 4.5 through 4.8 |
 
@@ -160,7 +160,7 @@ This document provides a phased planning framework for the resume site content a
 |---|---|---|---|
 | 5.1 | Identify old resources | Compare old v1 resources against new deployment | Phase 4 |
 | 5.2 | Remove old resource groups | Delete old backend and frontend RGs if replaced | 5.1 |
-| 5.3 | Clean up DNS records | Remove stale Cloudflare DNS records | 5.1 |
+| 5.3 | Clean up DNS records | Remove stale Cloudflare DNS records for retired .net and .cloud domains | 5.1 |
 | 5.4 | Update README.md | Reflect new stack version, configuration, and content | Phase 4 |
 | 5.5 | Update docs/ | Refresh architecture, workflow, and assessment docs | Phase 4 |
 | 5.6 | Close backlog items | Mark all completed issues as done | 5.4, 5.5 |
@@ -173,9 +173,9 @@ This document provides a phased planning framework for the resume site content a
 Use this structure for the backlog CSV file:
 
 ```csv
-task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,labels
-0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,high,todo,,assessment;credentials
-0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,high,todo,,assessment;azure
+task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,copilot_suitable,labels
+0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,P1 – Critical,todo,,No,assessment;credentials
+0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,P2 – High,todo,,Yes,assessment;azure
 ...
 ```
 
@@ -189,9 +189,10 @@ task_id,phase,phase_name,task_title,description,depends_on,priority,status,assig
 | `task_title` | Short task title for issue creation |
 | `description` | Detailed description of the work |
 | `depends_on` | Comma-separated list of task IDs this depends on |
-| `priority` | `critical`, `high`, `medium`, `low` |
+| `priority` | `P1 – Critical`, `P2 – High`, `P3 – Medium`, `P4 – Low` (must match label names) |
 | `status` | `todo`, `in_progress`, `done`, `blocked` |
 | `assignee` | GitHub username |
+| `copilot_suitable` | `Yes`, `Partial`, `No` — indicates if task is suitable for GitHub Copilot agent |
 | `labels` | Semicolon-separated labels for GitHub issues |
 
 ## Issue Template Structure
@@ -221,6 +222,10 @@ body:
     id: priority
     label: Priority
     options: [Critical, High, Medium, Low]
+  - type: dropdown
+    id: copilot_suitable
+    label: Copilot Suitable
+    options: [Yes, Partial, No]
   - type: textarea
     id: acceptance_criteria
     label: Acceptance Criteria

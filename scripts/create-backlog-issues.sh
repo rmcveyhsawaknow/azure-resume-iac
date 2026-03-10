@@ -142,7 +142,7 @@ while IFS= read -r file; do
 
   if [[ "$DRY_RUN" == "true" ]]; then
     echo "  [DRY RUN] Would create issue"
-    ((SKIPPED++))
+    SKIPPED=$((SKIPPED + 1))
   else
     if gh issue create \
       --repo "$REPO" \
@@ -150,12 +150,12 @@ while IFS= read -r file; do
       --body "$body" \
       "${label_args[@]}"; then
       echo "  ✅ Created successfully"
-      ((CREATED++))
+      CREATED=$((CREATED + 1))
       # Rate limit: pause between issue creation to avoid GitHub API limits
       sleep 2
     else
       echo "  ❌ Failed to create issue (exit code: $?)"
-      ((FAILED++))
+      FAILED=$((FAILED + 1))
     fi
   fi
   echo ""

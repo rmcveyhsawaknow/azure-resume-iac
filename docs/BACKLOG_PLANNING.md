@@ -54,6 +54,7 @@ This document provides a phased planning framework for the resume site content a
 | 0.11 | Verify GitHub secrets | Confirm all 5 secrets exist in repo settings (values cannot be read) |
 | 0.12 | Check workflow run history | Review recent GitHub Actions runs for errors |
 | 0.13 | Review GitHub environments | Check if `production` and `development` environments have protection rules |
+| 0.14 | Phase 0 Retrospective | Run retrospective generator, commit report, close milestone |
 
 ### Phase 0 Deliverable
 - Assessment output JSON files saved to `assessment-output/` directory
@@ -81,6 +82,8 @@ This document provides a phased planning framework for the resume site content a
 | 1.9 | Update function key in main.js | Retrieve current function key and update `frontend/main.js` | 1.3 |
 | 1.10 | Test function locally | Run Function App locally with `func start` and verify counter | 1.5 |
 | 1.11 | Update workflow dotnet version | Change `DOTNET_VERSION` from `3.1` to `8.0` in workflow files | 1.3 |
+| 1.12 | Set FtpsState to Disabled on Function App | Function App allows FTP/FTPS — set to `Disabled` in Bicep (gap-analysis F12) | 1.3 |
+| 1.13 | Phase 1 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
 
@@ -113,6 +116,7 @@ This document provides a phased planning framework for the resume site content a
 | 2.8 | Update social links | Verify LinkedIn and GitHub URLs | 2.1 |
 | 2.9 | Update page metadata | Title, description, Open Graph tags | 2.1 |
 | 2.10 | Review CSS/styling | Adjust styles for new content layout | 2.5 |
+| 2.11 | Phase 2 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
 
@@ -131,6 +135,14 @@ This document provides a phased planning framework for the resume site content a
 | 3.7 | Verify frontend | Access dev URL and confirm content, styling, counter | 3.5 |
 | 3.8 | Seed Cosmos DB | Create initial counter document if needed | 3.5 |
 | 3.9 | End-to-end validation | Full test of all features on dev environment | 3.6, 3.7 |
+| 3.10 | Add production environment protection rules | Configure required reviewers and branch policy on `production` environment (gap-analysis F6) | — |
+| 3.11 | Fix development environment branch policy | Add `develop` branch policy to `development` environment (gap-analysis F18) | — |
+| 3.12 | Update storage account min TLS to 1.2 | Set `minimumTlsVersion: TLS1_2` on all storage accounts (gap-analysis F11) | 3.1 |
+| 3.13 | Migrate backend App Insights to workspace-based | Convert Classic App Insights to workspace-based mode (gap-analysis F13) | 3.1 |
+| 3.14 | Enable Key Vault soft delete | Set `enableSoftDelete: true` on Key Vault (gap-analysis F14) | 3.1 |
+| 3.15 | Update backend App Insights connection string format | Add `IngestionEndpoint` and `LiveEndpoint` to connection string (gap-analysis F27) | 3.13 |
+| 3.16 | Update CLOUDFLARE_TOKEN and CLOUDFLARE_ZONE secrets | Update stale GitHub secrets with current Cloudflare API token (gap-analysis F9) | — |
+| 3.17 | Phase 3 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
 
@@ -149,6 +161,7 @@ This document provides a phased planning framework for the resume site content a
 | 4.7 | Verify DNS resolution | Confirm ryanmcvey.me domain resolves correctly | 4.4 |
 | 4.8 | Verify Cloudflare proxy | Confirm proxied CNAME records are active | 4.7 |
 | 4.9 | End-to-end production validation | Full test on production URLs | 4.5 through 4.8 |
+| 4.10 | Phase 4 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
 
@@ -165,6 +178,14 @@ This document provides a phased planning framework for the resume site content a
 | 5.5 | Update docs/ | Refresh architecture, workflow, and assessment docs | Phase 4 |
 | 5.6 | Close backlog items | Mark all completed issues as done | 5.4, 5.5 |
 | 5.7 | Final cost review | Verify Azure cost impact of new vs. old stack | 5.2 |
+| 5.8 | Delete stale GitHub secrets | Remove unused `CLOUDFLARE_ZONE2` and `CLOUDFLARE_ZONE3` secrets (gap-analysis F22) | — |
+| 5.9 | Clean up disabled Azure CDN workflows | Delete or archive disabled `azure-static-web-apps-*.yml` workflow files (gap-analysis F25) | — |
+| 5.10 | Remove copilot GitHub environment | Delete unused `copilot` environment from repo settings (gap-analysis F26) | — |
+| 5.11 | Clean up excess CORS origins | Remove stale Azure CDN CORS origins from Function App Bicep (gap-analysis F24) | — |
+| 5.12 | Set Key Vault secret expiration dates | Add expiration dates to all Key Vault secrets (gap-analysis F15) | — |
+| 5.13 | Migrate Key Vault to RBAC authorization | Switch from Vault access policy to Azure RBAC model (gap-analysis F16) | — |
+| 5.14 | Address frontend iKey hardcoding | Remove hardcoded App Insights instrumentation key from JS (gap-analysis F20) | — |
+| 5.15 | Phase 5 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
 

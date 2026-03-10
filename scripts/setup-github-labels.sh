@@ -65,6 +65,11 @@ create_label "area: documentation"  "1D76DB" "Documentation and knowledge base"
 create_label "area: credentials"    "1D76DB" "Secrets, tokens, and service principals"
 
 echo ""
+echo "=== Source Labels ==="
+create_label "gap-analysis-finding" "F9D0C4" "Identified during Phase 0 gap analysis assessment"
+create_label "phase-retrospective"  "FEF2C0" "Phase wrap-up retrospective — AgentGitOps"
+
+echo ""
 echo "=== Status Labels ==="
 create_label "backlog"    "EDEDED" "In the backlog, not yet started"
 create_label "ready"      "0E8A16" "Groomed and ready to start"

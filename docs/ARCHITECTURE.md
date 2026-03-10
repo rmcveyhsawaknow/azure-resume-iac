@@ -71,7 +71,7 @@ All resources follow a consistent naming pattern:
 
 | Component | Description | Examples |
 |---|---|---|
-| `locationCode` | Azure region short code | `cus1` (Central US), `zus1` (used in Azure CDN variant) |
+| `locationCode` | Short code used in resource names (note: `cus1` deploys to `eastus` per workflow `stackLocation`) | `cus1` (active Cloudflare workflows), `zus1` (disabled Azure CDN variant) |
 | `appName` | Application identifier | `resume` (frontend), `resumectr` (backend) |
 | `environment` | Deployment tier | `prod`, `dev` |
 | `version` | Stack version | `v1` (production), `v66` (dev) |

@@ -52,7 +52,7 @@ az resource list --resource-group glbl-ryanmcveyme-v1-rg \
 # Function App state and runtime
 az functionapp show --name cus1-resumectr-prod-v1-fa \
   --resource-group cus1-resume-be-prod-v1-rg \
-  --query '{State:state, DefaultHostName:defaultHostName, HttpsOnly:httpsOnly, Kind:kind, RuntimeVersion:siteConfig.netFrameworkVersion}' -o json
+  --query '{State:state, DefaultHostName:defaultHostName, HttpsOnly:httpsOnly, Kind:kind, LinuxFxVersion:siteConfig.linuxFxVersion}' -o json
 
 # Function App configuration
 az functionapp config show --name cus1-resumectr-prod-v1-fa \
@@ -290,7 +290,12 @@ Run this to get a fast status overview:
 echo "=== Function App State ==="
 az functionapp show --name cus1-resumectr-prod-v1-fa \
   --resource-group cus1-resume-be-prod-v1-rg \
-  --query '{State:state, Runtime:siteConfig.netFrameworkVersion}' -o json
+  --query '{State:state, LinuxFxVersion:siteConfig.linuxFxVersion}' -o json
+
+echo "=== Function App Runtime Settings ==="
+az functionapp config appsettings list --name cus1-resumectr-prod-v1-fa \
+  --resource-group cus1-resume-be-prod-v1-rg \
+  --query "[?name=='FUNCTIONS_EXTENSION_VERSION' || name=='FUNCTIONS_WORKER_RUNTIME'].{Name:name, Value:value}" -o table
 
 echo "=== Function App Functions ==="
 az functionapp function list --name cus1-resumectr-prod-v1-fa \

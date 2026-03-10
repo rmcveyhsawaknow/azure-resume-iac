@@ -117,8 +117,31 @@ echo "  Gap analysis findings: ${GAP_ISSUES}"
 # --- Collect PR Data ---
 echo "Collecting PR data..."
 
-# Determine date range for PRs
-START_DATE="${MILESTONE_CREATED:-2024-01-01}"
+# Determine date range for PRs and commits.
+# Prefer deriving START_DATE from earliest issue activity within the milestone
+# rather than milestone creation time (milestones are often created up-front for
+# all phases at once, which would produce inflated/misleading metrics).
+START_DATE=""
+if [[ -n "${MILESTONE_TITLE:-}" && -n "${MILESTONE_NUMBER:-}" ]]; then
+  ISSUES_JSON=$(gh issue list --repo "$REPO" --milestone "$MILESTONE_TITLE" --state all --json createdAt,closedAt 2>/dev/null || echo "[]")
+  START_DATE=$(echo "$ISSUES_JSON" | python3 -c "
+import json, sys
+issues = json.load(sys.stdin)
+dates = []
+for issue in issues:
+    for key in ('createdAt', 'closedAt'):
+        v = issue.get(key)
+        if v:
+            dates.append(v[:10])
+print(min(dates) if dates else '')
+" 2>/dev/null || echo "")
+fi
+
+# Fall back to milestone creation date, then a safe default if nothing is available.
+if [[ -z "$START_DATE" ]]; then
+  START_DATE="${MILESTONE_CREATED:-2024-01-01}"
+fi
+
 END_DATE="${DATE_NOW}"
 
 # Get PRs that mention phase issues or were merged during milestone period
@@ -142,8 +165,12 @@ start = '${START_DATE}'
 end = '${END_DATE}'
 filtered = [p for p in prs if p.get('mergedAt','')[:10] >= start and p.get('mergedAt','')[:10] <= end]
 authors = Counter(p.get('author',{}).get('login','unknown') for p in filtered)
-for author, count in sorted(authors.items(), key=lambda x: -x[1]):
-    print(f'| {author} | {count} |')
+rows = sorted(authors.items(), key=lambda x: -x[1])
+if rows:
+    for author, count in rows:
+        print(f'| {author} | {count} |')
+else:
+    print('| — | 0 |')
 " 2>/dev/null || echo "| — | 0 |")
 
 echo "  PRs merged in range: ${PRS_IN_RANGE}"
@@ -156,9 +183,12 @@ COMMIT_COUNT=$(git log --oneline --after="${START_DATE}" --before="${END_DATE}T2
 COMMIT_COUNT=$(echo "$COMMIT_COUNT" | tr -d ' ')
 
 # Commits by author
-COMMITS_BY_AUTHOR=$(git log --format='%aN' --after="${START_DATE}" --before="${END_DATE}T23:59:59" --all 2>/dev/null | sort | uniq -c | sort -rn | while read count name; do
-  echo "| ${name} | ${count} |"
-done || echo "| — | 0 |")
+COMMITS_BY_AUTHOR=$(
+  rows=$(git log --format='%aN' --after="${START_DATE}" --before="${END_DATE}T23:59:59" --all 2>/dev/null \
+    | sort | uniq -c | sort -rn \
+    | while read -r count name; do echo "| ${name} | ${count} |"; done || true)
+  if [[ -z "$rows" ]]; then echo "| — | 0 |"; else echo "$rows"; fi
+)
 
 # Copilot-attributed commits (Co-authored-by trailer)
 COPILOT_COMMITS=$(git log --all --after="${START_DATE}" --before="${END_DATE}T23:59:59" --format='%b' 2>/dev/null | grep -ci 'co-authored-by.*copilot' || true)
@@ -325,7 +355,7 @@ ${COMMITS_BY_AUTHOR}
 
 | Metric | Count | Percentage |
 |---|---|---|
-| Total commits | ${COMMIT_COUNT} | 100% |
+| Total commits | ${COMMIT_COUNT} | $([ "${COMMIT_COUNT}" -gt 0 ] && echo "100%" || echo "N/A") |
 | Copilot co-authored commits | ${COPILOT_COMMITS} | ${COPILOT_COMMIT_RATIO} |
 | Human-only commits | $((COMMIT_COUNT - COPILOT_COMMITS)) | $(python3 -c "
 cop=${COPILOT_COMMITS}; total=${COMMIT_COUNT}

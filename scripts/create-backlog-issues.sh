@@ -4,29 +4,35 @@
 # Reads YAML frontmatter from each file to extract labels and metadata.
 #
 # Usage:
-#   ./scripts/create-backlog-issues.sh [owner/repo]
+#   ./scripts/create-backlog-issues.sh [--dry-run] [owner/repo]
 #
 # Prerequisites:
 #   - gh CLI authenticated (gh auth login)
 #   - Labels created (run setup-github-labels.sh first)
-#   - yq installed (for YAML parsing) — or uses built-in grep/sed fallback
 #
 # Options:
 #   --dry-run    Show what would be created without actually creating issues
 
 set -euo pipefail
 
-REPO="${1:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ISSUES_DIR="${SCRIPT_DIR}/backlog-issues"
 DRY_RUN=false
+REPO=""
 
-# Check for --dry-run flag
+# Parse arguments: flags first, then positional
 for arg in "$@"; do
   if [[ "$arg" == "--dry-run" ]]; then
     DRY_RUN=true
+  elif [[ "$arg" != --* ]]; then
+    REPO="$arg"
   fi
 done
+
+# Fall back to current repo if not provided
+if [[ -z "$REPO" ]]; then
+  REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+fi
 
 if [[ ! -d "$ISSUES_DIR" ]]; then
   echo "Error: Issues directory not found: $ISSUES_DIR"
@@ -142,13 +148,13 @@ while IFS= read -r file; do
       --repo "$REPO" \
       --title "$issue_title" \
       --body "$body" \
-      "${label_args[@]}" 2>/dev/null; then
+      "${label_args[@]}"; then
       echo "  ✅ Created successfully"
       ((CREATED++))
       # Rate limit: pause between issue creation to avoid GitHub API limits
       sleep 2
     else
-      echo "  ❌ Failed to create issue"
+      echo "  ❌ Failed to create issue (exit code: $?)"
       ((FAILED++))
     fi
   fi

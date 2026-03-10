@@ -1,0 +1,35 @@
+# Build and Development Artifacts
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+output/
+
+# .NET
+*.user
+*.suo
+*.cache
+*.nupkg
+packages/
+
+# IDE
+.vs/
+.idea/
+*.swp
+*.swo
+*~
+
+# Azure Functions
+local.settings.json
+
+# Assessment output (generated during codespace sessions)
+assessment-output/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.log

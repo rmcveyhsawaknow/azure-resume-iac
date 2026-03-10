@@ -4,7 +4,11 @@
 # Designed for the Technologist role working on "Copilot: Partial" issues.
 #
 # Usage:
-#   bash scripts/setup-codespace-auth.sh
+#   bash scripts/setup-codespace-auth.sh [owner/repo]
+#
+# Arguments:
+#   owner/repo  (optional) Repository in owner/repo format.
+#               Defaults to the repository detected by `gh repo view`.
 #
 # Prerequisites (one-time setup in GitHub Settings → Secrets → Codespaces):
 #   AZURE_SP_APP_ID       — Azure Service Principal Application (client) ID
@@ -21,7 +25,7 @@
 
 set -euo pipefail
 
-REPO="${1:-rmcveyhsawaknow/azure-resume-iac}"
+REPO="${1:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
 
 echo "========================================"
 echo "  Codespace Auth Setup"

@@ -88,48 +88,94 @@ extract_body() {
 
 # --- GitHub Project V2 configuration ---
 # Project: Azure Resume IaC — Backlog (project #9)
-# These IDs are from `gh project field-list 9 --owner <owner> --format json`
+# Field and option IDs are loaded from project-fields.json.
+# To refresh IDs: gh project field-list 9 --owner <owner> --format json
 PROJECT_NUMBER=9
 PROJECT_OWNER="$(echo "$REPO" | cut -d/ -f1)"
 
-# Field IDs
-PROJECT_PHASE_FIELD="PVTSSF_lAHOBibeL84BRVsxzg_MiUc"
-PROJECT_PRIORITY_FIELD="PVTSSF_lAHOBibeL84BRVsxzg_MiUk"
-PROJECT_SIZE_FIELD="PVTSSF_lAHOBibeL84BRVsxzg_MiVQ"
-PROJECT_COPILOT_FIELD="PVTSSF_lAHOBibeL84BRVsxzg_MiWA"
+# Path to JSON config holding project field and option IDs.
+# See scripts/project-fields.json for the expected structure and refresh instructions.
+PROJECT_FIELDS_CONFIG="${SCRIPT_DIR}/project-fields.json"
 
-# Phase option IDs (keyed by phase number)
-declare -A PHASE_OPTION_IDS=(
-  [0]="70ee0bd5" [1]="a61899bf" [2]="e6b3e93e"
-  [3]="1f731d90" [4]="1777406b" [5]="b96aa0a0"
-)
+# Project V2 field IDs (populated from PROJECT_FIELDS_CONFIG)
+PROJECT_PHASE_FIELD=""
+PROJECT_PRIORITY_FIELD=""
+PROJECT_SIZE_FIELD=""
+PROJECT_COPILOT_FIELD=""
 
-# Priority option IDs (keyed by short prefix: P1, P2, P3, P4)
-declare -A PRIORITY_OPTION_IDS=(
-  ["P1"]="81541891" ["P2"]="725e03f8" ["P3"]="8c90ab5a" ["P4"]="814739e3"
-)
+# Option IDs keyed by label value (populated from PROJECT_FIELDS_CONFIG)
+declare -A PHASE_OPTION_IDS=()
+declare -A PRIORITY_OPTION_IDS=()
+declare -A SIZE_OPTION_IDS=()
+declare -A COPILOT_OPTION_IDS=()
 
-# Size option IDs (keyed by first token: S, M, L, XL)
-declare -A SIZE_OPTION_IDS=(
-  ["S"]="3d6ca061" ["M"]="da26800f" ["L"]="b2824b4a" ["XL"]="a911bc6a"
-)
+load_project_fields_config() {
+  if [[ ! -f "$PROJECT_FIELDS_CONFIG" ]]; then
+    echo "Error: Project fields config not found at '$PROJECT_FIELDS_CONFIG'." >&2
+    echo "Please create this JSON file with the required Project V2 field and option IDs." >&2
+    exit 1
+  fi
 
-# Copilot Suitable option IDs
-declare -A COPILOT_OPTION_IDS=(
-  ["Yes"]="6689ec40" ["Partial"]="34aaaef1" ["No"]="c2894628"
-)
+  local __config_eval
+  __config_eval="$(python3 - "$PROJECT_FIELDS_CONFIG" << 'PYEOF'
+import json, sys
+
+path = sys.argv[1]
+with open(path, "r", encoding="utf-8") as fh:
+    cfg = json.load(fh)
+
+pf   = cfg.get("projectFields", {}) or {}
+opts = cfg.get("options", {}) or {}
+
+def esc(v):
+    return str(v or "").replace("\\", "\\\\").replace('"', '\\"')
+
+def emit_scalar(name, value):
+    print(f'{name}="{esc(value)}"')
+
+def emit_map(name, mapping):
+    if not isinstance(mapping, dict):
+        return
+    for k, v in mapping.items():
+        print(f'{name}["{esc(k)}"]="{esc(v)}"')
+
+emit_scalar("PROJECT_PHASE_FIELD",    pf.get("phaseFieldId"))
+emit_scalar("PROJECT_PRIORITY_FIELD", pf.get("priorityFieldId"))
+emit_scalar("PROJECT_SIZE_FIELD",     pf.get("sizeFieldId"))
+emit_scalar("PROJECT_COPILOT_FIELD",  pf.get("copilotFieldId"))
+
+emit_map("PHASE_OPTION_IDS",    opts.get("phase", {}))
+emit_map("PRIORITY_OPTION_IDS", opts.get("priority", {}))
+emit_map("SIZE_OPTION_IDS",     opts.get("size", {}))
+emit_map("COPILOT_OPTION_IDS",  opts.get("copilot", {}))
+PYEOF
+  )"
+
+  eval "$__config_eval"
+
+  if [[ -z "$PROJECT_PHASE_FIELD" || -z "$PROJECT_SIZE_FIELD" || -z "$PROJECT_COPILOT_FIELD" ]]; then
+    echo "Error: Project field IDs not loaded correctly from '$PROJECT_FIELDS_CONFIG'." >&2
+    exit 1
+  fi
+}
+
+# Load project field and option IDs at startup (skipped when --no-project is set).
+if [[ "$NO_PROJECT" != "true" ]]; then
+  load_project_fields_config
+fi
 
 # Cache the project node ID once (only if we need it)
 PROJECT_ID=""
 get_project_id() {
   if [[ -z "$PROJECT_ID" ]]; then
     PROJECT_ID=$(gh project view "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" --format json \
-      | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])")
+      | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])") || return 1
   fi
   echo "$PROJECT_ID"
 }
 
-# Add an issue to the project and set its custom fields
+# Add an issue to the project and set its custom fields.
+# Returns 1 (without exiting the script) if any gh call fails.
 add_issue_to_project() {
   local issue_url="$1"
   local phase="$2"
@@ -138,39 +184,41 @@ add_issue_to_project() {
   local copilot="$5"    # e.g. "Yes"
 
   local proj_id
-  proj_id=$(get_project_id)
+  proj_id=$(get_project_id) || return 1
 
   # Add item and get its ID
   local item_id
   item_id=$(gh project item-add "$PROJECT_NUMBER" --owner "$PROJECT_OWNER" \
     --url "$issue_url" --format json \
-    | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])")
+    | python3 -c "import json,sys; print(json.load(sys.stdin)['id'])") || return 1
 
   # Set Phase
   if [[ -n "${PHASE_OPTION_IDS[$phase]:-}" ]]; then
     gh project item-edit --project-id "$proj_id" --id "$item_id" \
-      --field-id "$PROJECT_PHASE_FIELD" --single-select-option-id "${PHASE_OPTION_IDS[$phase]}"
+      --field-id "$PROJECT_PHASE_FIELD" --single-select-option-id "${PHASE_OPTION_IDS[$phase]}" || return 1
   fi
 
   # Set Priority (extract "P2" from "P2 – High")
   local pkey="${priority%% *}"
   if [[ -n "${PRIORITY_OPTION_IDS[$pkey]:-}" ]]; then
     gh project item-edit --project-id "$proj_id" --id "$item_id" \
-      --field-id "$PROJECT_PRIORITY_FIELD" --single-select-option-id "${PRIORITY_OPTION_IDS[$pkey]}"
+      --field-id "$PROJECT_PRIORITY_FIELD" --single-select-option-id "${PRIORITY_OPTION_IDS[$pkey]}" || return 1
   fi
 
   # Set Size (extract "S" from "S (half-day)")
   local skey="${size%% *}"
   if [[ -n "${SIZE_OPTION_IDS[$skey]:-}" ]]; then
     gh project item-edit --project-id "$proj_id" --id "$item_id" \
-      --field-id "$PROJECT_SIZE_FIELD" --single-select-option-id "${SIZE_OPTION_IDS[$skey]}"
+      --field-id "$PROJECT_SIZE_FIELD" --single-select-option-id "${SIZE_OPTION_IDS[$skey]}" || return 1
   fi
 
   # Set Copilot Suitable
   if [[ -n "${COPILOT_OPTION_IDS[$copilot]:-}" ]]; then
     gh project item-edit --project-id "$proj_id" --id "$item_id" \
-      --field-id "$PROJECT_COPILOT_FIELD" --single-select-option-id "${COPILOT_OPTION_IDS[$copilot]}"
+      --field-id "$PROJECT_COPILOT_FIELD" --single-select-option-id "${COPILOT_OPTION_IDS[$copilot]}" || return 1
   fi
+
+  return 0
 }
 
 # Sort files by task_id numerically (phase.sequence)
@@ -257,17 +305,17 @@ while IFS= read -r file; do
     echo "  [DRY RUN] Would create issue"
     SKIPPED=$((SKIPPED + 1))
   else
-    if gh issue create \
+    issue_url=""
+    if issue_url=$(gh issue create \
       --repo "$REPO" \
       --title "$issue_title" \
       --body "$body" \
-      "${label_args[@]}"; then
+      "${label_args[@]}"); then
       echo "  ✅ Created successfully"
       CREATED=$((CREATED + 1))
 
       # Add to project and set custom fields
       if [[ "$NO_PROJECT" != "true" ]]; then
-        issue_url=$(gh issue list --repo "$REPO" --search "$issue_title" --json url -q '.[0].url' 2>/dev/null || echo "")
         if [[ -n "$issue_url" ]]; then
           echo "  📋 Adding to project..."
           if add_issue_to_project "$issue_url" "$phase" "$priority" "$size" "$copilot_suitable"; then

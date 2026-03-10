@@ -174,8 +174,8 @@ Use this structure for the backlog CSV file:
 
 ```csv
 task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,copilot_suitable,labels
-0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,high,todo,,Yes,assessment;credentials
-0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,high,todo,,Yes,assessment;azure
+0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,P1 – Critical,todo,,No,assessment;credentials
+0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,P2 – High,todo,,Yes,assessment;azure
 ...
 ```
 
@@ -189,7 +189,7 @@ task_id,phase,phase_name,task_title,description,depends_on,priority,status,assig
 | `task_title` | Short task title for issue creation |
 | `description` | Detailed description of the work |
 | `depends_on` | Comma-separated list of task IDs this depends on |
-| `priority` | `critical`, `high`, `medium`, `low` |
+| `priority` | `P1 – Critical`, `P2 – High`, `P3 – Medium`, `P4 – Low` (must match label names) |
 | `status` | `todo`, `in_progress`, `done`, `blocked` |
 | `assignee` | GitHub username |
 | `copilot_suitable` | `Yes`, `Partial`, `No` — indicates if task is suitable for GitHub Copilot agent |

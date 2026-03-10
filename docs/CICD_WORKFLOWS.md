@@ -28,8 +28,6 @@ All workflows trigger on `push` events to their configured branch, filtered by p
 ```yaml
 env:
   dnsZone: 'ryanmcvey.me'
-  dnsZone2: 'ryanmcvey.net'
-  dnsZone3: 'ryanmcvey.cloud'
   stackVersion: 'v1'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
@@ -60,11 +58,11 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
   2. Get subscription ID from `az account show`
   3. Deploy `backend.bicep` via `Azure/arm-deploy@v1` at subscription scope
   4. Deploy `frontend.bicep` via `Azure/arm-deploy@v1` at subscription scope
-  5. Enable static website on 3 storage accounts via `az storage blob service-properties update`
+  5. Enable static website on storage account via `az storage blob service-properties update`
   6. Get storage static site endpoints
-  7. Create/update Cloudflare CNAME records (proxied) and verification CNAMEs (DNS-only) for all 3 zones
+  7. Create/update Cloudflare CNAME records (proxied) and verification CNAMEs (DNS-only) for ryanmcvey.me zone
   8. Wait 60 seconds for DNS propagation
-  9. Set custom domains on all 3 storage accounts
+  9. Set custom domain on storage account
 
 #### Job 3: `buildDeployProductionBackend`
 - **Runner:** `windows-latest` (required for .NET Core 3.1)
@@ -81,7 +79,7 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 - **Depends on:** `changes`, `buildDeployProductionBackend`
 - **Steps:**
   1. Azure Login
-  2. Upload `frontend/` to `$web` container on all 3 storage accounts via `az storage blob upload-batch`
+  2. Upload `frontend/` to `$web` container on storage account via `az storage blob upload-batch`
 
 ## Active Workflow: Development Full Stack Cloudflare
 
@@ -97,8 +95,8 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 | `stackVersion` | `v1` | `v66` |
 | `stackEnvironment` | `prod` | `dev` |
 | `AppName` | `resume` | `bevis` |
-| DNS subdomain | `resume.{zone}` | `bevisdevv66.{zone}` |
-| CORS URIs | `https://resume.{zone}` | `https://bevisdevv66.{zone}` |
+| DNS subdomain | `resume.ryanmcvey.me` | `bevisdevv66.ryanmcvey.me` |
+| CORS URIs | `https://resume.ryanmcvey.me` | `https://bevisdevv66.ryanmcvey.me` |
 | GitHub environment | `production` | `development` |
 
 The development workflow structure is identical to production but with these variable substitutions. It deploys a fully separate stack.
@@ -155,12 +153,10 @@ az ad sp create-for-rbac \
 |---|---|---|
 | `CLOUDFLARE_TOKEN` | API token with DNS edit permissions | Cloudflare Dashboard → My Profile → API Tokens → Create Token → "Edit zone DNS" template |
 | `CLOUDFLARE_ZONE` | Zone ID for `ryanmcvey.me` | Cloudflare Dashboard → select zone → Overview page → right sidebar "Zone ID" |
-| `CLOUDFLARE_ZONE2` | Zone ID for `ryanmcvey.net` | Same as above for the second zone |
-| `CLOUDFLARE_ZONE3` | Zone ID for `ryanmcvey.cloud` | Same as above for the third zone |
 
 **Cloudflare Token Permissions Required:**
 - Zone → DNS → Edit
-- Scoped to all three zones or the specific zones used
+- Scoped to the `ryanmcvey.me` zone
 
 **Cloudflare Action Used:** `rez0n/create-dns-record@v2.2` — creates CNAME records with these parameters:
 - `type: CNAME`

@@ -140,7 +140,7 @@ az keyvault show --name cus1-resume-prod-v1-kv \
 ## Storage Account Assessment (Frontend)
 
 ```bash
-# Storage account #1
+# Storage account
 az storage account show --name cus1resumeprodv1sa \
   --resource-group cus1-resume-fe-prod-v1-rg \
   --query '{Name:name, PrimaryEndpoint:primaryEndpoints.web, CustomDomain:customDomain.name, HttpsOnly:enableHttpsTrafficOnly}' -o json
@@ -154,10 +154,6 @@ az storage blob service-properties show --account-name cus1resumeprodv1sa \
 az storage blob list --account-name cus1resumeprodv1sa \
   --container-name '$web' --auth-mode login \
   --query "[].{Name:name, Size:properties.contentLength, Modified:properties.lastModified}" -o table
-
-# Repeat for storage accounts #2 and #3
-az storage account show --name cus1resume2prodv1sa --resource-group cus1-resume-fe-prod-v1-rg --query '{Name:name, PrimaryEndpoint:primaryEndpoints.web, CustomDomain:customDomain.name}' -o json
-az storage account show --name cus1resume3prodv1sa --resource-group cus1-resume-fe-prod-v1-rg --query '{Name:name, PrimaryEndpoint:primaryEndpoints.web, CustomDomain:customDomain.name}' -o json
 ```
 
 ## Application Insights Assessment
@@ -270,9 +266,7 @@ az keyvault show --name cus1-resume-prod-v1-kv -o json > "$OUTPUT_DIR/keyvault.j
 az keyvault secret list --vault-name cus1-resume-prod-v1-kv -o json > "$OUTPUT_DIR/keyvault-secrets.json"
 
 echo "=== Storage Accounts ==="
-az storage account show --name cus1resumeprodv1sa --resource-group cus1-resume-fe-prod-v1-rg -o json > "$OUTPUT_DIR/storage-fe1.json"
-az storage account show --name cus1resume2prodv1sa --resource-group cus1-resume-fe-prod-v1-rg -o json > "$OUTPUT_DIR/storage-fe2.json"
-az storage account show --name cus1resume3prodv1sa --resource-group cus1-resume-fe-prod-v1-rg -o json > "$OUTPUT_DIR/storage-fe3.json"
+az storage account show --name cus1resumeprodv1sa --resource-group cus1-resume-fe-prod-v1-rg -o json > "$OUTPUT_DIR/storage-fe.json"
 
 echo "=== App Insights ==="
 az monitor app-insights component show --app cus1-resumectr-prod-v1-ai --resource-group cus1-resume-be-prod-v1-rg -o json > "$OUTPUT_DIR/appinsights-backend.json"

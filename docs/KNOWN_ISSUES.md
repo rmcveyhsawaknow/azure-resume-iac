@@ -8,26 +8,27 @@ This document catalogs known issues, broken functionality, and technical debt in
 
 **Impact:** High — Core interactive feature of the resume site is broken  
 **Symptom:** The page counter on `https://resume.ryanmcvey.me/` does not display a visitor count  
-**Duration:** Reported as not working for a long time
+**Duration:** Reported as not working for a long time  
+**Root Cause:** **CONFIRMED** — See [ROOT_CAUSE_DIAGNOSIS.md](ROOT_CAUSE_DIAGNOSIS.md) for full analysis
 
-**Possible Root Causes:**
+**Confirmed Root Cause:** .NET Core 3.1 and Azure Functions v3 reached End of Life on December 13, 2022. Azure has removed runtime support, causing the Function App to fail. The CI/CD pipeline is also broken due to expired Azure SP credentials and deprecated GitHub Actions versions, preventing redeployment.
 
-| Cause | Likelihood | How to Verify |
+**Root Cause Evidence:**
+
+| Cause | Status | Details |
 |---|---|---|
-| Function App stopped or in error state | High | `az functionapp show --name cus1-resumectr-prod-v1-fa --resource-group cus1-resume-be-prod-v1-rg --query state` |
-| .NET Core 3.1 runtime deprecated/removed from Azure | High | `az functionapp config show --name cus1-resumectr-prod-v1-fa --resource-group cus1-resume-be-prod-v1-rg --query linuxFxVersion` or check Azure Portal |
-| Function key changed (URL in main.js is stale) | Medium | Compare `functionApiUrl` in `frontend/main.js` with actual function key in Azure Portal |
-| Cosmos DB document missing or inaccessible | Medium | Check Cosmos DB Data Explorer for document `{"id": "1"}` in `Counter` container |
-| Key Vault secret expired or inaccessible | Medium | Check Key Vault access policies and secret expiry |
-| CORS misconfiguration | Low | Check Function App CORS settings against the custom domain URL |
-| Cosmos DB connection string rotated | Low | Compare Key Vault secret with actual Cosmos DB keys |
+| .NET Core 3.1 runtime EOL / removed from Azure | ✅ **Confirmed — Primary** | `api.csproj` targets `netcoreapp3.1` + `v3`; Bicep sets `FUNCTIONS_EXTENSION_VERSION: ~3` |
+| CI/CD pipeline broken (Azure login fails) | ✅ **Confirmed — Blocking** | Workflow run `22905581884` fails at Azure/login with credential error |
+| Function key in main.js may be stale | ⚠️ **Possible — Contributing** | Key was hardcoded and may have been rotated |
+| Cosmos DB document missing or inaccessible | ⚠️ **Possible — Contributing** | Key Vault secrets may be stale if keys rotated |
+| CORS misconfiguration | ❌ **Unlikely** | CORS is configured in Bicep with correct origins |
 
-**Remediation Steps:**
-1. Run assessment commands in [ASSESSMENT_COMMANDS.md](ASSESSMENT_COMMANDS.md) to identify exact cause
-2. If runtime issue: Upgrade Function App to .NET 8 + Functions v4 (see Technical Debt #1 below)
-3. If function key issue: Retrieve current key and update `frontend/main.js`
-4. If Cosmos DB issue: Verify document exists and connection strings are valid
-5. If CORS issue: Verify allowed origins include the custom domain
+**Remediation Plan:**
+1. **Upgrade runtime:** .NET 8 (LTS) + Azure Functions v4 — update `api.csproj`, `tests.csproj`, Bicep, and workflows
+2. **Fix CI/CD:** Renew Azure SP credentials, upgrade to `Azure/login@v2`, update all deprecated Actions
+3. **Verify infrastructure:** Confirm Cosmos DB document exists, Key Vault secrets are current
+4. **Update frontend:** Retrieve current function key and update `frontend/main.js`
+5. See [ROOT_CAUSE_DIAGNOSIS.md](ROOT_CAUSE_DIAGNOSIS.md) for the detailed remediation action plan
 
 ### 2. Hardcoded Secrets in Source Control
 
@@ -48,7 +49,8 @@ This document catalogs known issues, broken functionality, and technical debt in
 ### 1. .NET Core 3.1 and Azure Functions v3 End of Life
 
 **Impact:** High — Blocks future deployments  
-**Status:** .NET Core 3.1 reached End of Life on December 13, 2022. Azure Functions v3 reached EOL on December 13, 2022.
+**Status:** .NET Core 3.1 reached End of Life on December 13, 2022. Azure Functions v3 reached EOL on December 13, 2022.  
+**Diagnosis:** **CONFIRMED** as the primary root cause of the visitor counter failure. See [ROOT_CAUSE_DIAGNOSIS.md](ROOT_CAUSE_DIAGNOSIS.md).
 
 **Current Configuration:**
 ```xml

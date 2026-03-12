@@ -49,6 +49,11 @@ echo "=== Step 1: Prerequisites ==="
 # Install Azure CLI if not present
 if ! command -v az &>/dev/null; then
   echo "  ⏳ Azure CLI not found — installing..."
+  # Remove broken third-party apt sources (e.g. Yarn with expired GPG keys)
+  # that cause apt-get update to fail inside the Microsoft install script.
+  for f in /etc/apt/sources.list.d/yarn.list /etc/apt/sources.list.d/docker.list; do
+    [[ -f "$f" ]] && sudo rm -f "$f" && echo "  ℹ️  Removed stale apt source: $f"
+  done
   if curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash 2>&1 | tail -5; then
     pass "az installed at $(command -v az)"
   else
@@ -87,7 +92,7 @@ elif [[ -n "${AZURE_SP_APP_ID:-}" && -n "${AZURE_SP_PASSWORD:-}" && -n "${AZURE_
 else
   echo "  No Azure SP env vars found. Starting device code login..."
   echo "  (Set AZURE_SP_APP_ID, AZURE_SP_PASSWORD, AZURE_SP_TENANT as Codespace Secrets for non-interactive login)"
-  if az login --use-device-code 2>/dev/null; then
+  if az login --use-device-code; then
     pass "Interactive login successful"
   else
     fail "Azure login failed"
@@ -159,6 +164,9 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
 else
   warn "CF_API_TOKEN not set — Cloudflare commands will not work"
   echo "       Set CF_API_TOKEN as a Codespace Secret for automatic injection"
+  echo ""
+  echo "       To set locally for this session:"
+  echo "         export CF_API_TOKEN=\"your-cloudflare-api-token\""
 fi
 echo ""
 

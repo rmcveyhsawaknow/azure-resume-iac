@@ -42,9 +42,19 @@ warn() { echo "  ⚠️  $1"; WARN=$((WARN + 1)); }
 fail() { echo "  ❌ $1"; FAIL=$((FAIL + 1)); }
 
 # =============================================================================
-# Step 1: Validate prerequisites
+# Step 1: Validate prerequisites (install az CLI if missing)
 # =============================================================================
 echo "=== Step 1: Prerequisites ==="
+
+# Install Azure CLI if not present
+if ! command -v az &>/dev/null; then
+  echo "  ⏳ Azure CLI not found — installing..."
+  if curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash &>/dev/null; then
+    pass "az installed at $(command -v az)"
+  else
+    fail "az install failed — see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux"
+  fi
+fi
 
 for cmd in az gh curl python3 git jq; do
   if command -v "$cmd" &>/dev/null; then

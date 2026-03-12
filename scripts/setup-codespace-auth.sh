@@ -49,7 +49,7 @@ echo "=== Step 1: Prerequisites ==="
 # Install Azure CLI if not present
 if ! command -v az &>/dev/null; then
   echo "  ⏳ Azure CLI not found — installing..."
-  if curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash &>/dev/null; then
+  if curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash 2>&1 | tail -5; then
     pass "az installed at $(command -v az)"
   else
     fail "az install failed — see https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-linux"

@@ -1,37 +1,56 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
+using System.Net;
+using System.Text.Json;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text;
+
 namespace Company.Function
 {
-    public static class GetResumeCounter
+    public class GetResumeCounter
     {
-        [FunctionName("GetResumeCounter")]
-        public static HttpResponseMessage Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            [CosmosDB(databaseName: CosmosConstants.COSMOS_DB_DATABASE_NAME , collectionName: CosmosConstants.COSMOS_DB_CONTAINER_NAME, ConnectionStringSetting = "AzureResumeConnectionStringPrimary", Id = CosmosConstants.COSMOS_DB_Item_Document_Id, PartitionKey = CosmosConstants.COSMOS_DB_Item_PartitionKey)] Counter counter,
-            [CosmosDB(databaseName: CosmosConstants.COSMOS_DB_DATABASE_NAME , collectionName: CosmosConstants.COSMOS_DB_CONTAINER_NAME, ConnectionStringSetting = "AzureResumeConnectionStringPrimary", Id = CosmosConstants.COSMOS_DB_Item_Document_Id, PartitionKey = CosmosConstants.COSMOS_DB_Item_PartitionKey)] out Counter updatedCounter,
-            ILogger log)
+        private readonly ILogger<GetResumeCounter> _logger;
+
+        public GetResumeCounter(ILogger<GetResumeCounter> logger)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            updatedCounter = counter;
-            updatedCounter.Count += 1;
-
-            var jsonToReturn = JsonConvert.SerializeObject(counter);
-
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK)
-            {
-                Content = new StringContent(jsonToReturn, Encoding.UTF8, "application/json")
-            };
-            
+            _logger = logger;
         }
+
+        [Function("GetResumeCounter")]
+        public MultiResponse Run(
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req,
+            [CosmosDBInput(
+                databaseName: CosmosConstants.COSMOS_DB_DATABASE_NAME,
+                containerName: CosmosConstants.COSMOS_DB_CONTAINER_NAME,
+                Connection = "AzureResumeConnectionStringPrimary",
+                Id = CosmosConstants.COSMOS_DB_Item_Document_Id,
+                PartitionKey = CosmosConstants.COSMOS_DB_Item_PartitionKey)] Counter counter)
+        {
+            _logger.LogInformation("C# HTTP trigger function processed a request.");
+
+            counter.Count += 1;
+
+            var jsonToReturn = JsonSerializer.Serialize(counter);
+
+            var response = req.CreateResponse(HttpStatusCode.OK);
+            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+            response.WriteString(jsonToReturn);
+
+            return new MultiResponse
+            {
+                HttpResponse = response,
+                UpdatedCounter = counter
+            };
+        }
+    }
+
+    public class MultiResponse
+    {
+        public HttpResponseData HttpResponse { get; set; }
+
+        [CosmosDBOutput(
+            databaseName: CosmosConstants.COSMOS_DB_DATABASE_NAME,
+            containerName: CosmosConstants.COSMOS_DB_CONTAINER_NAME,
+            Connection = "AzureResumeConnectionStringPrimary")]
+        public Counter UpdatedCounter { get; set; }
     }
 }

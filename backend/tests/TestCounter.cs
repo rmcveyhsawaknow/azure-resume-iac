@@ -1,30 +1,37 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Moq;
+using System.IO;
 using Xunit;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 
 namespace tests
 {
     public class TestCounter
     {
-        private readonly ILogger logger = TestFactory.CreateLogger();
-
         [Fact]
         public void Http_trigger_should_return_known_string()
         {
-            var counter = new Company.Function.Counter();
-            counter.Id = "1";
-            counter.Count = 2;
-            var request = TestFactory.CreateHttpRequest();
-            var response = (HttpResponseMessage) Company.Function.GetResumeCounter.Run(request, counter, out counter, logger);
-            Assert.Equal(3, counter.Count);
-        }
+            var counter = new Company.Function.Counter
+            {
+                Id = "1",
+                Count = 2
+            };
 
+            var mockContext = new Mock<FunctionContext>();
+            var mockRequest = new Mock<HttpRequestData>(mockContext.Object);
+            var mockResponse = new Mock<HttpResponseData>(mockContext.Object);
+            mockResponse.SetupProperty(r => r.StatusCode);
+            mockResponse.SetupProperty(r => r.Body, new MemoryStream());
+            mockResponse.Setup(r => r.Headers).Returns(new HttpHeadersCollection());
+            mockRequest.Setup(r => r.CreateResponse()).Returns(mockResponse.Object);
+
+            var logger = new Mock<ILogger<Company.Function.GetResumeCounter>>();
+            var function = new Company.Function.GetResumeCounter(logger.Object);
+
+            var result = function.Run(mockRequest.Object, counter);
+
+            Assert.Equal(3, result.UpdatedCounter.Count);
+        }
     }
 }

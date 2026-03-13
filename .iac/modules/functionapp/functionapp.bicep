@@ -126,7 +126,7 @@ resource functionAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource functionAppPlan 'Microsoft.Web/serverfarms@2020-12-01' = {
+resource functionAppPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: functionAppAppServicePlanName
   location: resourceGroupLocation
   kind: 'functionapp'
@@ -146,7 +146,7 @@ resource functionAppPlan 'Microsoft.Web/serverfarms@2020-12-01' = {
   }
 }
 
-resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: functionAppName
   location: resourceGroupLocation
   identity: {
@@ -156,6 +156,7 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
   properties: {
     serverFarmId: functionAppPlan.id
     siteConfig: {
+      linuxFxVersion: 'dotnet-isolated|8.0'
       cors: {
         allowedOrigins: [
           corsFriendlyDnsUri
@@ -192,7 +193,7 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
     FUNCTIONS_WORKER_RUNTIME: functionRuntime
-    FUNCTIONS_EXTENSION_VERSION: '~3'
+    FUNCTIONS_EXTENSION_VERSION: '~4'
     WEBSITE_CONTENTSHARE: functionAppName
   }
 }

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-
 namespace Company.Function
 {
     public class CosmosConstants
@@ -12,5 +7,4 @@ namespace Company.Function
         public const string COSMOS_DB_Item_Document_Id = "1";
         public const string COSMOS_DB_Item_PartitionKey = "1";
     }
-    
 }

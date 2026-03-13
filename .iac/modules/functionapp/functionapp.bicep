@@ -156,7 +156,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: functionAppPlan.id
     siteConfig: {
-      linuxFxVersion: 'dotnet-isolated|8.0'
+      linuxFxVersion: '${functionRuntime}|8.0'
       cors: {
         allowedOrigins: [
           corsFriendlyDnsUri

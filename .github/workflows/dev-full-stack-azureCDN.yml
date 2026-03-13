@@ -189,10 +189,10 @@ jobs:
     # needs: deployDevelopmentIac
     needs: [changes, deployDevelopmentIac]
     # if: ${{ needs.changes.outputs.backendApp == 'true' }}
-    name: Build and Deploy Backend App to Development - aspnetcore31_cs
+    name: Build and Deploy Backend App to Development - net8_isolated
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
-      DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
+      DOTNET_VERSION: '8.0'              # set this to the dotnet version to use
     environment:
       name: development
     runs-on: windows-latest

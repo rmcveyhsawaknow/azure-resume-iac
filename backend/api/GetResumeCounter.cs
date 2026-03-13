@@ -45,6 +45,7 @@ namespace Company.Function
 
     public class MultiResponse
     {
+        [HttpResultAttribute]
         public HttpResponseData HttpResponse { get; set; }
 
         [CosmosDBOutput(

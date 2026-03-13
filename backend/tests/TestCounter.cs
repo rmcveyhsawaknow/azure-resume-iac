@@ -10,7 +10,7 @@ namespace tests
     public class TestCounter
     {
         [Fact]
-        public void Http_trigger_should_return_known_string()
+        public void Http_trigger_should_increment_counter()
         {
             var counter = new Company.Function.Counter
             {

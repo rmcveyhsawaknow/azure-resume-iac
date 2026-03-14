@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Key Vault Access Verification Script
 # Verifies all acceptance criteria for Phase 1 - Verify Key Vault access
 set -euo pipefail

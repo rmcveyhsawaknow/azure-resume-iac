@@ -19,7 +19,6 @@ param defaultConsistencyLevel string
 
 // function app parameters
 param corsFriendlyDnsUri string
-param corsCdnUri string
 
 param functionAppStorageAccountName string
 param functionAppAppInsightsName string
@@ -83,7 +82,6 @@ module storageFunctionApp './modules/functionapp/functionapp.bicep' = {
     functionAppName: functionAppName
     // functionName: functionName
     corsFriendlyDnsUri: corsFriendlyDnsUri
-    corsCdnUri: corsCdnUri
     functionRuntime: functionRuntime
     functionAppKeySecretNamePrimary: functionAppKeySecretNamePrimary
     functionAppKeySecretNameSecondary: functionAppKeySecretNameSecondary

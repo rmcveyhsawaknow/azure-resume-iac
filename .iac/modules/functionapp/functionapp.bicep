@@ -11,7 +11,6 @@ param tagGitActionIacActionsLink string
 
 //function app parameters
 param corsFriendlyDnsUri string
-param corsCdnUri string
 param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
@@ -160,7 +159,6 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
       cors: {
         allowedOrigins: [
           corsFriendlyDnsUri
-          corsCdnUri
         ]
       }
     }

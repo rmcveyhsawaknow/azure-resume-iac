@@ -127,7 +127,7 @@ curl -X POST http://localhost:7071/api/GetResumeCounter
 {"id":"1","count":1}
 ```
 
-Each request increments the `count` value. The response format uses lowercase property names (`id`, `count`) which matches what the frontend expects — see `frontend/main.js` line 23: `data.count`.
+Each request increments the `count` value. The response format uses lowercase property names (`id`, `count`) which matches what the frontend expects — the `getVisitCount()` function in `frontend/main.js` reads `data.count`.
 
 ### Verifying the frontend integration
 

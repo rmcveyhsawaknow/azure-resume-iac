@@ -1,25 +1,31 @@
-window.addEventListener('DOMContentLoaded', (event) =>{
-    getVisitCount()
-})
+window.addEventListener('DOMContentLoaded', (event) => {
+    getVisitCount();
+});
 
-
-const functionApiUrl = 'https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter?code=M4ohKtXdNpeequpYibByW4KR8xXkrGHkCaxsTqsGATtFAzFuDvxeag==';
-
-
+// Azure Function App API endpoint
+// Hostname: {locationCode}-{appBackendName}-{environment}-{version}-fa
+// The function key (code param) must be updated after each Function App redeployment.
+// Retrieve the key from the Azure Portal or CLI:
+//   az functionapp keys list -g <resource-group> -n cus1-resumectr-prod-v1-fa --query "functionKeys.default" -o tsv
+const functionApi = 'https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter';
+const functionKey = ''; // Set after deployment — see comment above
+const functionApiUrl = functionKey ? functionApi + '?code=' + functionKey : functionApi;
 
 const getVisitCount = () => {
-    let count = 30;
-    fetch(functionApiUrl).then(response =>{
-        return response.json()
-    }).then(response =>{
-        console.log("Website called function API.");
-        count = response.count;
-        document.getElementById("counter").innerText = count;
-    }).catch(function(error){
-        console.log(error);
-    });
-    return count;
-}
+    fetch(functionApiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('API returned ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("counter").innerText = data.count;
+        })
+        .catch(error => {
+            console.error("Visitor counter error:", error);
+        });
+};
 
 var TxtRotate = function(el, toRotate, period) {
     this.toRotate = toRotate;

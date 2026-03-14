@@ -164,7 +164,7 @@ az functionapp config appsettings list --name "$FUNCTION_APP_NAME" \
 #     Use the REST API to check the reference status
 az rest --method GET \
   --uri "https://management.azure.com/subscriptions/$(az account show --query id -o tsv)/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Web/sites/${FUNCTION_APP_NAME}/config/configreferences/appsettings?api-version=2022-03-01" \
-  --query "properties.{AzureResumeConnectionStringPrimary:AzureResumeConnectionStringPrimary, AzureResumeConnectionStringSecondary:AzureResumeConnectionStringSecondary}" -o json
+  --query "value[?name=='AzureResumeConnectionStringPrimary' || name=='AzureResumeConnectionStringSecondary'].{Name:name, Status:properties.status, Details:properties.details}" -o json
 ```
 
 **Expected Key Vault References (from Bicep):**

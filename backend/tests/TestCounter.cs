@@ -20,7 +20,7 @@ namespace tests
             _function = new Company.Function.GetResumeCounter(_mockLogger.Object);
         }
 
-        private static (Mock<HttpRequestData> request, Mock<HttpResponseData> response) CreateMockHttpContext()
+        private static (Mock<HttpRequestData> request, Mock<HttpResponseData> response) CreateMockHttpRequestAndResponse()
         {
             var mockContext = new Mock<FunctionContext>();
             var mockRequest = new Mock<HttpRequestData>(mockContext.Object);
@@ -36,7 +36,7 @@ namespace tests
         public void Http_trigger_should_increment_counter()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 2 };
-            var (mockRequest, _) = CreateMockHttpContext();
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
 
             var result = _function.Run(mockRequest.Object, counter);
 
@@ -47,7 +47,7 @@ namespace tests
         public void Http_trigger_should_increment_counter_from_zero()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 0 };
-            var (mockRequest, _) = CreateMockHttpContext();
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
 
             var result = _function.Run(mockRequest.Object, counter);
 
@@ -58,7 +58,7 @@ namespace tests
         public void Http_trigger_should_return_ok_status()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 0 };
-            var (mockRequest, _) = CreateMockHttpContext();
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
 
             var result = _function.Run(mockRequest.Object, counter);
 
@@ -69,7 +69,7 @@ namespace tests
         public void Http_trigger_should_return_json_content_type()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 0 };
-            var (mockRequest, _) = CreateMockHttpContext();
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
 
             var result = _function.Run(mockRequest.Object, counter);
 
@@ -80,7 +80,7 @@ namespace tests
         public void Http_trigger_should_return_updated_counter_as_json()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 5 };
-            var (mockRequest, _) = CreateMockHttpContext();
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
 
             var result = _function.Run(mockRequest.Object, counter);
 
@@ -98,7 +98,7 @@ namespace tests
         public void Http_trigger_updated_counter_should_reference_same_object()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 10 };
-            var (mockRequest, _) = CreateMockHttpContext();
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
 
             var result = _function.Run(mockRequest.Object, counter);
 

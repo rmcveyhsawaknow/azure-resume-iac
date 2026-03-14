@@ -33,7 +33,7 @@ jobs:
       frontendSite: ${{ steps.filter.outputs.frontendSite }}
     steps:
     - uses: actions/checkout@v4
-    # For pull requests it's not necessary to checkout the code
+    # Checkout is required because dorny/paths-filter needs the repository contents (this workflow runs on push events).
     - uses: dorny/paths-filter@v2
       id: filter
       with:

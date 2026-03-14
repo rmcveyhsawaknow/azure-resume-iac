@@ -157,7 +157,7 @@ az functionapp config appsettings list --name "$FUNCTION_APP_NAME" \
   --resource-group "$RESOURCE_GROUP" \
   --query "[?name=='AzureResumeConnectionStringSecondary'].value" -o tsv
 
-# Expected: @Microsoft.KeyVault(SecretUri=https://zus1-resume-dev-v1-kv.vault.azure.net/secrets/AzureResumeConnectionStringSecondary)
+# Expected: @Microsoft.KeyVault(SecretUri=https://zus1-resume-prod-v1-kv.vault.azure.net/secrets/AzureResumeConnectionStringSecondary)
 
 # 3d. Verify the Key Vault reference resolution status
 #     A resolved reference will show the secret value, not the @Microsoft.KeyVault(...) syntax
@@ -254,8 +254,8 @@ az webapp log tail --name "$FUNCTION_APP_NAME" \
   --timeout 30
 
 # 5c. Query Application Insights for Key Vault related exceptions (last 24 hours)
-APP_INSIGHTS_NAME="${KEY_VAULT_NAME//-kv/-ai}"
-# Note: Application Insights name follows pattern: zus1-resumectr-{env}-v1-ai
+# Application Insights name follows pattern: zus1-resumectr-{env}-v1-ai (uses AppBackendName, not AppName)
+# Prod: zus1-resumectr-prod-v1-ai | Dev: zus1-resumectr-dev-v1-ai
 
 az monitor app-insights query \
   --app "$FUNCTION_APP_NAME" \

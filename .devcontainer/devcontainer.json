@@ -1,0 +1,30 @@
+{
+  "name": "Azure Resume Functions (.NET 8)",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:8.0",
+  "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  "postCreateCommand": "npm install -g azure-functions-core-tools@4 --unsafe-perm true && dotnet restore backend/api/api.csproj && dotnet restore backend/tests/tests.csproj",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-azurefunctions",
+        "ms-azuretools.vscode-azureresourcegroups",
+        "ms-azuretools.vscode-azurestorage",
+        "ms-azuretools.vscode-bicep",
+        "ms-dotnettools.csharp",
+        "ms-vscode.azure-account",
+        "me-dutour-mathieu.vscode-github-actions"
+      ],
+      "settings": {
+        "azureFunctions.projectSubpath": "backend/api",
+        "azureFunctions.projectLanguage": "C#",
+        "azureFunctions.projectRuntime": "~4"
+      }
+    }
+  },
+  "forwardPorts": [7071]
+}

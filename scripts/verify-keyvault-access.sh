@@ -3,6 +3,19 @@
 # Verifies all acceptance criteria for Phase 1 - Verify Key Vault access
 set -euo pipefail
 
+# Prerequisite checks
+require_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "Error: Required command '$1' is not installed or not on PATH." >&2
+    echo "Please install '$1' and try again." >&2
+    exit 1
+  fi
+}
+
+require_cmd az
+require_cmd jq
+require_cmd curl
+
 # Configuration (edit for your environment)
 KEY_VAULT_NAME="${1:-cus1-resume-prod-v1-kv}"
 RESOURCE_GROUP="${2:-cus1-resume-be-prod-v1-rg}"

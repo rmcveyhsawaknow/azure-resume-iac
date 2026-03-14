@@ -115,11 +115,13 @@ Once the function is running, test it:
 
 ```bash
 # GET request
-curl http://localhost:7071/api/GetResumeCounter
+curl "http://localhost:7071/api/GetResumeCounter?code=<YOUR_FUNCTION_KEY>"
 
 # POST request
-curl -X POST http://localhost:7071/api/GetResumeCounter
+curl -X POST "http://localhost:7071/api/GetResumeCounter?code=<YOUR_FUNCTION_KEY>"
 ```
+
+Replace `<YOUR_FUNCTION_KEY>` with the function key shown in the URL that Azure Functions Core Tools prints when the host starts.
 
 ### Expected response
 

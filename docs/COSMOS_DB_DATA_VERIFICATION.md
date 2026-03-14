@@ -29,18 +29,21 @@ az account show --query '{Name:name, Id:id, TenantId:tenantId}' -o table
 | **Partition Key Value** | `"1"` | `"1"` |
 | **Consistency Level** | `Eventual` | `Eventual` |
 
-Set these variables for convenience (use production or development values):
+Set these variables for convenience (use production or development values).
+Values are sourced from `backend/api/CosmosConstants.cs` and `.github/workflows/`:
 
 ```bash
 # --- Production ---
 COSMOS_ACCOUNT="cus1-resume-prod-v1-cmsdb"
 RESOURCE_GROUP="cus1-resume-be-prod-v1-rg"
+FUNCTION_APP_NAME="cus1-resumectr-prod-v1-fa"
 
 # --- Development (uncomment to use) ---
 # COSMOS_ACCOUNT="cus1-bevis-dev-v66-cmsdb"
 # RESOURCE_GROUP="cus1-bevis-be-dev-v66-rg"
+# FUNCTION_APP_NAME="cus1-bevisctr-dev-v66-fa"
 
-# Common to both environments
+# Common to both environments (from backend/api/CosmosConstants.cs)
 DATABASE_NAME="azure-resume-click-count"
 CONTAINER_NAME="Counter"
 DOCUMENT_ID="1"
@@ -227,14 +230,17 @@ az cosmosdb sql query --account-name "$COSMOS_ACCOUNT" \
 ```bash
 # 4c. Get the function key
 FUNCTION_KEY=$(az functionapp function keys list \
-  --name cus1-resumectr-prod-v1-fa \
+  --name "$FUNCTION_APP_NAME" \
   --resource-group "$RESOURCE_GROUP" \
   --function-name GetResumeCounter \
   --query default -o tsv)
 
 # 4d. Call the function (reads and increments the counter)
 # WARNING: This will increment the counter by 1
-curl -s "https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter?code=${FUNCTION_KEY}" | jq .
+FUNCTION_HOST=$(az functionapp show --name "$FUNCTION_APP_NAME" \
+  --resource-group "$RESOURCE_GROUP" \
+  --query defaultHostName -o tsv)
+curl -s "https://${FUNCTION_HOST}/api/GetResumeCounter?code=${FUNCTION_KEY}" | jq .
 
 # Expected response: {"id":"1","count":<current_count>}
 ```
@@ -301,19 +307,14 @@ echo "Backup saved to: $BACKUP_FILE"
 
 echo ""
 echo "=== Step 3: Extract current count value ==="
-# Try to extract count as a number; handle both string and number formats
-CURRENT_COUNT=$(echo "$CURRENT_DOC" | jq -r '.[0].count // .[0].Count // "0"')
+# Extract count as a number; handle both string and number formats
+CURRENT_COUNT=$(echo "$CURRENT_DOC" | jq -r '.[0].count // .[0].Count // 0 | tonumber')
 echo "Current count value: $CURRENT_COUNT"
 
 echo ""
 echo "=== Step 4: Verify expected format ==="
 echo "Expected document format:"
-cat <<EOF
-{
-    "id": "1",
-    "count": ${CURRENT_COUNT}
-}
-EOF
+jq -n --argjson count "$CURRENT_COUNT" '{"id": "1", "count": $count}'
 
 echo ""
 echo "=== Step 5: Upsert corrected document ==="
@@ -324,7 +325,7 @@ echo "  2. Data Explorer → ${DATABASE_NAME} → ${CONTAINER_NAME} → Items"
 echo "  3. Select the document with id '1'"
 echo "  4. Replace the document body with:"
 echo ""
-echo '  {"id": "1", "count": '"${CURRENT_COUNT}"'}'
+jq -n --argjson count "$CURRENT_COUNT" '{"id": "1", "count": $count}'
 echo ""
 echo "  5. Click 'Update' to save"
 echo ""
@@ -398,7 +399,7 @@ DOC_RESULT=$(az cosmosdb sql query \
 echo "$DOC_RESULT" | jq .
 
 DOC_COUNT=$(echo "$DOC_RESULT" | jq 'length')
-if [ "$DOC_COUNT" -gt 0 ]; then
+if [ "${DOC_COUNT:-0}" -gt 0 ] 2>/dev/null; then
   echo "✅ AC1 PASS: Document exists in the expected container"
 else
   echo "❌ AC1 FAIL: Document not found"
@@ -420,16 +421,21 @@ FIELD_CHECK=$(az cosmosdb sql query \
   -o json)
 echo "$FIELD_CHECK" | jq .
 
-HAS_ID=$(echo "$FIELD_CHECK" | jq -r '.[0].hasId // false')
-HAS_COUNT=$(echo "$FIELD_CHECK" | jq -r '.[0].hasCount // false')
-COUNT_IS_NUM=$(echo "$FIELD_CHECK" | jq -r '.[0].countIsNumber // false')
+FIELD_COUNT=$(echo "$FIELD_CHECK" | jq 'length')
+if [ "${FIELD_COUNT:-0}" -gt 0 ] 2>/dev/null; then
+  HAS_ID=$(echo "$FIELD_CHECK" | jq -r '.[0].hasId // false')
+  HAS_COUNT=$(echo "$FIELD_CHECK" | jq -r '.[0].hasCount // false')
+  COUNT_IS_NUM=$(echo "$FIELD_CHECK" | jq -r '.[0].countIsNumber // false')
 
-if [ "$HAS_ID" = "true" ] && [ "$HAS_COUNT" = "true" ] && [ "$COUNT_IS_NUM" = "true" ]; then
-  echo "✅ AC2 PASS: Document structure matches Counter model (id: string, count: number)"
+  if [ "$HAS_ID" = "true" ] && [ "$HAS_COUNT" = "true" ] && [ "$COUNT_IS_NUM" = "true" ]; then
+    echo "✅ AC2 PASS: Document structure matches Counter model (id: string, count: number)"
+  else
+    echo "❌ AC2 FAIL: Document structure mismatch"
+    echo "   hasId=$HAS_ID, hasCount=$HAS_COUNT, countIsNumber=$COUNT_IS_NUM"
+    echo "   Expected: Counter { id: string, count: int }"
+  fi
 else
-  echo "❌ AC2 FAIL: Document structure mismatch"
-  echo "   hasId=$HAS_ID, hasCount=$HAS_COUNT, countIsNumber=$COUNT_IS_NUM"
-  echo "   Expected: Counter { id: string, count: int }"
+  echo "❌ AC2 FAIL: No document found to check structure"
 fi
 
 echo ""
@@ -444,14 +450,19 @@ CASE_CHECK=$(az cosmosdb sql query \
   -o json)
 echo "$CASE_CHECK" | jq .
 
-HAS_UPPER_ID=$(echo "$CASE_CHECK" | jq -r '.[0].hasUpperId // false')
-HAS_UPPER_COUNT=$(echo "$CASE_CHECK" | jq -r '.[0].hasUpperCount // false')
+CASE_COUNT=$(echo "$CASE_CHECK" | jq 'length')
+if [ "${CASE_COUNT:-0}" -gt 0 ] 2>/dev/null; then
+  HAS_UPPER_ID=$(echo "$CASE_CHECK" | jq -r '.[0].hasUpperId // false')
+  HAS_UPPER_COUNT=$(echo "$CASE_CHECK" | jq -r '.[0].hasUpperCount // false')
 
-if [ "$HAS_UPPER_ID" = "false" ] && [ "$HAS_UPPER_COUNT" = "false" ]; then
-  echo "✅ No uppercase field conflicts (no legacy Id/Count fields)"
+  if [ "$HAS_UPPER_ID" = "false" ] && [ "$HAS_UPPER_COUNT" = "false" ]; then
+    echo "✅ No uppercase field conflicts (no legacy Id/Count fields)"
+  else
+    echo "⚠️  WARNING: Uppercase field variants found (possible serialization mismatch)"
+    echo "   hasUpperId=$HAS_UPPER_ID, hasUpperCount=$HAS_UPPER_COUNT"
+  fi
 else
-  echo "⚠️  WARNING: Uppercase field variants found (possible serialization mismatch)"
-  echo "   hasUpperId=$HAS_UPPER_ID, hasUpperCount=$HAS_UPPER_COUNT"
+  echo "⚠️  WARNING: No document found to check case conflicts"
 fi
 echo ""
 
@@ -508,7 +519,7 @@ FULL_DOC=$(az cosmosdb sql query \
 echo "$FULL_DOC" | jq .
 
 READABLE_COUNT=$(echo "$FULL_DOC" | jq 'length')
-if [ "$READABLE_COUNT" -gt 0 ]; then
+if [ "${READABLE_COUNT:-0}" -gt 0 ] 2>/dev/null; then
   echo "✅ AC4 PASS: Data is readable via Azure CLI (SDK)"
 else
   echo "❌ AC4 FAIL: No data returned"

@@ -243,7 +243,7 @@ Verify there are no Key Vault access denied or secret resolution errors in the F
 # 5a. Check the Function App for Key Vault reference errors in app settings status
 az rest --method GET \
   --uri "https://management.azure.com/subscriptions/$(az account show --query id -o tsv)/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Web/sites/${FUNCTION_APP_NAME}/config/configreferences/appsettings?api-version=2022-03-01" \
-  -o json | jq '.properties | to_entries[] | select(.value.status != "Resolved") | {name: .key, status: .value.status, detail: .value.detail}'
+  -o json | jq '.value[]? | select(.properties.status != "Resolved") | {name: .name, status: .properties.status, detail: .properties.details}'
 
 # Expected: No output (all Key Vault references are in "Resolved" status)
 
@@ -325,9 +325,9 @@ PASS_COUNT=0
 FAIL_COUNT=0
 WARN_COUNT=0
 
-pass() { echo "✅ $1"; ((PASS_COUNT++)); }
-fail() { echo "❌ $1"; ((FAIL_COUNT++)); }
-warn() { echo "⚠️  $1"; ((WARN_COUNT++)); }
+pass() { echo "✅ $1"; PASS_COUNT=$((PASS_COUNT + 1)); }
+fail() { echo "❌ $1"; FAIL_COUNT=$((FAIL_COUNT + 1)); }
+warn() { echo "⚠️  $1"; WARN_COUNT=$((WARN_COUNT + 1)); }
 
 # --- AC1: Function App managed identity confirmed ---
 echo "=== AC1: Verify Function App managed identity ==="
@@ -506,49 +506,79 @@ echo ""
 
 echo ">> Checking secrets in Key Vault..."
 SECRET_LIST=$(az keyvault secret list --vault-name "$KEY_VAULT_NAME" \
-  --query "[].{Name:name, Enabled:attributes.enabled}" -o json 2>/dev/null || echo "[]")
-echo "$SECRET_LIST" | jq .
+  --query "[].{Name:name, Enabled:attributes.enabled}" -o json 2>&1 || true)
 
-echo ""
-echo ">> Checking primary secret..."
-PRIMARY_ENABLED=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
-  --name "$SECRET_NAME_PRIMARY" \
-  --query 'attributes.enabled' -o tsv 2>/dev/null || echo "NOT_FOUND")
+if echo "$SECRET_LIST" | grep -qi "Forbidden\|AccessDenied"; then
+  echo "  NOTE: CLI user does not have Key Vault data plane permissions."
+  echo "  Falling back to ARM config references API to verify secret resolution."
+  SUBSCRIPTION_ID=${SUBSCRIPTION_ID:-$(az account show --query id -o tsv)}
+  KV_CONFIG_REFS=$(az rest --method GET \
+    --uri "https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Web/sites/${FUNCTION_APP_NAME}/config/configreferences/appsettings?api-version=2022-03-01" \
+    -o json 2>/dev/null || echo '{"value":[]}')
 
-if [ "$PRIMARY_ENABLED" = "true" ]; then
-  pass "AC4: Secret '$SECRET_NAME_PRIMARY' exists and is enabled"
-elif [ "$PRIMARY_ENABLED" = "NOT_FOUND" ]; then
-  fail "AC4: Secret '$SECRET_NAME_PRIMARY' not found in Key Vault"
+  PRIMARY_STATUS=$(echo "$KV_CONFIG_REFS" | jq -r ".value[]? | select(.name==\"$SECRET_NAME_PRIMARY\") | .properties.status" 2>/dev/null || echo "UNKNOWN")
+  SECONDARY_STATUS=$(echo "$KV_CONFIG_REFS" | jq -r ".value[]? | select(.name==\"$SECRET_NAME_SECONDARY\") | .properties.status" 2>/dev/null || echo "UNKNOWN")
+
+  echo "  Primary config ref status:   $PRIMARY_STATUS"
+  echo "  Secondary config ref status: $SECONDARY_STATUS"
+
+  if [ "$PRIMARY_STATUS" = "Resolved" ]; then
+    pass "AC4: Secret '$SECRET_NAME_PRIMARY' is resolvable by Function App (verified via ARM config references)"
+  else
+    fail "AC4: Secret '$SECRET_NAME_PRIMARY' config reference status: $PRIMARY_STATUS"
+  fi
+
+  if [ "$SECONDARY_STATUS" = "Resolved" ]; then
+    pass "AC4: Secret '$SECRET_NAME_SECONDARY' is resolvable by Function App (verified via ARM config references)"
+  else
+    fail "AC4: Secret '$SECRET_NAME_SECONDARY' config reference status: $SECONDARY_STATUS"
+  fi
+
+  warn "AC4: Cannot verify secret value format — CLI user lacks Key Vault data plane access"
 else
-  warn "AC4: Secret '$SECRET_NAME_PRIMARY' exists but is disabled"
-fi
+  echo "$SECRET_LIST" | jq . 2>/dev/null || echo "$SECRET_LIST"
 
-echo ""
-echo ">> Checking secondary secret..."
-SECONDARY_ENABLED=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
-  --name "$SECRET_NAME_SECONDARY" \
-  --query 'attributes.enabled' -o tsv 2>/dev/null || echo "NOT_FOUND")
+  echo ""
+  echo ">> Checking primary secret..."
+  PRIMARY_ENABLED=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
+    --name "$SECRET_NAME_PRIMARY" \
+    --query 'attributes.enabled' -o tsv 2>/dev/null || echo "NOT_FOUND")
 
-if [ "$SECONDARY_ENABLED" = "true" ]; then
-  pass "AC4: Secret '$SECRET_NAME_SECONDARY' exists and is enabled"
-elif [ "$SECONDARY_ENABLED" = "NOT_FOUND" ]; then
-  fail "AC4: Secret '$SECRET_NAME_SECONDARY' not found in Key Vault"
-else
-  warn "AC4: Secret '$SECRET_NAME_SECONDARY' exists but is disabled"
-fi
+  if [ "$PRIMARY_ENABLED" = "true" ]; then
+    pass "AC4: Secret '$SECRET_NAME_PRIMARY' exists and is enabled"
+  elif [ "$PRIMARY_ENABLED" = "NOT_FOUND" ]; then
+    fail "AC4: Secret '$SECRET_NAME_PRIMARY' not found in Key Vault"
+  else
+    warn "AC4: Secret '$SECRET_NAME_PRIMARY' exists but is disabled"
+  fi
 
-echo ""
-echo ">> Validating secret value format (primary — first 50 chars)..."
-SECRET_VALUE_PREVIEW=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
-  --name "$SECRET_NAME_PRIMARY" \
-  --query 'value' -o tsv 2>/dev/null | head -c 50 || echo "")
-if [[ "$SECRET_VALUE_PREVIEW" == AccountEndpoint=* ]]; then
-  pass "AC4: Primary secret contains a valid Cosmos DB connection string"
-elif [ -n "$SECRET_VALUE_PREVIEW" ]; then
-  warn "AC4: Primary secret has a value but may not be a Cosmos DB connection string"
-  echo "     Preview: ${SECRET_VALUE_PREVIEW}..."
-else
-  fail "AC4: Could not retrieve primary secret value"
+  echo ""
+  echo ">> Checking secondary secret..."
+  SECONDARY_ENABLED=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
+    --name "$SECRET_NAME_SECONDARY" \
+    --query 'attributes.enabled' -o tsv 2>/dev/null || echo "NOT_FOUND")
+
+  if [ "$SECONDARY_ENABLED" = "true" ]; then
+    pass "AC4: Secret '$SECRET_NAME_SECONDARY' exists and is enabled"
+  elif [ "$SECONDARY_ENABLED" = "NOT_FOUND" ]; then
+    fail "AC4: Secret '$SECRET_NAME_SECONDARY' not found in Key Vault"
+  else
+    warn "AC4: Secret '$SECRET_NAME_SECONDARY' exists but is disabled"
+  fi
+
+  echo ""
+  echo ">> Validating secret value format (primary — first 50 chars)..."
+  SECRET_VALUE_PREVIEW=$(az keyvault secret show --vault-name "$KEY_VAULT_NAME" \
+    --name "$SECRET_NAME_PRIMARY" \
+    --query 'value' -o tsv 2>/dev/null | head -c 50 || echo "")
+  if [[ "$SECRET_VALUE_PREVIEW" == AccountEndpoint=* ]]; then
+    pass "AC4: Primary secret contains a valid Cosmos DB connection string"
+  elif [ -n "$SECRET_VALUE_PREVIEW" ]; then
+    warn "AC4: Primary secret has a value but may not be a Cosmos DB connection string"
+    echo "     Preview: ${SECRET_VALUE_PREVIEW}..."
+  else
+    fail "AC4: Could not retrieve primary secret value"
+  fi
 fi
 
 echo ""
@@ -596,15 +626,15 @@ echo ">> Checking Key Vault config reference status..."
 SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 CONFIG_REFS=$(az rest --method GET \
   --uri "https://management.azure.com/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${RESOURCE_GROUP}/providers/Microsoft.Web/sites/${FUNCTION_APP_NAME}/config/configreferences/appsettings?api-version=2022-03-01" \
-  -o json 2>/dev/null || echo '{"properties":{}}')
+  -o json 2>/dev/null || echo '{"value":[]}')
 
-UNRESOLVED=$(echo "$CONFIG_REFS" | jq '[.properties | to_entries[] | select(.value.status != null and .value.status != "Resolved")] | length')
+UNRESOLVED=$(echo "$CONFIG_REFS" | jq '[.value[]? | select(.properties.status != null and .properties.status != "Resolved")] | length')
 
 if [ "$UNRESOLVED" = "0" ]; then
   pass "AC5: All Key Vault config references are in Resolved status"
 else
   fail "AC5: $UNRESOLVED Key Vault config reference(s) are not resolved"
-  echo "$CONFIG_REFS" | jq '.properties | to_entries[] | select(.value.status != "Resolved") | {name: .key, status: .value.status, detail: .value.detail}'
+  echo "$CONFIG_REFS" | jq '.value[]? | select(.properties.status != "Resolved") | {name: .name, status: .properties.status, detail: .properties.details}'
 fi
 
 echo ""

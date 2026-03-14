@@ -578,6 +578,144 @@ ul#nav li.current a { color: #216e3b; }
 }
 
 /* ------------------------------------------------------------------ */
+/* e2. AgentGitOps Section
+/* ------------------------------------------------------------------ */
+
+#agentgitops {
+   background: #2B2B2B;
+   padding-top: 90px;
+   padding-bottom: 72px;
+   overflow: hidden;
+}
+
+#agentgitops a, #agentgitops a:visited { color: #1da74b; }
+#agentgitops a:hover, #agentgitops a:focus { color: #fff; }
+
+#agentgitops h1 {
+   font: 18px/24px 'opensans-bold', sans-serif;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+   color: #fff;
+}
+#agentgitops h1 span {
+   border-bottom: 3px solid #1da74b;
+   padding-bottom: 6px;
+}
+#agentgitops h2 {
+   font: 22px/30px 'opensans-bold', sans-serif;
+   color: #fff;
+   margin-bottom: 12px;
+}
+#agentgitops h3 {
+   font: 20px/30px 'opensans-bold', sans-serif;
+   color: #EBEEEE;
+   margin-top: 24px;
+   margin-bottom: 12px;
+}
+#agentgitops p {
+   line-height: 30px;
+   color: #A8A8A8;
+}
+#agentgitops p strong {
+   color: #fff;
+}
+#agentgitops .header-col { padding-top: 9px; }
+#agentgitops .main-col { padding-right: 10%; }
+
+#agentgitops code {
+   background: #444;
+   padding: 2px 6px;
+   border-radius: 3px;
+   color: #1da74b;
+   font-size: 14px;
+}
+
+ul.agentgitops-list {
+   margin-left: 0;
+   padding-left: 20px;
+   margin-bottom: 18px;
+}
+ul.agentgitops-list li {
+   line-height: 30px;
+   color: #A8A8A8;
+   margin-bottom: 12px;
+}
+ul.agentgitops-list li strong {
+   color: #fff;
+}
+ul.agentgitops-list li em {
+   color: #1da74b;
+   font-style: italic;
+}
+
+/* ------------------------------------------------------------------ */
+/* e3. Projects Section
+/* ------------------------------------------------------------------ */
+
+#projects {
+   background: #c1d3c2;
+   padding-top: 90px;
+   padding-bottom: 72px;
+   overflow: hidden;
+}
+
+#projects a, #projects a:visited { color: #1da74b; }
+#projects a:hover, #projects a:focus { color: #313131; }
+
+#projects h1 {
+   font: 18px/24px 'opensans-bold', sans-serif;
+   text-transform: uppercase;
+   letter-spacing: 1px;
+}
+#projects h1 span {
+   border-bottom: 3px solid #1da74b;
+   padding-bottom: 6px;
+}
+#projects h3 {
+   font: 25px/30px 'opensans-bold', sans-serif;
+}
+#projects .header-col { padding-top: 9px; }
+#projects .main-col { padding-right: 10%; }
+#projects .info {
+   font: 16px/24px 'librebaskerville-italic', serif;
+   color: #6E7881;
+   margin-bottom: 18px;
+   margin-top: 9px;
+}
+#projects p {
+   line-height: 30px;
+   color: #4A4A4A;
+}
+#projects .item {
+   margin-bottom: 48px;
+   padding-bottom: 24px;
+   border-bottom: 1px solid #A8B0A8;
+}
+
+/* ------------------------------------------------------------------ */
+/* Cert Badge (used in resume certifications)
+/* ------------------------------------------------------------------ */
+
+.cert-badge {
+   width: 120px;
+   height: 120px;
+   margin-top: 6px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Expertise List (used in resume expertise)
+/* ------------------------------------------------------------------ */
+
+ul.expertise-list {
+   margin-left: 0;
+   padding-left: 20px;
+}
+ul.expertise-list li {
+   line-height: 30px;
+   margin-bottom: 6px;
+}
+
+/* ------------------------------------------------------------------ */
 /* f. Call To Action Section
 /* ------------------------------------------------------------------ */
 

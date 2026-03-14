@@ -1,0 +1,39 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test (.NET 8)
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_VERSION: '8.0.x'
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: backend/api
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+      working-directory: backend/api
+
+    - name: Test
+      run: dotnet test --configuration Release --verbosity normal
+      working-directory: backend/tests

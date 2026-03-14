@@ -257,8 +257,14 @@ az webapp log tail --name "$FUNCTION_APP_NAME" \
 # Application Insights name follows pattern: cus1-resumectr-{env}-{version}-ai (uses AppBackendName, not AppName)
 # Prod: cus1-resumectr-prod-v1-ai | Dev: cus1-resumectr-dev-v66-ai
 
+# Set the Application Insights name for the current environment
+# Uncomment and adjust one of the following lines as appropriate:
+# APP_INSIGHTS_NAME="cus1-resumectr-prod-v1-ai"   # Production
+# APP_INSIGHTS_NAME="cus1-resumectr-dev-v66-ai"   # Development
+APP_INSIGHTS_NAME="<cus1-resumectr-<env>-<version>-ai>"
+
 az monitor app-insights query \
-  --app "$FUNCTION_APP_NAME" \
+  --app "$APP_INSIGHTS_NAME" \
   --resource-group "$RESOURCE_GROUP" \
   --analytics-query "
     exceptions
@@ -271,7 +277,7 @@ az monitor app-insights query \
 
 # 5d. Check for any failed requests related to the Function App (last 24 hours)
 az monitor app-insights query \
-  --app "$FUNCTION_APP_NAME" \
+  --app "$APP_INSIGHTS_NAME" \
   --resource-group "$RESOURCE_GROUP" \
   --analytics-query "
     requests

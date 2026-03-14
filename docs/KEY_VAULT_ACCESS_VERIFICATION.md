@@ -20,9 +20,9 @@ az account show --query '{Name:name, Id:id, TenantId:tenantId}' -o table
 
 | Property | Production | Development |
 |---|---|---|
-| **Key Vault Name** | `zus1-resume-prod-v1-kv` | `zus1-resume-dev-v1-kv` |
-| **Resource Group** | `zus1-resume-be-prod-v1-rg` | `zus1-resume-be-dev-v1-rg` |
-| **Function App Name** | `zus1-resumectr-prod-v1-fa` | `zus1-resumectr-dev-v1-fa` |
+| **Key Vault Name** | `cus1-resume-prod-v1-kv` | `cus1-bevis-dev-v66-kv` |
+| **Resource Group** | `cus1-resume-be-prod-v1-rg` | `cus1-bevis-be-dev-v66-rg` |
+| **Function App Name** | `cus1-resumectr-prod-v1-fa` | `cus1-resumectr-dev-v66-fa` |
 | **Key Vault SKU** | `standard` | `standard` |
 | **RBAC Authorization** | `false` (uses access policies) | `false` (uses access policies) |
 | **Purge Protection** | `true` | `true` |
@@ -36,14 +36,14 @@ Values are sourced from `.iac/modules/functionapp/functionapp.bicep` and `.githu
 
 ```bash
 # --- Production ---
-KEY_VAULT_NAME="zus1-resume-prod-v1-kv"
-RESOURCE_GROUP="zus1-resume-be-prod-v1-rg"
-FUNCTION_APP_NAME="zus1-resumectr-prod-v1-fa"
+KEY_VAULT_NAME="cus1-resume-prod-v1-kv"
+RESOURCE_GROUP="cus1-resume-be-prod-v1-rg"
+FUNCTION_APP_NAME="cus1-resumectr-prod-v1-fa"
 
 # --- Development (uncomment to use) ---
-# KEY_VAULT_NAME="zus1-resume-dev-v1-kv"
-# RESOURCE_GROUP="zus1-resume-be-dev-v1-rg"
-# FUNCTION_APP_NAME="zus1-resumectr-dev-v1-fa"
+# KEY_VAULT_NAME="cus1-bevis-dev-v66-kv"
+# RESOURCE_GROUP="cus1-bevis-be-dev-v66-rg"
+# FUNCTION_APP_NAME="cus1-resumectr-dev-v66-fa"
 
 # Common to both environments
 SECRET_NAME_PRIMARY="AzureResumeConnectionStringPrimary"
@@ -150,14 +150,14 @@ az functionapp config appsettings list --name "$FUNCTION_APP_NAME" \
   --resource-group "$RESOURCE_GROUP" \
   --query "[?name=='AzureResumeConnectionStringPrimary'].value" -o tsv
 
-# Expected: @Microsoft.KeyVault(SecretUri=https://zus1-resume-prod-v1-kv.vault.azure.net/secrets/AzureResumeConnectionStringPrimary)
+# Expected: @Microsoft.KeyVault(SecretUri=https://cus1-resume-prod-v1-kv.vault.azure.net/secrets/AzureResumeConnectionStringPrimary)
 
 # 3c. Verify the Key Vault reference format for the secondary connection string
 az functionapp config appsettings list --name "$FUNCTION_APP_NAME" \
   --resource-group "$RESOURCE_GROUP" \
   --query "[?name=='AzureResumeConnectionStringSecondary'].value" -o tsv
 
-# Expected: @Microsoft.KeyVault(SecretUri=https://zus1-resume-prod-v1-kv.vault.azure.net/secrets/AzureResumeConnectionStringSecondary)
+# Expected: @Microsoft.KeyVault(SecretUri=https://cus1-resume-prod-v1-kv.vault.azure.net/secrets/AzureResumeConnectionStringSecondary)
 
 # 3d. Verify the Key Vault reference resolution status
 #     A resolved reference will show the secret value, not the @Microsoft.KeyVault(...) syntax
@@ -254,8 +254,8 @@ az webapp log tail --name "$FUNCTION_APP_NAME" \
   --timeout 30
 
 # 5c. Query Application Insights for Key Vault related exceptions (last 24 hours)
-# Application Insights name follows pattern: zus1-resumectr-{env}-v1-ai (uses AppBackendName, not AppName)
-# Prod: zus1-resumectr-prod-v1-ai | Dev: zus1-resumectr-dev-v1-ai
+# Application Insights name follows pattern: cus1-resumectr-{env}-{version}-ai (uses AppBackendName, not AppName)
+# Prod: cus1-resumectr-prod-v1-ai | Dev: cus1-resumectr-dev-v66-ai
 
 az monitor app-insights query \
   --app "$FUNCTION_APP_NAME" \
@@ -307,9 +307,9 @@ Save as `scripts/verify-keyvault-access.sh` and run from a Codespace:
 set -euo pipefail
 
 # Configuration (edit for your environment)
-KEY_VAULT_NAME="${1:-zus1-resume-prod-v1-kv}"
-RESOURCE_GROUP="${2:-zus1-resume-be-prod-v1-rg}"
-FUNCTION_APP_NAME="${3:-zus1-resumectr-prod-v1-fa}"
+KEY_VAULT_NAME="${1:-cus1-resume-prod-v1-kv}"
+RESOURCE_GROUP="${2:-cus1-resume-be-prod-v1-rg}"
+FUNCTION_APP_NAME="${3:-cus1-resumectr-prod-v1-fa}"
 SECRET_NAME_PRIMARY="AzureResumeConnectionStringPrimary"
 SECRET_NAME_SECONDARY="AzureResumeConnectionStringSecondary"
 

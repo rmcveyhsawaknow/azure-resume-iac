@@ -33,7 +33,7 @@ jobs:
       frontendSite: ${{ steps.filter.outputs.frontendSite }}
     steps:
     - uses: actions/checkout@v4
-    # For pull requests it's not necessary to checkout the code
+    # Checkout is required so dorny/paths-filter can inspect changed files
     - uses: dorny/paths-filter@v2
       id: filter
       with:

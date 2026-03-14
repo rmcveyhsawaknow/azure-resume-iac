@@ -54,7 +54,7 @@ SECRET_NAME_SECONDARY="AzureResumeConnectionStringSecondary"
 
 ## Acceptance Criteria Verification
 
-### ✅ AC1: Function App managed identity confirmed (system or user-assigned)
+### ✅ AC1: Function App managed identity confirmed (system-assigned)
 
 Verify the Function App has a System-Assigned Managed Identity enabled (as defined in `.iac/modules/functionapp/functionapp.bicep` lines 152–154).
 

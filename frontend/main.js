@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 //   az functionapp keys list -g <resource-group> -n cus1-resumectr-prod-v1-fa --query "functionKeys.default" -o tsv
 const functionApi = 'https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter';
 const functionKey = ''; // Set after deployment — see comment above
-const functionApiUrl = functionKey ? functionApi + '?code=' + functionKey : functionApi;
+const functionApiUrl = functionKey ? `${functionApi}?code=${functionKey}` : functionApi;
 
 const getVisitCount = () => {
     fetch(functionApiUrl)

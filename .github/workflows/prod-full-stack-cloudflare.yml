@@ -118,7 +118,7 @@ jobs:
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
                   corsFriendlyDnsUri=https://${{env.AppName}}.${{env.dnsZone}}
                   corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
-                  functionRuntime=dotnet
+                  functionRuntime=dotnet-isolated
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
                   keyVaultSku=standard
   
@@ -212,10 +212,10 @@ jobs:
     # needs: deployProductionIac
     needs: [changes, deployProductionIac]
     # if: ${{ needs.changes.outputs.backendApp == 'true' }}
-    name: Build and Deploy Backend App to Production - aspnetcore31_cs
+    name: Build and Deploy Backend App to Production - net8_isolated
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
-      DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
+      DOTNET_VERSION: '8.0'              # set this to the dotnet version to use
     environment:
       name: production
     runs-on: windows-latest

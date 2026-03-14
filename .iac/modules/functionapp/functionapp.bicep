@@ -156,6 +156,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: functionAppPlan.id
     siteConfig: {
       linuxFxVersion: '${functionRuntime}|8.0'
+      ftpsState: 'Disabled'
       cors: {
         allowedOrigins: [
           corsFriendlyDnsUri

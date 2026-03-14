@@ -1,0 +1,73 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build (api)",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/backend/api/api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "type": "process",
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "clean (api)",
+      "command": "dotnet",
+      "args": [
+        "clean",
+        "${workspaceFolder}/backend/api/api.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "type": "process",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "test (backend)",
+      "command": "dotnet",
+      "args": [
+        "test",
+        "${workspaceFolder}/backend/tests/tests.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary;ForceNoAlign"
+      ],
+      "type": "process",
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "host start (func)",
+      "type": "shell",
+      "command": "func host start",
+      "options": {
+        "cwd": "${workspaceFolder}/backend/api"
+      },
+      "dependsOn": "build (api)",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "azureFunctions",
+        "pattern": {
+          "regexp": "\\b\\B",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*(Job host started|Starting worker process).*$",
+          "endsPattern": "^.*(Host lock lease acquired|Worker process started and initialized).*$"
+        }
+      }
+    }
+  ]
+}

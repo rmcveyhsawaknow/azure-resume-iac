@@ -25,13 +25,7 @@
 
 set -euo pipefail
 
-REPO="${1:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
-
-echo "========================================"
-echo "  Codespace Auth Setup"
-echo "  Repository: $REPO"
-echo "========================================"
-echo ""
+REPO_ARG="${1:-}"
 
 PASS=0
 WARN=0
@@ -42,7 +36,7 @@ warn() { echo "  ⚠️  $1"; WARN=$((WARN + 1)); }
 fail() { echo "  ❌ $1"; FAIL=$((FAIL + 1)); }
 
 # =============================================================================
-# Step 1: Validate prerequisites (install az CLI if missing)
+# Step 1: Validate prerequisites (install az/gh CLI if missing)
 # =============================================================================
 echo "=== Step 1: Prerequisites ==="
 
@@ -61,6 +55,20 @@ if ! command -v az &>/dev/null; then
   fi
 fi
 
+# Install GitHub CLI if not present
+if ! command -v gh &>/dev/null; then
+  echo "  ⏳ GitHub CLI not found — installing..."
+  if sudo mkdir -p -m 755 /etc/apt/keyrings \
+     && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+     && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+     && sudo apt-get update && sudo apt-get install -y gh 2>&1 | tail -5; then
+    pass "gh installed at $(command -v gh)"
+  else
+    fail "gh install failed — see https://github.com/cli/cli/blob/trunk/docs/install_linux.md"
+  fi
+fi
+
 for cmd in az gh curl python3 git jq; do
   if command -v "$cmd" &>/dev/null; then
     pass "$cmd $(command -v "$cmd")"
@@ -68,6 +76,21 @@ for cmd in az gh curl python3 git jq; do
     fail "$cmd not found on PATH"
   fi
 done
+echo ""
+
+# Resolve repository now that gh is available
+if [[ -n "$REPO_ARG" ]]; then
+  REPO="$REPO_ARG"
+elif command -v gh &>/dev/null; then
+  REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown")
+else
+  REPO="unknown"
+fi
+
+echo "========================================"
+echo "  Codespace Auth Setup"
+echo "  Repository: $REPO"
+echo "========================================"
 echo ""
 
 # =============================================================================

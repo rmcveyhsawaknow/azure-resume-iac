@@ -176,10 +176,10 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
     -H "Authorization: Bearer $CF_API_TOKEN" \
     -H "Content-Type: application/json" 2>/dev/null || echo '{"success":false}')
 
-  CF_SUCCESS=$(echo "$CF_RESULT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('success', False))" 2>/dev/null || echo "False")
-  CF_STATUS=$(echo "$CF_RESULT" | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',{}); print(r.get('status','unknown'))" 2>/dev/null || echo "unknown")
+  CF_SUCCESS=$(echo "$CF_RESULT" | jq -r '.success // false' 2>/dev/null || echo "false")
+  CF_STATUS=$(echo "$CF_RESULT" | jq -r '.result.status // "unknown"' 2>/dev/null || echo "unknown")
 
-  if [[ "$CF_SUCCESS" == "True" && "$CF_STATUS" == "active" ]]; then
+  if [[ "$CF_SUCCESS" == "true" && "$CF_STATUS" == "active" ]]; then
     pass "Cloudflare API token verified (status: active)"
   else
     fail "Cloudflare API token validation failed (status: $CF_STATUS)"

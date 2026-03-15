@@ -10,6 +10,9 @@ on:
     - 'backend/**'
     - 'frontend/**'
 
+permissions:
+  contents: read
+
 env: 
   dnsZone: 'ryanmcvey.me'
   stackVersion: 'v1'
@@ -34,7 +37,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     # Checkout is required so dorny/paths-filter can inspect changed files
-    - uses: dorny/paths-filter@v2
+    - uses: dorny/paths-filter@v3
       id: filter
       with:
         filters: |
@@ -55,7 +58,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Azure Login
-      uses: Azure/login@v1.1
+      uses: Azure/login@v2
       with:
         creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}   
     
@@ -63,7 +66,7 @@ jobs:
       id: subs
       run: |
         SUBID=$(az account show --query id --output tsv)
-        echo "::set-output name=SUBID::${SUBID}"
+        echo "subid=${SUBID}" >> $GITHUB_OUTPUT
     - name: Echo SubscriptionId
       run: echo "${{ steps.subs.outputs.subid }}"      
     
@@ -87,10 +90,10 @@ jobs:
       run: |
         echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml"
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml
-        echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
+        echo "iacactionslink=${IACACTIONSLINK}" >> $GITHUB_OUTPUT
  
     - name: Bicep - Backend
-      uses: Azure/arm-deploy@v1
+      uses: Azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -124,7 +127,7 @@ jobs:
   #                functionName=GetResumeCounter
   
     - name: Bicep - Frontend
-      uses: Azure/arm-deploy@v1
+      uses: Azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -144,7 +147,7 @@ jobs:
                   staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
     - name: Enable Storage Account Frontend Static Website
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
             az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document index.html --index-document index.html
@@ -153,12 +156,12 @@ jobs:
       id: staticSiteEndPoint
       run: |
         ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
-        echo "::set-output name=ssEndPoint::${ssEndPoint}"
+        echo "ssEndPoint=${ssEndPoint}" >> $GITHUB_OUTPUT
     - name: Echo Static Site Endpoint
       run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
     
     - name: Bicep - Frontend CDN
-      uses: azure/arm-deploy@v1
+      uses: azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -200,7 +203,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}  
 
@@ -221,7 +224,7 @@ jobs:
         pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/tests'
         dotnet test
     - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1.4.4
+      uses: Azure/functions-action@v1.5.4
       id: fa
       with:
         app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
@@ -240,18 +243,18 @@ jobs:
       uses: actions/checkout@v4
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }} 
     
     - name: Upload to blob storage
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
     
     - name: Purge CDN endpoint
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
            az afd endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --endpoint-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg

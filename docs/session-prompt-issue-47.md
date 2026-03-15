@@ -146,13 +146,13 @@ az ad app credential reset --id "$SP_APP_ID" --display-name "github-actions-$(da
    - Update `AZURE_SP_PASSWORD` with the new `password` value
 
 2. **Actions Environment Secrets** → Repo Settings → Environments → `development`
-   - Update `AZURE_RESUME_GITHUB_SP` with the full JSON:
+   - Update `AZURE_RESUME_GITHUB_SP` with the full JSON (using values from the `az ad app credential reset` output):
      ```json
      {
-       "clientId": "<appId>",
-       "clientSecret": "<new-password>",
+       "clientId": "<appId from output>",
+       "clientSecret": "<password from output>",
        "subscriptionId": "<subscriptionId>",
-       "tenantId": "<tenant>"
+       "tenantId": "<tenant from output>"
      }
      ```
    - Repeat for the `production` environment if using the same SP

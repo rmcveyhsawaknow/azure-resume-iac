@@ -241,14 +241,14 @@ check_env_resources() {
   fi
 
   # Key Vault
-  if az keyvault show --name "$keyvault" --query name -o tsv &>/dev/null 2>&1; then
+  if az keyvault show --name "$keyvault" --query name -o tsv &>/dev/null; then
     pass "Key Vault accessible: $keyvault"
   else
     info "Key Vault not found: $keyvault (will be created on first deploy)"
   fi
 
   # Function App
-  if az functionapp show --name "$functionapp" --resource-group "$backend_rg" --query name -o tsv &>/dev/null 2>&1; then
+  if az functionapp show --name "$functionapp" --resource-group "$backend_rg" --query name -o tsv &>/dev/null; then
     FA_STATE=$(az functionapp show --name "$functionapp" --resource-group "$backend_rg" --query state -o tsv 2>/dev/null || echo "unknown")
     pass "Function App accessible: $functionapp (state: $FA_STATE)"
   else
@@ -256,7 +256,7 @@ check_env_resources() {
   fi
 
   # Cosmos DB
-  if az cosmosdb show --name "$cosmosdb" --resource-group "$backend_rg" --query name -o tsv &>/dev/null 2>&1; then
+  if az cosmosdb show --name "$cosmosdb" --resource-group "$backend_rg" --query name -o tsv &>/dev/null; then
     pass "Cosmos DB accessible: $cosmosdb"
   else
     info "Cosmos DB not found: $cosmosdb (will be created on first deploy)"

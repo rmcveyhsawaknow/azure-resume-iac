@@ -2,16 +2,22 @@ window.addEventListener('DOMContentLoaded', (event) => {
     getVisitCount();
 });
 
-// Azure Function App API endpoint
-// Hostname: {locationCode}-{appBackendName}-{environment}-{version}-fa
-// The function key (code param) must be updated after each Function App redeployment.
-// Retrieve the key from the Azure Portal or CLI:
-//   az functionapp keys list -g <resource-group> -n cus1-resumectr-prod-v1-fa --query "functionKeys.default" -o tsv
-const functionApi = 'https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter';
-const functionKey = ''; // Set after deployment — see comment above
-const functionApiUrl = functionKey ? `${functionApi}?code=${functionKey}` : functionApi;
+// Azure Function App API endpoint — injected by CI/CD via config.js
+// Hostname pattern: {locationCode}-{appBackendName}-{environment}-{version}-fa
+// config.js sets defined_FUNCTION_API_BASE per environment; see deployment workflows.
+const functionApi = (typeof defined_FUNCTION_API_BASE !== 'undefined' && defined_FUNCTION_API_BASE)
+    ? defined_FUNCTION_API_BASE
+    : '';
+const functionKey = ''; // Set after deployment if needed
+const functionApiUrl = functionApi
+    ? (functionKey ? `${functionApi}?code=${functionKey}` : functionApi)
+    : '';
 
 const getVisitCount = () => {
+    if (!functionApiUrl) {
+        console.warn('Visitor counter: defined_FUNCTION_API_BASE (from config.js) not configured');
+        return;
+    }
     fetch(functionApiUrl)
         .then(response => {
             if (!response.ok) {

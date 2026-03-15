@@ -11,6 +11,8 @@
    c. About Section
    d. Resume Section
    e. Portfolio Section
+   e2. AgentGitOps Section
+   e3. Projects Section
    f. Call To Action Section
    g. Testimonials Section
    h. Contact Section
@@ -52,7 +54,7 @@ header .banner {
    vertical-align: middle;
    margin: 0 auto;
    width: 85%;
-   padding-bottom: 30px;s
+   padding-bottom: 30px;
    text-align: center;
 }
 
@@ -64,7 +66,8 @@ header .banner-text h1 {
    margin: 0 auto 18px auto;
    text-shadow: 0px 1px 3px rgba(0, 0, 0, .8);
 }
-header .banner-text h3 {
+header .banner-text h3,
+header .banner-text h4 {
    font: 18px/1.9em 'librebaskerville-regular', serif;
    color: #A8A8A8;
    margin: 0 auto;
@@ -72,8 +75,16 @@ header .banner-text h3 {
    text-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
 }
 header .banner-text h3 span,
-header .banner-text h3 a {
+header .banner-text h3 a,
+header .banner-text h4 span,
+header .banner-text h4 a {
    color: #fff;
+}
+header .banner-text p {
+   color: #A8A8A8;
+   font-size: 14px;
+   text-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
+   margin-bottom: 0;
 }
 header .banner-text hr {
    width: 60%;
@@ -236,6 +247,9 @@ ul#nav li.current a { color: #216e3b; }
    color: #fff;
 }
 #about .main-col { padding-right: 5%; }
+#about .main-col p span {
+   color: #fff;
+}
 #about .download .button {
    margin-top: 6px;
    background: #444;
@@ -279,6 +293,20 @@ ul#nav li.current a { color: #216e3b; }
 
 #resume .header-col { padding-top: 9px; }
 #resume .main-col { padding-right: 10%; }
+
+#resume ul {
+   margin-left: 0;
+   padding-left: 20px;
+   margin-bottom: 12px;
+}
+#resume ul li {
+   line-height: 28px;
+   margin-bottom: 4px;
+}
+#resume ul.expertise-list li {
+   line-height: 30px;
+   margin-bottom: 6px;
+}
 
 .education, .work {
    margin-bottom: 48px;

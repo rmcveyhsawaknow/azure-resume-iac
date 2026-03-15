@@ -1,0 +1,11 @@
+{
+  "name": "site-validation-tools",
+  "version": "1.0.0",
+  "private": true,
+  "description": "On-demand tools for retrospective content validation (screenshots, GIF, video, broken links)",
+  "dependencies": {
+    "puppeteer": "^23.0.0",
+    "serve": "^14.0.0",
+    "broken-link-checker": "^0.7.0"
+  }
+}

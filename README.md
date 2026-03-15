@@ -35,7 +35,7 @@ Personal resume website deployed as a static site on Azure PaaS services, fronte
                     ┌────────────▼────────────┐
                     │   Azure Function App     │
                     │   GetResumeCounter       │
-                    │   (.NET Core 3.1, v3)    │
+                    │   (.NET 8, isolated v4)  │
                     └────────────┬────────────┘
                                  │
                     ┌────────────▼────────────┐
@@ -176,8 +176,8 @@ See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) for complete details and remedi
 ### Prerequisites
 
 - [Visual Studio Code](https://code.visualstudio.com/) with [recommended extensions](.vscode/extensions.json)
-- [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
-- [.NET Core 3.1 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/3.1) (**must be 3.1** for Newtonsoft.Json compatibility with current codebase)
+- [Azure Functions Core Tools v4](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (isolated worker model with System.Text.Json)
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - [Bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) (bundled with Azure CLI)
 

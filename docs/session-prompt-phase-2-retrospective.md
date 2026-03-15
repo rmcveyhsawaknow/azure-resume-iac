@@ -155,7 +155,7 @@ npx puppeteer --version
 blc --version
 ```
 
-### 11. Serve the site locally
+### Step 11. Serve the site locally
 
 ```bash
 # Start a local HTTP server for the frontend
@@ -165,7 +165,7 @@ echo "Server running on http://localhost:8080 (PID: $SERVER_PID)"
 sleep 2
 ```
 
-### 12. Generate full-page screenshots
+### Step 12. Generate full-page screenshots
 
 Capture a full-page screenshot of each major section viewport:
 
@@ -224,7 +224,7 @@ EOF
 node /tmp/screenshot.js
 ```
 
-### 13. Generate animated GIF of site navigation
+### Step 13. Generate animated GIF of site navigation
 
 Record a scrolling walkthrough as GIF:
 
@@ -249,7 +249,7 @@ const { execSync } = require('child_process');
 
   for (let y = 0; y < totalHeight; y += step) {
     await page.evaluate((scrollY) => window.scrollTo(0, scrollY), y);
-    await page.waitForTimeout(100);
+    await new Promise(resolve => setTimeout(resolve, 100));
     await page.screenshot({
       path: `${frameDir}/frame-${String(frame).padStart(4, '0')}.png`,
     });
@@ -267,7 +267,7 @@ EOF
 node /tmp/record-gif.js
 ```
 
-### 14. Record video of site navigation
+### Step 14. Record video of site navigation
 
 Record a full video walkthrough with section navigation:
 
@@ -293,7 +293,7 @@ const { execSync } = require('child_process');
   });
 
   await page.goto('http://localhost:8080', { waitUntil: 'networkidle2' });
-  await page.waitForTimeout(2000);
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   // Navigate through sections
   const sections = ['#home', '#about', '#resume', '#agentgitops', '#projects'];
@@ -301,7 +301,7 @@ const { execSync } = require('child_process');
     await page.evaluate((sel) => {
       document.querySelector(sel)?.scrollIntoView({ behavior: 'smooth' });
     }, section);
-    await page.waitForTimeout(3000);
+    await new Promise(resolve => setTimeout(resolve, 3000));
   }
 
   await client.send('Page.stopScreencast');
@@ -323,7 +323,7 @@ EOF
 node /tmp/record-video.js
 ```
 
-### 15. Broken link audit
+### Step 15. Broken link audit
 
 Scan all links in the site for broken or unreachable targets:
 
@@ -399,7 +399,7 @@ EOF
 node /tmp/check-links.js
 ```
 
-### 16. Commit content validation artifacts
+### Step 16. Commit content validation artifacts
 
 ```bash
 # Add rendering and validation artifacts
@@ -409,7 +409,7 @@ git commit -m "docs: Phase 2 content validation artifacts (screenshots, GIF, vid
 git push origin develop
 ```
 
-### 17. Stop the local server
+### Step 17. Stop the local server
 
 ```bash
 kill $SERVER_PID 2>/dev/null

@@ -1,0 +1,750 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.41.2.15936",
+      "templateHash": "7818897940077611345"
+    }
+  },
+  "parameters": {
+    "resourceGroupLocation": {
+      "type": "string"
+    },
+    "rgBackendName": {
+      "type": "string"
+    },
+    "tagCostCenter": {
+      "type": "string"
+    },
+    "tagGitActionIacRunId": {
+      "type": "string"
+    },
+    "tagGitActionIacRunNumber": {
+      "type": "string"
+    },
+    "tagGitActionIacRunAttempt": {
+      "type": "string"
+    },
+    "tagGitActionIacActionsLink": {
+      "type": "string"
+    },
+    "tagEnvironmentNameTier": {
+      "type": "string"
+    },
+    "cosmosName": {
+      "type": "string"
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "containerName": {
+      "type": "string"
+    },
+    "defaultConsistencyLevel": {
+      "type": "string"
+    },
+    "corsFriendlyDnsUri": {
+      "type": "string"
+    },
+    "functionAppStorageAccountName": {
+      "type": "string"
+    },
+    "functionAppAppInsightsName": {
+      "type": "string"
+    },
+    "functionAppAppServicePlanName": {
+      "type": "string"
+    },
+    "functionAppName": {
+      "type": "string"
+    },
+    "functionAppKeySecretNamePrimary": {
+      "type": "string"
+    },
+    "functionAppKeySecretNameSecondary": {
+      "type": "string"
+    },
+    "functionRuntime": {
+      "type": "string"
+    },
+    "keyVaultName": {
+      "type": "string"
+    },
+    "keyVaultSku": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2020-06-01",
+      "name": "[parameters('rgBackendName')]",
+      "location": "[parameters('resourceGroupLocation')]",
+      "tags": {
+        "Environment": "[parameters('tagEnvironmentNameTier')]",
+        "CostCenter": "[parameters('tagCostCenter')]",
+        "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+        "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+        "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+        "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "cosmos01",
+      "resourceGroup": "[parameters('rgBackendName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "cosmosName": {
+            "value": "[parameters('cosmosName')]"
+          },
+          "resourceGroupLocation": {
+            "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgBackendName')), '2020-06-01', 'full').location]"
+          },
+          "defaultConsistencyLevel": {
+            "value": "[parameters('defaultConsistencyLevel')]"
+          },
+          "databaseName": {
+            "value": "[parameters('databaseName')]"
+          },
+          "containerName": {
+            "value": "[parameters('containerName')]"
+          },
+          "tagEnvironmentNameTier": {
+            "value": "[parameters('tagEnvironmentNameTier')]"
+          },
+          "tagCostCenter": {
+            "value": "[parameters('tagCostCenter')]"
+          },
+          "tagGitActionIacRunId": {
+            "value": "[parameters('tagGitActionIacRunId')]"
+          },
+          "tagGitActionIacRunNumber": {
+            "value": "[parameters('tagGitActionIacRunNumber')]"
+          },
+          "tagGitActionIacRunAttempt": {
+            "value": "[parameters('tagGitActionIacRunAttempt')]"
+          },
+          "tagGitActionIacActionsLink": {
+            "value": "[parameters('tagGitActionIacActionsLink')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.41.2.15936",
+              "templateHash": "9327886428090964713"
+            }
+          },
+          "parameters": {
+            "resourceGroupLocation": {
+              "type": "string"
+            },
+            "tagEnvironmentNameTier": {
+              "type": "string"
+            },
+            "tagCostCenter": {
+              "type": "string"
+            },
+            "tagGitActionIacRunId": {
+              "type": "string"
+            },
+            "tagGitActionIacRunNumber": {
+              "type": "string"
+            },
+            "tagGitActionIacRunAttempt": {
+              "type": "string"
+            },
+            "tagGitActionIacActionsLink": {
+              "type": "string"
+            },
+            "defaultConsistencyLevel": {
+              "type": "string",
+              "allowedValues": [
+                "Eventual",
+                "ConsistentPrefix",
+                "Session",
+                "BoundedStaleness",
+                "Strong"
+              ],
+              "metadata": {
+                "description": "The default consistency level of the Cosmos DB account."
+              }
+            },
+            "databaseName": {
+              "type": "string"
+            },
+            "containerName": {
+              "type": "string"
+            },
+            "cosmosName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts",
+              "apiVersion": "2021-10-15",
+              "name": "[parameters('cosmosName')]",
+              "location": "[parameters('resourceGroupLocation')]",
+              "kind": "GlobalDocumentDB",
+              "properties": {
+                "consistencyPolicy": {
+                  "defaultConsistencyLevel": "[parameters('defaultConsistencyLevel')]"
+                },
+                "locations": [
+                  {
+                    "locationName": "[parameters('resourceGroupLocation')]",
+                    "failoverPriority": 0,
+                    "isZoneRedundant": false
+                  }
+                ],
+                "capabilities": [
+                  {
+                    "name": "EnableServerless"
+                  }
+                ],
+                "databaseAccountOfferType": "Standard"
+              },
+              "tags": {
+                "Environment": "[parameters('tagEnvironmentNameTier')]",
+                "CostCenter": "[parameters('tagCostCenter')]",
+                "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+                "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+                "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+                "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+              }
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+              "apiVersion": "2021-10-15",
+              "name": "[format('{0}/{1}', parameters('cosmosName'), parameters('databaseName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('databaseName')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+              "apiVersion": "2021-10-15",
+              "name": "[format('{0}/{1}/{2}', parameters('cosmosName'), parameters('databaseName'), parameters('containerName'))]",
+              "properties": {
+                "resource": {
+                  "id": "[parameters('containerName')]",
+                  "partitionKey": {
+                    "paths": [
+                      "/id"
+                    ],
+                    "kind": "Hash"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('cosmosName'), parameters('databaseName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "cosmos_id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosName'))]"
+            },
+            "cosmos_name": {
+              "type": "string",
+              "value": "[parameters('cosmosName')]"
+            },
+            "cosmos_db_id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('cosmosName'), parameters('databaseName'))]"
+            },
+            "cosmos_db_name": {
+              "type": "string",
+              "value": "[parameters('databaseName')]"
+            },
+            "cosmos_db_container_id": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers', parameters('cosmosName'), parameters('databaseName'), parameters('containerName'))]"
+            },
+            "cosmos_db_container_name": {
+              "type": "string",
+              "value": "[parameters('containerName')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgBackendName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "storageFunctionApp01",
+      "resourceGroup": "[parameters('rgBackendName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "functionAppStorageAccountName": {
+            "value": "[parameters('functionAppStorageAccountName')]"
+          },
+          "resourceGroupLocation": {
+            "value": "[reference(subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgBackendName')), '2020-06-01', 'full').location]"
+          },
+          "functionAppAppInsightsName": {
+            "value": "[parameters('functionAppAppInsightsName')]"
+          },
+          "functionAppAppServicePlanName": {
+            "value": "[parameters('functionAppAppServicePlanName')]"
+          },
+          "functionAppName": {
+            "value": "[parameters('functionAppName')]"
+          },
+          "corsFriendlyDnsUri": {
+            "value": "[parameters('corsFriendlyDnsUri')]"
+          },
+          "functionRuntime": {
+            "value": "[parameters('functionRuntime')]"
+          },
+          "functionAppKeySecretNamePrimary": {
+            "value": "[parameters('functionAppKeySecretNamePrimary')]"
+          },
+          "functionAppKeySecretNameSecondary": {
+            "value": "[parameters('functionAppKeySecretNameSecondary')]"
+          },
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "keyVaultSku": {
+            "value": "[parameters('keyVaultSku')]"
+          },
+          "aadTenant": {
+            "value": "[subscription().tenantId]"
+          },
+          "cosmosName": {
+            "value": "[parameters('cosmosName')]"
+          },
+          "tagEnvironmentNameTier": {
+            "value": "[parameters('tagEnvironmentNameTier')]"
+          },
+          "tagCostCenter": {
+            "value": "[parameters('tagCostCenter')]"
+          },
+          "tagGitActionIacRunId": {
+            "value": "[parameters('tagGitActionIacRunId')]"
+          },
+          "tagGitActionIacRunNumber": {
+            "value": "[parameters('tagGitActionIacRunNumber')]"
+          },
+          "tagGitActionIacRunAttempt": {
+            "value": "[parameters('tagGitActionIacRunAttempt')]"
+          },
+          "tagGitActionIacActionsLink": {
+            "value": "[parameters('tagGitActionIacActionsLink')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.41.2.15936",
+              "templateHash": "17538714387618926145"
+            }
+          },
+          "parameters": {
+            "aadTenant": {
+              "type": "string"
+            },
+            "resourceGroupLocation": {
+              "type": "string"
+            },
+            "tagEnvironmentNameTier": {
+              "type": "string"
+            },
+            "tagCostCenter": {
+              "type": "string"
+            },
+            "tagGitActionIacRunId": {
+              "type": "string"
+            },
+            "tagGitActionIacRunNumber": {
+              "type": "string"
+            },
+            "tagGitActionIacRunAttempt": {
+              "type": "string"
+            },
+            "tagGitActionIacActionsLink": {
+              "type": "string"
+            },
+            "corsFriendlyDnsUri": {
+              "type": "string"
+            },
+            "functionAppStorageAccountName": {
+              "type": "string"
+            },
+            "functionAppAppInsightsName": {
+              "type": "string"
+            },
+            "functionAppAppServicePlanName": {
+              "type": "string"
+            },
+            "functionAppName": {
+              "type": "string"
+            },
+            "functionRuntime": {
+              "type": "string"
+            },
+            "functionAppKeySecretNamePrimary": {
+              "type": "string"
+            },
+            "functionAppKeySecretNameSecondary": {
+              "type": "string"
+            },
+            "keyVaultName": {
+              "type": "string"
+            },
+            "keyVaultSku": {
+              "type": "string"
+            },
+            "cosmosName": {
+              "type": "string"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.KeyVault/vaults",
+              "apiVersion": "2019-09-01",
+              "name": "[parameters('keyVaultName')]",
+              "location": "[parameters('resourceGroupLocation')]",
+              "tags": {
+                "Environment": "[parameters('tagEnvironmentNameTier')]",
+                "CostCenter": "[parameters('tagCostCenter')]",
+                "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+                "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+                "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+                "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+              },
+              "properties": {
+                "tenantId": "[parameters('aadTenant')]",
+                "sku": {
+                  "family": "A",
+                  "name": "[parameters('keyVaultSku')]"
+                },
+                "createMode": "default",
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "enablePurgeProtection": true,
+                "enableRbacAuthorization": false,
+                "enableSoftDelete": false,
+                "softDeleteRetentionInDays": 7,
+                "accessPolicies": [
+                  {
+                    "objectId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01', 'full').identity.principalId]",
+                    "permissions": {
+                      "secrets": [
+                        "get",
+                        "list"
+                      ]
+                    },
+                    "tenantId": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01', 'full').identity.tenantId]"
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2021-04-01",
+              "name": "[parameters('functionAppStorageAccountName')]",
+              "location": "[parameters('resourceGroupLocation')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                  "services": {
+                    "file": {
+                      "keyType": "Account",
+                      "enabled": true
+                    },
+                    "blob": {
+                      "keyType": "Account",
+                      "enabled": true
+                    }
+                  },
+                  "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+              },
+              "tags": {
+                "Environment": "[parameters('tagEnvironmentNameTier')]",
+                "CostCenter": "[parameters('tagCostCenter')]",
+                "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+                "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+                "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+                "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+              }
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[parameters('functionAppAppInsightsName')]",
+              "location": "[parameters('resourceGroupLocation')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              },
+              "tags": {
+                "Environment": "[parameters('tagEnvironmentNameTier')]",
+                "CostCenter": "[parameters('tagCostCenter')]",
+                "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+                "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+                "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+                "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+              }
+            },
+            {
+              "type": "Microsoft.Web/serverfarms",
+              "apiVersion": "2023-12-01",
+              "name": "[parameters('functionAppAppServicePlanName')]",
+              "location": "[parameters('resourceGroupLocation')]",
+              "kind": "functionapp",
+              "sku": {
+                "name": "Y1"
+              },
+              "properties": {
+                "reserved": true
+              },
+              "tags": {
+                "Environment": "[parameters('tagEnvironmentNameTier')]",
+                "CostCenter": "[parameters('tagCostCenter')]",
+                "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+                "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+                "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+                "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+              }
+            },
+            {
+              "type": "Microsoft.Web/sites",
+              "apiVersion": "2023-12-01",
+              "name": "[parameters('functionAppName')]",
+              "location": "[parameters('resourceGroupLocation')]",
+              "identity": {
+                "type": "SystemAssigned"
+              },
+              "kind": "functionapp",
+              "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppAppServicePlanName'))]",
+                "siteConfig": {
+                  "linuxFxVersion": "[format('{0}|8.0', parameters('functionRuntime'))]",
+                  "ftpsState": "Disabled",
+                  "cors": {
+                    "allowedOrigins": [
+                      "[parameters('corsFriendlyDnsUri')]"
+                    ]
+                  }
+                },
+                "httpsOnly": true
+              },
+              "tags": {
+                "Environment": "[parameters('tagEnvironmentNameTier')]",
+                "CostCenter": "[parameters('tagCostCenter')]",
+                "GitActionIaCRunId": "[parameters('tagGitActionIacRunId')]",
+                "GitActionIaCRunNumber": "[parameters('tagGitActionIacRunNumber')]",
+                "GitActionIaCRunAttempt": "[parameters('tagGitActionIacRunAttempt')]",
+                "GitActionIacActionsLink": "[parameters('tagGitActionIacActionsLink')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('functionAppAppServicePlanName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Web/sites/config",
+              "apiVersion": "2021-03-01",
+              "name": "[format('{0}/{1}', parameters('functionAppName'), 'appsettings')]",
+              "properties": {
+                "AzureResumeConnectionStringPrimary": "[format('@Microsoft.KeyVault(SecretUri=https://{0}.vault.azure.net/secrets/{1})', parameters('keyVaultName'), parameters('functionAppKeySecretNamePrimary'))]",
+                "AzureResumeConnectionStringSecondary": "[format('@Microsoft.KeyVault(SecretUri=https://{0}.vault.azure.net/secrets/{1})', parameters('keyVaultName'), parameters('functionAppKeySecretNameSecondary'))]",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', parameters('functionAppAppInsightsName')), '2020-02-02').InstrumentationKey]",
+                "APPLICATIONINSIGHTS_CONNECTION_STRING": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Insights/components', parameters('functionAppAppInsightsName')), '2020-02-02').InstrumentationKey)]",
+                "AzureWebJobsStorage": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', parameters('functionAppStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionAppStorageAccountName')), '2021-04-01').keys[0].value)]",
+                "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', parameters('functionAppStorageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('functionAppStorageAccountName')), '2021-04-01').keys[0].value)]",
+                "FUNCTIONS_WORKER_RUNTIME": "[parameters('functionRuntime')]",
+                "FUNCTIONS_EXTENSION_VERSION": "~4",
+                "WEBSITE_CONTENTSHARE": "[parameters('functionAppName')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'cosmosKeyVaultSecretPrimaryConnectionString')]",
+                "[resourceId('Microsoft.Resources/deployments', 'cosmosKeyVaultSecretSecondaryConnectionString')]",
+                "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]",
+                "[resourceId('Microsoft.Insights/components', parameters('functionAppAppInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('functionAppStorageAccountName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "cosmosKeyVaultSecretPrimaryConnectionString",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "keyVaultName": {
+                    "value": "[parameters('keyVaultName')]"
+                  },
+                  "secretName": {
+                    "value": "[parameters('functionAppKeySecretNamePrimary')]"
+                  },
+                  "secretValue": {
+                    "value": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosName')), '2021-10-15').connectionStrings[0].connectionString]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.41.2.15936",
+                      "templateHash": "9354511993599131037"
+                    }
+                  },
+                  "parameters": {
+                    "keyVaultName": {
+                      "type": "string"
+                    },
+                    "secretName": {
+                      "type": "string"
+                    },
+                    "secretValue": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.KeyVault/vaults/secrets",
+                      "apiVersion": "2019-09-01",
+                      "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]",
+                      "properties": {
+                        "value": "[parameters('secretValue')]"
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "keyVaultSecretName": {
+                      "type": "string",
+                      "value": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Resources/deployments",
+              "apiVersion": "2025-04-01",
+              "name": "cosmosKeyVaultSecretSecondaryConnectionString",
+              "properties": {
+                "expressionEvaluationOptions": {
+                  "scope": "inner"
+                },
+                "mode": "Incremental",
+                "parameters": {
+                  "keyVaultName": {
+                    "value": "[parameters('keyVaultName')]"
+                  },
+                  "secretName": {
+                    "value": "[parameters('functionAppKeySecretNameSecondary')]"
+                  },
+                  "secretValue": {
+                    "value": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosName')), '2021-10-15').connectionStrings[1].connectionString]"
+                  }
+                },
+                "template": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "metadata": {
+                    "_generator": {
+                      "name": "bicep",
+                      "version": "0.41.2.15936",
+                      "templateHash": "9354511993599131037"
+                    }
+                  },
+                  "parameters": {
+                    "keyVaultName": {
+                      "type": "string"
+                    },
+                    "secretName": {
+                      "type": "string"
+                    },
+                    "secretValue": {
+                      "type": "string"
+                    }
+                  },
+                  "resources": [
+                    {
+                      "type": "Microsoft.KeyVault/vaults/secrets",
+                      "apiVersion": "2019-09-01",
+                      "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]",
+                      "properties": {
+                        "value": "[parameters('secretValue')]"
+                      }
+                    }
+                  ],
+                  "outputs": {
+                    "keyVaultSecretName": {
+                      "type": "string",
+                      "value": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]"
+                    }
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "functionAppSCMI": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '2023-12-01', 'full').identity.principalId]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('rgBackendName')), 'Microsoft.Resources/deployments', 'cosmos01')]",
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgBackendName'))]"
+      ]
+    }
+  ]
+}

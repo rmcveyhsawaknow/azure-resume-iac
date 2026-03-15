@@ -106,6 +106,18 @@ namespace tests
         }
 
         [Fact]
+        public void Http_trigger_should_initialize_counter_when_null()
+        {
+            var (mockRequest, _) = CreateMockHttpRequestAndResponse();
+
+            var result = _function.Run(mockRequest.Object, null);
+
+            Assert.NotNull(result.UpdatedCounter);
+            Assert.Equal("1", result.UpdatedCounter.Id);
+            Assert.Equal(1, result.UpdatedCounter.Count);
+        }
+
+        [Fact]
         public void Counter_model_should_serialize_with_lowercase_properties()
         {
             var counter = new Company.Function.Counter { Id = "1", Count = 42 };

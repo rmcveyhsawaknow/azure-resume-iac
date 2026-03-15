@@ -15,12 +15,27 @@ param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
+@allowed([
+  'dotnet-isolated'
+  'dotnet'
+  'node'
+  'python'
+  'java'
+])
 param functionRuntime string
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
 param keyVaultName string
 param keyVaultSku string
 param cosmosName string
+
+var linuxFxVersionMap = {
+  'dotnet-isolated': 'DOTNET-ISOLATED|8.0'
+  dotnet: 'DOTNET|8.0'
+  node: 'NODE|20'
+  python: 'PYTHON|3.11'
+  java: 'JAVA|17'
+}
 
 resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: keyVaultName
@@ -155,7 +170,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   properties: {
     serverFarmId: functionAppPlan.id
     siteConfig: {
-      linuxFxVersion: '${functionRuntime}|8.0'
+      linuxFxVersion: linuxFxVersionMap[functionRuntime]
       ftpsState: 'Disabled'
       cors: {
         allowedOrigins: [

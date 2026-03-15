@@ -29,6 +29,9 @@ env:
   AppBackendName: 'resumectr'
   tagCostCenter: 'azCF'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
+  # Custom domain prefix — used for CORS origin, Cloudflare DNS CNAME, and storage custom domain.
+  # Dev appends environment+version; prod uses just the AppName.
+  customDomainPrefix: 'resumedevv1'
 
 jobs:
 
@@ -43,7 +46,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     # Checkout is required so dorny/paths-filter can inspect changed files
-    - uses: dorny/paths-filter@v3
+    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
       id: filter
       with:
         filters: |
@@ -56,7 +59,7 @@ jobs:
 
   deployDevelopmentIac:
     needs: changes
-    # if: ${{ needs.changes.outputs.iac == 'true' }}
+    if: ${{ needs.changes.outputs.iac == 'true' || github.event_name == 'workflow_dispatch' }}
     name: Deploy IaC to development
     environment:
       name: development
@@ -125,7 +128,7 @@ jobs:
                   functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
                   functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
-                  corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
+                  corsFriendlyDnsUri=https://${{env.customDomainPrefix}}.${{env.dnsZone}}
                   functionRuntime=dotnet-isolated
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
                   keyVaultSku=standard
@@ -178,12 +181,14 @@ jobs:
       run: echo "${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}"
    
 
+    # Idempotency: continue-on-error handles pre-existing DNS records.
+    # These are create-only; if the CNAME target changes, update manually via Cloudflare Dashboard or API.
     - name: Cloudflare - Frontend DNS
       continue-on-error: true
-      uses: rez0n/create-dns-record@v2.2
+      uses: rez0n/create-dns-record@6ed7986dfe67b8da8b79c3c1c38acf35dead112f # v2.2
       with:
         type: "CNAME"
-        name: ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
+        name: ${{env.customDomainPrefix}}
         content: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
         ttl: 1
         proxied: true
@@ -193,10 +198,10 @@ jobs:
     
     - name: Cloudflare - Frontend DNS Verify
       continue-on-error: true
-      uses: rez0n/create-dns-record@v2.2
+      uses: rez0n/create-dns-record@6ed7986dfe67b8da8b79c3c1c38acf35dead112f # v2.2
       with:
         type: "CNAME"
-        name: asverify.${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
+        name: asverify.${{env.customDomainPrefix}}
         content: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
         ttl: 1
         proxied: false
@@ -204,21 +209,30 @@ jobs:
         zone: ${{ secrets.CLOUDFLARE_ZONE }}
     ### static site #1 - End
 
-    - name: DNS Propagation Sleeper
-      run: sleep 60s
+    - name: Wait for DNS Propagation
+      run: |
+        DOMAIN="${{env.customDomainPrefix}}.${{env.dnsZone}}"
+        echo "Waiting for DNS to resolve: ${DOMAIN}"
+        for i in $(seq 1 12); do
+          if dig +short "${DOMAIN}" | grep -q '.'; then
+            echo "✅ DNS resolved after $((i * 10))s"
+            break
+          fi
+          echo "  Attempt ${i}/12 — not yet resolved, waiting 10s..."
+          sleep 10
+        done
 
     ### static site #1 - custom domain
     - name: Enable Storage Account Frontend Cloudflare Custom Domain 
       uses: azure/CLI@v2
       with:
         inlineScript: |
-            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}} --use-subdomain true
+            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.customDomainPrefix}}.${{env.dnsZone}} --use-subdomain true
 
 
   buildDeployDevelopmentBackend:
-    # needs: deployDevelopmentIac
     needs: [changes, deployDevelopmentIac]
-    # if: ${{ needs.changes.outputs.backendApp == 'true' }}
+    if: ${{ always() && (needs.deployDevelopmentIac.result == 'success' || needs.deployDevelopmentIac.result == 'skipped') && (needs.changes.outputs.backendApp == 'true' || github.event_name == 'workflow_dispatch') }}
     name: Build and Deploy Backend App to Development - net8_isolated
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -260,9 +274,8 @@ jobs:
 
 
   buildDeployDevelopmentFrontend:
-    # needs: buildDeployDevelopmentBackend
     needs: [changes, buildDeployDevelopmentBackend]
-    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    if: ${{ always() && (needs.buildDeployDevelopmentBackend.result == 'success' || needs.buildDeployDevelopmentBackend.result == 'skipped') && (needs.changes.outputs.frontendSite == 'true' || github.event_name == 'workflow_dispatch') }}
     name: Deploy Frontend Static App to Development
     environment:
       name: development
@@ -278,12 +291,21 @@ jobs:
     
     - name: Generate Frontend Config
       run: |
-        cat > frontend/config.js << 'CFGEOF'
+        cat > frontend/config.js << CFGEOF
         var defined_FUNCTION_API_BASE = 'https://${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa.azurewebsites.net/api/GetResumeCounter';
         CFGEOF
+        echo "Generated config.js:"
+        cat frontend/config.js
 
     - name: Upload to blob storage
       uses: azure/CLI@v2
       with:
         inlineScript: |
-            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
+            az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login -d '$web' -s frontend/ --overwrite
+
+    - name: Purge Cloudflare Cache
+      run: |
+        curl -sS -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"purge_everything":true}'

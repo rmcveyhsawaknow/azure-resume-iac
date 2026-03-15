@@ -41,7 +41,7 @@ PROD_COSMOSDB="cus1-resume-prod-v1-cmsdb"
 PROD_DNS_RECORD="resume.ryanmcvey.me"
 
 DNS_ZONE="ryanmcvey.me"
-SP_DISPLAY_NAME="github-azure-resume"
+SP_DISPLAY_NAME="azureresumeiac-github-sp"
 
 PASS=0
 WARN=0
@@ -92,42 +92,39 @@ if az account show &>/dev/null; then
 
     # List credentials and check expiry
     CRED_JSON=$(az ad app credential list --id "$SP_APP_ID" -o json 2>/dev/null || echo "[]")
-    CRED_COUNT=$(echo "$CRED_JSON" | python3 -c "import json,sys; print(len(json.load(sys.stdin)))" 2>/dev/null || echo "0")
+    CRED_COUNT=$(echo "$CRED_JSON" | jq 'length' 2>/dev/null || echo "0")
 
     if [[ "$CRED_COUNT" -eq 0 ]]; then
-      fail "No client secrets found for SP $SP_APP_ID"
+      # When logged in as SP, the SP may lack Application.Read.All to list its own credentials
+      LOGIN_TYPE=$(az account show --query user.type -o tsv 2>/dev/null || echo "unknown")
+      if [[ "$LOGIN_TYPE" == "servicePrincipal" ]]; then
+        warn "Cannot list SP credentials when logged in as SP (requires Application.Read.All). SP login itself confirms the credential is valid."
+      else
+        fail "No client secrets found for SP $SP_APP_ID"
+      fi
     else
       info "Found $CRED_COUNT client secret(s)"
 
-      # Check each credential's expiry
-      echo "$CRED_JSON" | python3 -c "
-import json, sys
-from datetime import datetime, timezone
-
-creds = json.load(sys.stdin)
-now = datetime.now(timezone.utc)
-
-for c in creds:
-    end = c.get('endDateTime', '')
-    display = c.get('displayName', c.get('keyId', 'unknown')[:8])
-    if end:
-        try:
-            exp = datetime.fromisoformat(end.replace('Z', '+00:00'))
-            days_left = (exp - now).days
-            exp_str = exp.strftime('%Y-%m-%d')
-            if days_left < 0:
-                print(f'  ❌ Secret \"{display}\" EXPIRED on {exp_str} ({abs(days_left)} days ago)')
-            elif days_left <= 30:
-                print(f'  ⚠️  Secret \"{display}\" expires {exp_str} ({days_left} days — ROTATION RECOMMENDED)')
-            elif days_left <= 90:
-                print(f'  ℹ️  Secret \"{display}\" expires {exp_str} ({days_left} days remaining)')
-            else:
-                print(f'  ✅ Secret \"{display}\" expires {exp_str} ({days_left} days remaining)')
-        except Exception as e:
-            print(f'  ⚠️  Secret \"{display}\" — could not parse expiry: {end}')
-    else:
-        print(f'  ⚠️  Secret \"{display}\" — no expiry date set')
-" 2>/dev/null || warn "Could not parse credential expiry dates"
+      # Check each credential's expiry using jq + date
+      NOW_EPOCH=$(date +%s)
+      echo "$CRED_JSON" | jq -r '.[] | [.displayName // .keyId, .endDateTime // ""] | @tsv' | while IFS=$'\t' read -r display end; do
+        if [[ -z "$end" ]]; then
+          warn "Secret \"$display\" — no expiry date set"
+          continue
+        fi
+        EXP_EPOCH=$(date -d "$end" +%s 2>/dev/null || echo "0")
+        DAYS_LEFT=$(( (EXP_EPOCH - NOW_EPOCH) / 86400 ))
+        EXP_STR=$(date -d "$end" +%Y-%m-%d 2>/dev/null || echo "$end")
+        if [[ "$DAYS_LEFT" -lt 0 ]]; then
+          fail "Secret \"$display\" EXPIRED on $EXP_STR ($(( -DAYS_LEFT )) days ago)"
+        elif [[ "$DAYS_LEFT" -le 30 ]]; then
+          warn "Secret \"$display\" expires $EXP_STR ($DAYS_LEFT days — ROTATION RECOMMENDED)"
+        elif [[ "$DAYS_LEFT" -le 90 ]]; then
+          info "Secret \"$display\" expires $EXP_STR ($DAYS_LEFT days remaining)"
+        else
+          pass "Secret \"$display\" expires $EXP_STR ($DAYS_LEFT days remaining)"
+        fi
+      done
     fi
 
     # Check role assignments
@@ -156,11 +153,11 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
     -H "Authorization: Bearer $CF_API_TOKEN" \
     -H "Content-Type: application/json" 2>/dev/null || echo '{"success":false}')
 
-  CF_SUCCESS=$(echo "$CF_RESULT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('success', False))" 2>/dev/null || echo "False")
-  CF_STATUS=$(echo "$CF_RESULT" | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',{}); print(r.get('status','unknown'))" 2>/dev/null || echo "unknown")
-  CF_EXPIRES=$(echo "$CF_RESULT" | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',{}); print(r.get('expires_on','No expiry set'))" 2>/dev/null || echo "unknown")
+  CF_SUCCESS=$(echo "$CF_RESULT" | jq -r '.success // false' 2>/dev/null || echo "false")
+  CF_STATUS=$(echo "$CF_RESULT" | jq -r '.result.status // "unknown"' 2>/dev/null || echo "unknown")
+  CF_EXPIRES=$(echo "$CF_RESULT" | jq -r '.result.expires_on // "No expiry set"' 2>/dev/null || echo "unknown")
 
-  if [[ "$CF_SUCCESS" == "True" && "$CF_STATUS" == "active" ]]; then
+  if [[ "$CF_SUCCESS" == "true" && "$CF_STATUS" == "active" ]]; then
     pass "Cloudflare token verified (status: active)"
     info "Token expires: $CF_EXPIRES"
   else
@@ -171,7 +168,7 @@ if [[ -n "${CF_API_TOKEN:-}" ]]; then
   ZONE_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones?name=$DNS_ZONE" \
     -H "Authorization: Bearer $CF_API_TOKEN" \
     -H "Content-Type: application/json" 2>/dev/null \
-    | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',[]); print(r[0]['id'] if r else '')" 2>/dev/null || echo "")
+    | jq -r '.result[0].id // empty' 2>/dev/null || echo "")
 
   if [[ -n "$ZONE_ID" ]]; then
     pass "Zone access verified: $DNS_ZONE (ID: $ZONE_ID)"
@@ -267,7 +264,7 @@ check_env_resources() {
     DNS_CHECK=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records?name=$dns_record" \
       -H "Authorization: Bearer $CF_API_TOKEN" \
       -H "Content-Type: application/json" 2>/dev/null \
-      | python3 -c "import json,sys; r=json.load(sys.stdin).get('result',[]); print(len(r))" 2>/dev/null || echo "0")
+      | jq '.result | length' 2>/dev/null || echo "0")
 
     if [[ "$DNS_CHECK" -gt 0 ]]; then
       pass "DNS record exists: $dns_record"

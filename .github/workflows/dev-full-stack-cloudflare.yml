@@ -276,6 +276,12 @@ jobs:
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }} 
     
+    - name: Generate Frontend Config
+      run: |
+        cat > frontend/config.js << 'CFGEOF'
+        var defined_FUNCTION_API_BASE = 'https://${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa.azurewebsites.net/api/GetResumeCounter';
+        CFGEOF
+
     - name: Upload to blob storage
       uses: azure/CLI@v2
       with:

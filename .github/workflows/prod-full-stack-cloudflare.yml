@@ -301,13 +301,17 @@ jobs:
 
     - name: Purge Cloudflare Cache
       run: |
-        RESPONSE=$(curl -sSf -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE }}/purge_cache" \
+        HTTP_CODE=$(curl -sS -o /tmp/cf_response.json -w '%{http_code}' -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE }}/purge_cache" \
           -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_TOKEN }}" \
           -H "Content-Type: application/json" \
           --data '{"purge_everything":true}')
-        SUCCESS=$(echo "$RESPONSE" | jq -r '.success')
+        if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+          echo "::error::Cloudflare cache purge HTTP error $HTTP_CODE: $(cat /tmp/cf_response.json)"
+          exit 1
+        fi
+        SUCCESS=$(jq -r '.success' /tmp/cf_response.json)
         if [ "$SUCCESS" != "true" ]; then
-          echo "::error::Cloudflare cache purge failed: $RESPONSE"
+          echo "::error::Cloudflare cache purge API failure: $(cat /tmp/cf_response.json)"
           exit 1
         fi
         echo "Cloudflare cache purge succeeded"

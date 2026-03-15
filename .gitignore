@@ -6,6 +6,9 @@ obj/
 *.exe
 output/
 
+# Bicep compiled ARM templates
+.iac/*.json
+
 # .NET
 *.user
 *.suo

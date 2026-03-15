@@ -74,7 +74,7 @@ All resources follow a consistent naming pattern:
 | `locationCode` | Short code used in resource names (note: `cus1` deploys to `eastus` per workflow `stackLocation`) | `cus1` (active Cloudflare workflows), `zus1` (disabled Azure CDN variant) |
 | `appName` | Application identifier | `resume` (frontend), `resumectr` (backend) |
 | `environment` | Deployment tier | `prod`, `dev` |
-| `version` | Stack version | `v1` (production), `v66` (dev) |
+| `version` | Stack version | `v1` |
 | `resourceType` | Azure resource suffix | `rg`, `fa`, `kv`, `sa`, `cmsdb`, `ai`, `asp` |
 
 **Storage account names** omit hyphens (Azure requirement): `{locationCode}{appName}{environment}{version}sa`
@@ -116,17 +116,17 @@ All resources follow a consistent naming pattern:
 | `ryanmcvey.me` | CNAME | `resume` | `cus1resumeprodv1sa.z13.web.core.windows.net` | Proxied (orange) |
 | `ryanmcvey.me` | CNAME | `asverify.resume` | `asverify.cus1resumeprodv1sa...` | DNS only |
 
-## Development Stack (v66)
+## Development Stack (v1)
 
-The development environment uses different naming to avoid conflicts:
+The development environment uses the same naming convention as production, differentiated by the `stackEnvironment` suffix:
 
 | Variable | Production | Development |
 |---|---|---|
-| `stackVersion` | `v1` | `v66` |
+| `stackVersion` | `v1` | `v1` |
 | `stackEnvironment` | `prod` | `dev` |
-| `AppName` | `resume` | `bevis` |
+| `AppName` | `resume` | `resume` |
 | Branch trigger | `main` | `develop` |
-| DNS subdomain | `resume.ryanmcvey.me` | `bevisdevv66.ryanmcvey.me` |
+| DNS subdomain | `resume.ryanmcvey.me` | `resumedevv1.ryanmcvey.me` |
 
 ## Bicep Module Reference
 

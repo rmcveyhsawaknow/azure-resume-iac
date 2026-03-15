@@ -92,11 +92,11 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 | Setting | Production | Development |
 |---|---|---|
 | Branch | `main` | `develop` |
-| `stackVersion` | `v1` | `v66` |
+| `stackVersion` | `v1` | `v1` |
 | `stackEnvironment` | `prod` | `dev` |
-| `AppName` | `resume` | `bevis` |
-| DNS subdomain | `resume.ryanmcvey.me` | `bevisdevv66.ryanmcvey.me` |
-| CORS URIs | `https://resume.ryanmcvey.me` | `https://bevisdevv66.ryanmcvey.me` |
+| `AppName` | `resume` | `resume` |
+| DNS subdomain | `resume.ryanmcvey.me` | `resumedevv1.ryanmcvey.me` |
+| CORS URIs | `https://resume.ryanmcvey.me` | `https://resumedevv1.ryanmcvey.me` |
 | GitHub environment | `production` | `development` |
 
 The development workflow structure is identical to production but with these variable substitutions. It deploys a fully separate stack.

@@ -9,7 +9,9 @@ const functionApi = (typeof defined_FUNCTION_API_BASE !== 'undefined' && defined
     ? defined_FUNCTION_API_BASE
     : '';
 const functionKey = ''; // Set after deployment if needed
-const functionApiUrl = functionKey ? `${functionApi}?code=${functionKey}` : functionApi;
+const functionApiUrl = functionApi
+    ? (functionKey ? `${functionApi}?code=${functionKey}` : functionApi)
+    : '';
 
 const getVisitCount = () => {
     if (!functionApiUrl) {

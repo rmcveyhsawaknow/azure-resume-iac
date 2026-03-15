@@ -303,6 +303,10 @@ ul#nav li.current a { color: #216e3b; }
    line-height: 28px;
    margin-bottom: 4px;
 }
+#resume ul.expertise-list li {
+   line-height: 30px;
+   margin-bottom: 6px;
+}
 
 .education, .work {
    margin-bottom: 48px;

@@ -139,6 +139,13 @@ if [[ "${SKIP_LIVE}" == false && -n "${LIVE_URL}" ]]; then
 fi
 
 # --- Step 4: Package zip files ---
+
+# Ensure required tooling is available before attempting to package artifacts.
+if ! command -v zip >/dev/null 2>&1; then
+  echo "Error: 'zip' command not found. Please install 'zip' and rerun this script." >&2
+  exit 1
+fi
+
 echo "--- Packaging artifacts ---"
 
 if [[ -d "${OUTPUT_BASE}/local" ]]; then

@@ -97,8 +97,16 @@ if az account show &>/dev/null; then
   SP_APP_ID=$(az ad sp list --display-name "$SP_DISPLAY_NAME" --query "[0].appId" -o tsv 2>/dev/null || echo "")
 
   if [[ -z "$SP_APP_ID" || "$SP_APP_ID" == "None" ]]; then
-    warn "Service Principal '$SP_DISPLAY_NAME' not found. Trying current logged-in SP..."
-    SP_APP_ID=$(az account show --query user.name -o tsv 2>/dev/null || echo "")
+    warn "Service Principal '$SP_DISPLAY_NAME' not found by display name '$SP_DISPLAY_NAME'."
+    LOGIN_TYPE=$(az account show --query user.type -o tsv 2>/dev/null || echo "unknown")
+    if [[ "$LOGIN_TYPE" == "servicePrincipal" ]]; then
+      info "Trying current logged-in service principal as fallback..."
+      SP_APP_ID=$(az account show --query user.name -o tsv 2>/dev/null || echo "")
+    else
+      warn "Current Azure identity is a user account (type: $LOGIN_TYPE); cannot infer Service Principal App ID automatically."
+      warn "Provide an explicit App ID (for example via AZURE_SP_APP_ID) or log in as the target service principal to enable SP expiry checks."
+      SP_APP_ID=""
+    fi
   fi
 
   if [[ -n "$SP_APP_ID" && "$SP_APP_ID" != "None" ]]; then
@@ -148,7 +156,7 @@ if az account show &>/dev/null; then
       --query "[].{Role:roleDefinitionName, Scope:scope}" -o table 2>/dev/null \
       || warn "Could not list role assignments"
   else
-    fail "Could not determine Service Principal App ID"
+    warn "Skipping Service Principal credential expiry check because App ID could not be determined."
   fi
 else
   warn "Skipping SP check — not authenticated to Azure"

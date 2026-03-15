@@ -66,7 +66,7 @@ jobs:
       id: subs
       run: |
         SUBID=$(az account show --query id --output tsv)
-        echo "SUBID=${SUBID}" >> $GITHUB_OUTPUT
+        echo "subid=${SUBID}" >> $GITHUB_OUTPUT
     - name: Echo SubscriptionId
       run: echo "${{ steps.subs.outputs.subid }}"      
     
@@ -90,7 +90,7 @@ jobs:
       run: |
         echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml"
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-azureCDN.yml
-        echo "IACACTIONSLINK=${IACACTIONSLINK}" >> $GITHUB_OUTPUT
+        echo "iacactionslink=${IACACTIONSLINK}" >> $GITHUB_OUTPUT
  
     - name: Bicep - Backend
       uses: Azure/arm-deploy@v2

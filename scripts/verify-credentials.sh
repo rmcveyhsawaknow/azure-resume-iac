@@ -19,6 +19,20 @@
 set -euo pipefail
 
 # =============================================================================
+# Prerequisite checks
+# =============================================================================
+
+REQUIRED_CMDS=("az" "gh" "curl" "jq")
+
+for cmd in "${REQUIRED_CMDS[@]}"; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "Error: Required command '$cmd' is not installed or not in PATH." >&2
+    echo "Please install '$cmd' and re-run scripts/verify-credentials.sh." >&2
+    exit 1
+  fi
+done
+
+# =============================================================================
 # Configuration
 # =============================================================================
 

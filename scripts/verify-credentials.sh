@@ -121,7 +121,7 @@ if az account show &>/dev/null; then
 
       # Check each credential's expiry using jq + date
       NOW_EPOCH=$(date +%s)
-      echo "$CRED_JSON" | jq -r '.[] | [.displayName // .keyId, .endDateTime // ""] | @tsv' | while IFS=$'\t' read -r display end; do
+      while IFS=$'\t' read -r display end; do
         if [[ -z "$end" ]]; then
           warn "Secret \"$display\" — no expiry date set"
           continue
@@ -138,7 +138,7 @@ if az account show &>/dev/null; then
         else
           pass "Secret \"$display\" expires $EXP_STR ($DAYS_LEFT days remaining)"
         fi
-      done
+      done < <(echo "$CRED_JSON" | jq -r '.[] | [.displayName // .keyId, .endDateTime // ""] | @tsv')
     fi
 
     # Check role assignments

@@ -12,11 +12,11 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v66'
+  stackVersion: 'v1'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'
-  AppName: 'bevis'
+  AppName: 'resume'
   AppBackendName: 'resumectr'
   tagCostCenter: 'azCF'
   rgDns: 'glbl-ryanmcveyme-v1-rg'

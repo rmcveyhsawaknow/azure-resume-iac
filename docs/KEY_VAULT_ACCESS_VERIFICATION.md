@@ -20,9 +20,9 @@ az account show --query '{Name:name, Id:id, TenantId:tenantId}' -o table
 
 | Property | Production | Development |
 |---|---|---|
-| **Key Vault Name** | `cus1-resume-prod-v1-kv` | `cus1-bevis-dev-v66-kv` |
-| **Resource Group** | `cus1-resume-be-prod-v1-rg` | `cus1-bevis-be-dev-v66-rg` |
-| **Function App Name** | `cus1-resumectr-prod-v1-fa` | `cus1-resumectr-dev-v66-fa` |
+| **Key Vault Name** | `cus1-resume-prod-v1-kv` | `cus1-resume-dev-v1-kv` |
+| **Resource Group** | `cus1-resume-be-prod-v1-rg` | `cus1-resume-be-dev-v1-rg` |
+| **Function App Name** | `cus1-resumectr-prod-v1-fa` | `cus1-resumectr-dev-v1-fa` |
 | **Key Vault SKU** | `standard` | `standard` |
 | **RBAC Authorization** | `false` (uses access policies) | `false` (uses access policies) |
 | **Purge Protection** | `true` | `true` |
@@ -41,9 +41,9 @@ RESOURCE_GROUP="cus1-resume-be-prod-v1-rg"
 FUNCTION_APP_NAME="cus1-resumectr-prod-v1-fa"
 
 # --- Development (uncomment to use) ---
-# KEY_VAULT_NAME="cus1-bevis-dev-v66-kv"
-# RESOURCE_GROUP="cus1-bevis-be-dev-v66-rg"
-# FUNCTION_APP_NAME="cus1-resumectr-dev-v66-fa"
+# KEY_VAULT_NAME="cus1-resume-dev-v1-kv"
+# RESOURCE_GROUP="cus1-resume-be-dev-v1-rg"
+# FUNCTION_APP_NAME="cus1-resumectr-dev-v1-fa"
 
 # Common to both environments
 SECRET_NAME_PRIMARY="AzureResumeConnectionStringPrimary"
@@ -255,12 +255,12 @@ az webapp log tail --name "$FUNCTION_APP_NAME" \
 
 # 5c. Query Application Insights for Key Vault related exceptions (last 24 hours)
 # Application Insights name follows pattern: cus1-resumectr-{env}-{version}-ai (uses AppBackendName, not AppName)
-# Prod: cus1-resumectr-prod-v1-ai | Dev: cus1-resumectr-dev-v66-ai
+# Prod: cus1-resumectr-prod-v1-ai | Dev: cus1-resumectr-dev-v1-ai
 
 # Set the Application Insights name for the current environment
 # Uncomment and adjust one of the following lines as appropriate:
 # APP_INSIGHTS_NAME="cus1-resumectr-prod-v1-ai"   # Production
-# APP_INSIGHTS_NAME="cus1-resumectr-dev-v66-ai"   # Development
+# APP_INSIGHTS_NAME="cus1-resumectr-dev-v1-ai"   # Development
 APP_INSIGHTS_NAME="<cus1-resumectr-<env>-<version>-ai>"
 
 az monitor app-insights query \

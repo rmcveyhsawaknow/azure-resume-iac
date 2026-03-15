@@ -20,8 +20,8 @@ az account show --query '{Name:name, Id:id, TenantId:tenantId}' -o table
 
 | Property | Production | Development |
 |---|---|---|
-| **Cosmos Account** | `cus1-resume-prod-v1-cmsdb` | `cus1-bevis-dev-v66-cmsdb` |
-| **Resource Group** | `cus1-resume-be-prod-v1-rg` | `cus1-bevis-be-dev-v66-rg` |
+| **Cosmos Account** | `cus1-resume-prod-v1-cmsdb` | `cus1-resume-dev-v1-cmsdb` |
+| **Resource Group** | `cus1-resume-be-prod-v1-rg` | `cus1-resume-be-dev-v1-rg` |
 | **Database Name** | `azure-resume-click-count` | `azure-resume-click-count` |
 | **Container Name** | `Counter` | `Counter` |
 | **Document ID** | `"1"` | `"1"` |
@@ -39,9 +39,9 @@ RESOURCE_GROUP="cus1-resume-be-prod-v1-rg"
 FUNCTION_APP_NAME="cus1-resumectr-prod-v1-fa"
 
 # --- Development (uncomment to use) ---
-# COSMOS_ACCOUNT="cus1-bevis-dev-v66-cmsdb"
-# RESOURCE_GROUP="cus1-bevis-be-dev-v66-rg"
-# FUNCTION_APP_NAME="cus1-bevisctr-dev-v66-fa"
+# COSMOS_ACCOUNT="cus1-resume-dev-v1-cmsdb"
+# RESOURCE_GROUP="cus1-resume-be-dev-v1-rg"
+# FUNCTION_APP_NAME="cus1-resumectr-dev-v1-fa"
 
 # Common to both environments (from backend/api/CosmosConstants.cs)
 DATABASE_NAME="azure-resume-click-count"

@@ -12,11 +12,16 @@ on:
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v66'
+  # NOTE: Changing stackVersion and/or AppName will deploy a NEW dev stack
+  # (new resource groups, Key Vault, Cosmos DB, Function App, storage, etc.)
+  # instead of updating the existing one. When you do this, make sure to:
+  # - Decommission and delete the old dev resource groups to avoid orphaned costs.
+  # - Clean up any obsolete Cloudflare DNS records that pointed to the old stack.
+  stackVersion: 'v1'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'
-  AppName: 'bevis'
+  AppName: 'resume'
   AppBackendName: 'resumectr'
   tagCostCenter: 'azCF'
   rgDns: 'glbl-ryanmcveyme-v1-rg'

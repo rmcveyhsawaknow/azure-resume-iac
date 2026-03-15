@@ -6,9 +6,9 @@ This directory holds committed retrospective summaries generated at each phase b
 
 | File | Phase | Status |
 |---|---|---|
-| `phase-0-retrospective.md` | Phase 0 — Assessment | Pending |
-| `phase-1-retrospective.md` | Phase 1 — Fix Function App | Pending |
-| `phase-2-retrospective.md` | Phase 2 — Content Update | Pending |
+| `phase-0-retrospective.md` | Phase 0 — Assessment | ✅ Complete |
+| `phase-1-retrospective.md` | Phase 1 — Fix Function App | ✅ Complete |
+| `phase-2-retrospective.md` | Phase 2 — Content Update | ✅ Complete (milestone closure pending) |
 | `phase-3-retrospective.md` | Phase 3 — Dev Deployment | Pending |
 | `phase-4-retrospective.md` | Phase 4 — Prod Deployment | Pending |
 | `phase-5-retrospective.md` | Phase 5 — Cleanup & Docs | Pending |

@@ -90,12 +90,11 @@ This document catalogs known issues, broken functionality, and technical debt in
 
 **Impact:** Low — All jobs run on every push, increasing build time and Azure costs
 
-**Current State:** The `if` conditions using path-filter outputs are commented out in all workflows:
-```yaml
-# if: ${{ needs.changes.outputs.iac == 'true' }}
-```
+**Current State:** ~~The `if` conditions using path-filter outputs are commented out in all workflows.~~
 
-**Remediation:** Uncomment the `if` conditions after verifying they work correctly, or remove the `changes` job entirely if always-deploy is desired.
+**Status: PARTIALLY RESOLVED** — The `if` conditions have been uncommented in both `dev-full-stack-cloudflare.yml` and `prod-full-stack-cloudflare.yml` (branch `copilot/investigate-cors-error-and-fix`). Each conditional uses `always()` to run even when upstream jobs are skipped, checks upstream job result, and falls back to full deploy on `workflow_dispatch`. The disabled Azure CDN workflows still have commented-out conditionals.
+
+**Remediation:** Merge the branch to `develop`/`main` and verify the conditionals work correctly in a real workflow run.
 
 ### 4. Manual Post-Deployment Steps
 
@@ -139,3 +138,38 @@ The current setup uses the legacy `--sdk-auth` JSON format for `Azure/login`. Mi
 - **Client ID/Secret** with the newer `Azure/login@v2` format
 
 See: [Configure Azure credentials for GitHub Actions](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure)
+
+---
+
+## Resolved Issues
+
+### CORS Investigation — Dev Site Visitor Counter (Issue #196)
+
+**Date Resolved:** June 2025 (branch `copilot/investigate-cors-error-and-fix`)
+
+**Symptoms:** Dev site at `https://resumedevv1.ryanmcvey.me` showed CORS errors in browser console. Visitor counter did not display.
+
+**Root Causes Found:**
+
+| # | Cause | Status | Fix Applied |
+|---|---|---|---|
+| 1 | `main.js` hardcoded prod API URL | ✅ Fixed in PR #197 | `config.js` runtime injection |
+| 2 | Dev Function App CORS origins were empty | ✅ Fixed | `az functionapp cors add --allowed-origins "https://resumedevv1.ryanmcvey.me"` |
+| 3 | Cosmos DB seed document missing | ✅ Fixed | Created `{id: "1", count: 0}` in `Counter` container via REST API upsert |
+| 4 | Function key not passed in API calls | ⚠️ Open | `functionKey` in `main.js` is empty; API requires `?code=<key>` (AuthorizationLevel.Function) |
+
+**Additional Workflow Improvements Applied:**
+
+- Uncommented path-filter `if:` conditionals on deployment jobs (both dev and prod workflows)
+- Added `customDomainPrefix` env var for consistent domain/CORS construction
+- Pinned `dorny/paths-filter` and `rez0n/create-dns-record` to commit SHAs
+- Replaced `sleep 60s` DNS wait with `dig`-based retry loop (12 attempts × 10s)
+- Switched blob upload from `--auth-mode key` to `--auth-mode login`
+- Added Cloudflare cache purge step after frontend deployment
+- Added `workflow_dispatch` trigger to prod workflow
+- Removed single-quoted heredoc delimiter on `config.js` generation (allows shell expansion)
+
+**Prerequisites for Workflow Changes:**
+
+- GitHub Actions SP needs `Storage Blob Data Contributor` role on frontend storage accounts for `--auth-mode login`
+- `CLOUDFLARE_ZONE` secret must be configured in GitHub Secrets for cache purge step

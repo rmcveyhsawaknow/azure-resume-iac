@@ -27,6 +27,16 @@ namespace Company.Function
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
+            if (counter == null)
+            {
+                _logger.LogWarning("Counter document not found in Cosmos DB. Initializing new counter.");
+                counter = new Counter
+                {
+                    Id = CosmosConstants.COSMOS_DB_Item_Document_Id,
+                    Count = 0
+                };
+            }
+
             counter.Count += 1;
 
             var jsonToReturn = JsonSerializer.Serialize(counter);

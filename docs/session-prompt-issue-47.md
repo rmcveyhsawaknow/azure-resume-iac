@@ -181,7 +181,11 @@ az group list --query "[?contains(name, 'resume')].Name" -o tsv
 
 ```bash
 # The token should already be available from Codespace Secrets
-echo "CF_API_TOKEN is ${CF_API_TOKEN:+set (${#CF_API_TOKEN} chars)}${CF_API_TOKEN:-NOT SET}"
+if [ -n "${CF_API_TOKEN}" ]; then
+  echo "CF_API_TOKEN is set (${#CF_API_TOKEN} chars)"
+else
+  echo "CF_API_TOKEN is NOT SET"
+fi
 
 # Verify token via Cloudflare API
 curl -s -X GET "https://api.cloudflare.com/client/v4/user/tokens/verify" \

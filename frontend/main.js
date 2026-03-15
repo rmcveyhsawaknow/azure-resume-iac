@@ -13,7 +13,7 @@ const functionApiUrl = functionKey ? `${functionApi}?code=${functionKey}` : func
 
 const getVisitCount = () => {
     if (!functionApiUrl) {
-        console.warn('Visitor counter: FUNCTION_API_BASE not configured in config.js');
+        console.warn('Visitor counter: defined_FUNCTION_API_BASE (from config.js) not configured');
         return;
     }
     fetch(functionApiUrl)

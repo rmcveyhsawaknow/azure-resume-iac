@@ -17,7 +17,7 @@ namespace Company.Function
 
         [Function("GetResumeCounter")]
         public MultiResponse Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
             [CosmosDBInput(
                 databaseName: CosmosConstants.COSMOS_DB_DATABASE_NAME,
                 containerName: CosmosConstants.COSMOS_DB_CONTAINER_NAME,

@@ -76,7 +76,7 @@ diagnose_environment() {
   echo ""
   echo "--- Check 1: Function App State ---"
 
-  if ! az functionapp show --name "$functionapp" --resource-group "$backend_rg" &>/dev/null 2>&1; then
+  if ! az functionapp show --name "$functionapp" --resource-group "$backend_rg" &>/dev/null; then
     fail "Function App '$functionapp' not found in resource group '$backend_rg'"
     echo "       The Function App may not have been deployed yet."
     echo "       Run the $env_name deployment workflow to create it."
@@ -157,10 +157,10 @@ for o in origins:
     --name config.js \
     --auth-mode login \
     --file "$TEMP_CONFIG" \
-    --no-progress &>/dev/null 2>&1; then
+    --no-progress &>/dev/null; then
 
     info "Downloaded config.js from $storage_account:"
-    echo "         $(cat "$TEMP_CONFIG" | tr -d '\n' | head -c 200)"
+    echo "         $(tr -d '\n' < "$TEMP_CONFIG" | head -c 200)"
 
     # Check if it points to the correct API host
     if grep -q "$expected_api_host" "$TEMP_CONFIG" 2>/dev/null; then
@@ -177,7 +177,7 @@ for o in origins:
       echo "       Run the $env_name deployment workflow to generate the correct config.js."
     else
       warn "config.js does not contain a recognized API URL pattern"
-      echo "       Content: $(cat "$TEMP_CONFIG")"
+      echo "       Content: $(< "$TEMP_CONFIG")"
     fi
 
     rm -f "$TEMP_CONFIG"

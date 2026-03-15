@@ -216,6 +216,25 @@ ul#nav li.current a { color: #216e3b; }
    width: 58.33333%;
    padding-top: 6px;
 }
+#about h3 {
+   font: 20px/30px 'opensans-bold', sans-serif;
+   color: #EBEEEE;
+   margin-top: 24px;
+   margin-bottom: 12px;
+}
+#about ul {
+   margin-left: 0;
+   padding-left: 20px;
+   margin-bottom: 18px;
+}
+#about ul li {
+   line-height: 30px;
+   color: #7A7A7A;
+   margin-bottom: 8px;
+}
+#about ul li strong {
+   color: #fff;
+}
 #about .main-col { padding-right: 5%; }
 #about .download .button {
    margin-top: 6px;

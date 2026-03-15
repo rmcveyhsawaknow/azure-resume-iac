@@ -28,6 +28,12 @@ install_system_deps() {
     echo "✓ imagemagick already installed ($(convert --version 2>&1 | head -1))"
   fi
 
+  if ! command -v zip &>/dev/null; then
+    needs_install+=("zip")
+  else
+    echo "✓ zip already installed"
+  fi
+
   # Chromium dependencies for puppeteer headless
   local chromium_deps=(
     libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2
@@ -65,8 +71,7 @@ install_node_deps() {
   "description": "On-demand tools for retrospective content validation (screenshots, GIF, video, broken links)",
   "dependencies": {
     "puppeteer": "^23.0.0",
-    "serve": "^14.0.0",
-    "broken-link-checker": "^0.7.0"
+    "serve": "^14.0.0"
   }
 }
 PKGJSON
@@ -74,7 +79,11 @@ PKGJSON
 
   if [ ! -d node_modules ] || [ ! -f node_modules/.package-lock.json ]; then
     echo "Installing Node.js dependencies..."
-    npm install --no-audit --no-fund 2>&1 | tail -3
+    if [ -f package-lock.json ]; then
+      npm ci --no-audit --no-fund 2>&1 | tail -3
+    else
+      npm install --no-audit --no-fund 2>&1 | tail -3
+    fi
     echo "✓ Node.js packages installed"
   else
     echo "✓ Node.js packages already installed"
@@ -113,10 +122,10 @@ verify_tools() {
     echo "✗ serve: NOT FOUND"; ok=false
   fi
 
-  if [ -x "${SCRIPT_DIR}/node_modules/.bin/blc" ]; then
-    echo "✓ broken-link-checker: installed"
+  if command -v zip &>/dev/null; then
+    echo "✓ zip: $(zip --version 2>&1 | head -2 | tail -1 | awk '{print $1,$2}')"
   else
-    echo "✗ broken-link-checker: NOT FOUND"; ok=false
+    echo "✗ zip: NOT FOUND"; ok=false
   fi
 
   echo ""

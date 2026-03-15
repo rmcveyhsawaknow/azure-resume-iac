@@ -3,7 +3,7 @@
 **Generated:** 2026-03-15
 **Repository:** rmcveyhsawaknow/azure-resume-iac
 **Milestone:** Phase 2 - Content Update
-**Milestone State:** open
+**Milestone State:** open (to be closed after retrospective is posted and issue #149 resolved)
 **Period:** 2026-03-14 → 2026-03-15
 **Duration:** 1 day
 

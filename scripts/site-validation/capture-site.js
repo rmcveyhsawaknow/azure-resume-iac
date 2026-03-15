@@ -83,7 +83,6 @@ async function captureGif(page, url, outputDir) {
   await sleep(1000);
 
   const totalHeight = await page.evaluate(() => document.body.scrollHeight);
-  const viewportHeight = 900;
   const step = 200; // pixels per scroll step
   let frame = 0;
 
@@ -262,6 +261,7 @@ function checkUrl(url) {
   return new Promise((resolve) => {
     const mod = url.startsWith('https') ? https : http;
     const req = mod.get(url, { timeout: 8000, headers: { 'User-Agent': 'Site-Validation-Bot/1.0' } }, (res) => {
+      res.resume(); // Drain response body to free the socket
       resolve(res.statusCode);
     });
     req.on('error', (err) => resolve(`ERROR: ${err.code || err.message}`));

@@ -52,7 +52,7 @@ done
 
 if [[ -z "$PHASE" || -z "$OUTPUT_BASE" ]]; then
   echo "Error: --phase and --output-base are required"
-  echo "Usage: bash $0 --phase <N> --local-dir <dir> --live-url <url> --output-base <dir>"
+  echo "Usage: bash $0 --phase <N> --output-base <dir> [--local-dir <dir>] [--live-url <url>] [--skip-local] [--skip-live]"
   exit 1
 fi
 
@@ -94,9 +94,9 @@ trap cleanup EXIT
 if [[ "${SKIP_LOCAL}" == false && -n "${LOCAL_DIR}" ]]; then
   echo "--- Capturing local site ---"
 
-  # Find an available port
+  # Find an available port using bash built-in /dev/tcp
   PORT=8080
-  while lsof -i :"${PORT}" &>/dev/null 2>&1; do
+  while (echo >/dev/tcp/localhost/${PORT}) 2>/dev/null; do
     PORT=$((PORT + 1))
   done
 

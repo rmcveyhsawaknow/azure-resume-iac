@@ -141,278 +141,92 @@ Phase 2 updated the static resume site with current professional content sourced
 
 ### Prerequisites
 
-Install rendering and validation tools in the Codespace:
+The validation toolkit under `scripts/site-validation/` handles all dependency installation
+automatically. No manual setup is required — `run-validation.sh` calls `install-deps.sh`
+which installs system packages (ffmpeg, ImageMagick, zip, Chromium libs) and Node.js
+packages (puppeteer, serve) on first run.
+
+### Step 11. Run the site validation toolkit
 
 ```bash
-# Install Node.js-based tools for rendering and link checking
-npm install -g puppeteer-cli broken-link-checker serve
+# Capture both local (develop branch) and live (production) sites
+bash scripts/site-validation/run-validation.sh \
+  --phase 2 \
+  --local-dir frontend/ \
+  --live-url https://resume.ryanmcvey.me \
+  --output-base docs/retrospectives/phase-2-assets
 
-# For GIF recording (optional, requires Xvfb)
-sudo apt-get update && sudo apt-get install -y xvfb ffmpeg imagemagick
+# Or capture only local site
+bash scripts/site-validation/run-validation.sh \
+  --phase 2 \
+  --local-dir frontend/ \
+  --output-base docs/retrospectives/phase-2-assets \
+  --skip-live
 
-# Verify
-npx puppeteer --version
-blc --version
+# Or capture only live site
+bash scripts/site-validation/run-validation.sh \
+  --phase 2 \
+  --live-url https://resume.ryanmcvey.me \
+  --output-base docs/retrospectives/phase-2-assets \
+  --skip-local
 ```
 
-### Step 11. Serve the site locally
+This runs the full validation pipeline for each target:
+1. **Screenshots** — Full-page captures at desktop (1440px), tablet (768px), and mobile (375px)
+2. **Animated GIF** — Scrolling walkthrough of the full page
+3. **Navigation Video** — Section-by-section walkthrough (home → about → resume → agentgitops → projects)
+4. **Broken Link Audit** — Checks all `<a href>` links and generates a markdown report
 
-```bash
-# Start a local HTTP server for the frontend
-npx serve frontend/ -l 8080 &
-SERVER_PID=$!
-echo "Server running on http://localhost:8080 (PID: $SERVER_PID)"
-sleep 2
+Output is organized as:
+```
+docs/retrospectives/phase-2-assets/
+├── local/                         # Local site artifacts
+│   ├── full-page-desktop.png
+│   ├── full-page-tablet.png
+│   ├── full-page-mobile.png
+│   ├── site-scroll.gif
+│   ├── site-walkthrough.mp4
+│   ├── broken-links-report.md
+│   └── capture-summary.md
+├── live/                          # Live site artifacts
+│   └── (same structure)
+├── phase-2-local-site.zip         # Packaged local artifacts
+├── phase-2-live-site.zip          # Packaged live artifacts
+└── comparison-summary.md          # Side-by-side inventory
 ```
 
-### Step 12. Generate full-page screenshots
-
-Capture a full-page screenshot of each major section viewport:
+### Step 12. Review broken link reports
 
 ```bash
-mkdir -p docs/retrospectives/phase-2-assets
+# Check local site broken links
+cat docs/retrospectives/phase-2-assets/local/broken-links-report.md
 
-# Full-page screenshot (desktop 1440px)
-npx puppeteer screenshot http://localhost:8080 \
-  --viewport 1440x900 \
-  --full-page \
-  docs/retrospectives/phase-2-assets/full-page-desktop.png
-
-# Mobile screenshot (375px iPhone)
-npx puppeteer screenshot http://localhost:8080 \
-  --viewport 375x812 \
-  --full-page \
-  docs/retrospectives/phase-2-assets/full-page-mobile.png
-
-# Tablet screenshot (768px iPad)
-npx puppeteer screenshot http://localhost:8080 \
-  --viewport 768x1024 \
-  --full-page \
-  docs/retrospectives/phase-2-assets/full-page-tablet.png
+# Check live site broken links
+cat docs/retrospectives/phase-2-assets/live/broken-links-report.md
 ```
 
-**Alternative using Node.js script:**
+Document any unexpected broken links. Expected false positives include:
+- Government sites (SSL certificate issues, bot protection)
+- Private GitHub repositories
+- Rate-limited external APIs
+
+### Step 13. Commit content validation artifacts
 
 ```bash
-cat > /tmp/screenshot.js << 'EOF'
-const puppeteer = require('puppeteer');
-
-(async () => {
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-
-  const viewports = [
-    { name: 'desktop', width: 1440, height: 900 },
-    { name: 'tablet', width: 768, height: 1024 },
-    { name: 'mobile', width: 375, height: 812 },
-  ];
-
-  for (const vp of viewports) {
-    await page.setViewport({ width: vp.width, height: vp.height });
-    await page.goto('http://localhost:8080', { waitUntil: 'networkidle2' });
-    await page.screenshot({
-      path: `docs/retrospectives/phase-2-assets/full-page-${vp.name}.png`,
-      fullPage: true,
-    });
-    console.log(`Screenshot saved: full-page-${vp.name}.png`);
-  }
-
-  await browser.close();
-})();
-EOF
-
-node /tmp/screenshot.js
-```
-
-### Step 13. Generate animated GIF of site navigation
-
-Record a scrolling walkthrough as GIF:
-
-```bash
-cat > /tmp/record-gif.js << 'EOF'
-const puppeteer = require('puppeteer');
-const { execSync } = require('child_process');
-
-(async () => {
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1440, height: 900 });
-  await page.goto('http://localhost:8080', { waitUntil: 'networkidle2' });
-
-  // Capture frames while scrolling
-  const frameDir = '/tmp/gif-frames';
-  execSync(`mkdir -p ${frameDir}`);
-
-  const totalHeight = await page.evaluate(() => document.body.scrollHeight);
-  const step = 100;
-  let frame = 0;
-
-  for (let y = 0; y < totalHeight; y += step) {
-    await page.evaluate((scrollY) => window.scrollTo(0, scrollY), y);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    await page.screenshot({
-      path: `${frameDir}/frame-${String(frame).padStart(4, '0')}.png`,
-    });
-    frame++;
-  }
-
-  await browser.close();
-
-  // Convert frames to GIF using ImageMagick
-  execSync(`convert -delay 10 -loop 0 ${frameDir}/frame-*.png docs/retrospectives/phase-2-assets/site-scroll.gif`);
-  console.log('GIF saved: site-scroll.gif');
-})();
-EOF
-
-node /tmp/record-gif.js
-```
-
-### Step 14. Record video of site navigation
-
-Record a full video walkthrough with section navigation:
-
-```bash
-cat > /tmp/record-video.js << 'EOF'
-const puppeteer = require('puppeteer');
-const { execSync } = require('child_process');
-
-(async () => {
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1440, height: 900 });
-
-  // Start screen recording via Xvfb + ffmpeg (alternative)
-  // Or use Puppeteer screencast (Chrome DevTools Protocol)
-  const client = await page.target().createCDPSession();
-  await client.send('Page.startScreencast', { format: 'png', maxWidth: 1440, maxHeight: 900 });
-
-  const frames = [];
-  client.on('Page.screencastFrame', async (event) => {
-    frames.push(event.data);
-    await client.send('Page.screencastFrameAck', { sessionId: event.sessionId });
-  });
-
-  await page.goto('http://localhost:8080', { waitUntil: 'networkidle2' });
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
-  // Navigate through sections
-  const sections = ['#home', '#about', '#resume', '#agentgitops', '#projects'];
-  for (const section of sections) {
-    await page.evaluate((sel) => {
-      document.querySelector(sel)?.scrollIntoView({ behavior: 'smooth' });
-    }, section);
-    await new Promise(resolve => setTimeout(resolve, 3000));
-  }
-
-  await client.send('Page.stopScreencast');
-  await browser.close();
-
-  // Save frames and convert to video
-  const frameDir = '/tmp/video-frames';
-  execSync(`mkdir -p ${frameDir}`);
-  for (let i = 0; i < frames.length; i++) {
-    const buf = Buffer.from(frames[i], 'base64');
-    require('fs').writeFileSync(`${frameDir}/frame-${String(i).padStart(5, '0')}.png`, buf);
-  }
-
-  execSync(`ffmpeg -y -framerate 10 -i ${frameDir}/frame-%05d.png -c:v libx264 -pix_fmt yuv420p docs/retrospectives/phase-2-assets/site-walkthrough.mp4`);
-  console.log('Video saved: site-walkthrough.mp4');
-})();
-EOF
-
-node /tmp/record-video.js
-```
-
-### Step 15. Broken link audit
-
-Scan all links in the site for broken or unreachable targets:
-
-```bash
-# Run broken link checker against local server
-blc http://localhost:8080 --recursive --ordered --exclude-external \
-  > docs/retrospectives/phase-2-assets/broken-links-internal.txt 2>&1
-
-# Include external links (may have timeouts)
-blc http://localhost:8080 --recursive --ordered \
-  > docs/retrospectives/phase-2-assets/broken-links-full.txt 2>&1
-
-echo "Broken link reports saved to docs/retrospectives/phase-2-assets/"
-```
-
-**Alternative using a Node.js script for more control:**
-
-```bash
-cat > /tmp/check-links.js << 'EOF'
-const puppeteer = require('puppeteer');
-const https = require('https');
-const http = require('http');
-
-(async () => {
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
-  const page = await browser.newPage();
-  await page.goto('http://localhost:8080', { waitUntil: 'networkidle2' });
-
-  // Collect all links
-  const links = await page.evaluate(() => {
-    return Array.from(document.querySelectorAll('a[href]')).map(a => ({
-      href: a.href,
-      text: a.textContent.trim().substring(0, 50),
-      isExternal: a.hostname !== location.hostname,
-    }));
-  });
-
-  const results = [];
-  for (const link of links) {
-    try {
-      const mod = link.href.startsWith('https') ? https : http;
-      const status = await new Promise((resolve) => {
-        mod.get(link.href, { timeout: 5000 }, (res) => resolve(res.statusCode))
-           .on('error', () => resolve('ERROR'));
-      });
-      results.push({ ...link, status });
-    } catch {
-      results.push({ ...link, status: 'ERROR' });
-    }
-  }
-
-  // Generate report
-  const broken = results.filter(r => r.status !== 200 && r.status !== 301 && r.status !== 302);
-  let report = '# Broken Link Report\n\n';
-  report += `**Total links:** ${results.length}\n`;
-  report += `**Broken/Unreachable:** ${broken.length}\n\n`;
-
-  if (broken.length > 0) {
-    report += '| Status | URL | Link Text |\n|---|---|---|\n';
-    for (const b of broken) {
-      report += `| ${b.status} | ${b.href} | ${b.text} |\n`;
-    }
-  } else {
-    report += 'No broken links found.\n';
-  }
-
-  require('fs').writeFileSync('docs/retrospectives/phase-2-assets/broken-links-report.md', report);
-  console.log(report);
-  await browser.close();
-})();
-EOF
-
-node /tmp/check-links.js
-```
-
-### Step 16. Commit content validation artifacts
-
-```bash
-# Add rendering and validation artifacts
 git add docs/retrospectives/phase-2-assets/
-
 git commit -m "docs: Phase 2 content validation artifacts (screenshots, GIF, video, broken links)"
 git push origin develop
 ```
 
-### Step 17. Stop the local server
+### Step 14. Stop any remaining processes
+
+The validation script cleans up after itself via a trap handler. If you need to
+manually stop a leftover serve process:
 
 ```bash
-kill $SERVER_PID 2>/dev/null
+# Find and stop any lingering serve processes
+ps aux | grep serve | grep -v grep
+# kill <PID> if found
 ```
 
 ---

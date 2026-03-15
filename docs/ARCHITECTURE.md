@@ -116,17 +116,85 @@ All resources follow a consistent naming pattern:
 | `ryanmcvey.me` | CNAME | `resume` | `cus1resumeprodv1sa.z13.web.core.windows.net` | Proxied (orange) |
 | `ryanmcvey.me` | CNAME | `asverify.resume` | `asverify.cus1resumeprodv1sa...` | DNS only |
 
-## Development Stack (v1)
+## Development Resource Inventory (v1)
 
-The development environment uses the same naming convention as production, differentiated by the `stackEnvironment` suffix:
+The development environment uses the same naming convention and Bicep templates as production, differentiated by the `stackEnvironment` suffix (`dev` instead of `prod`) and a versioned custom domain prefix (`resumedevv1` instead of `resume`).
 
 | Variable | Production | Development |
 |---|---|---|
 | `stackVersion` | `v1` | `v1` |
 | `stackEnvironment` | `prod` | `dev` |
+| `stackLocation` | `eastus` | `eastus` |
+| `stackLocationCode` | `cus1` | `cus1` |
 | `AppName` | `resume` | `resume` |
+| `AppBackendName` | `resumectr` | `resumectr` |
+| `customDomainPrefix` | `resume` | `resumedevv1` |
 | Branch trigger | `main` | `develop` |
 | DNS subdomain | `resume.ryanmcvey.me` | `resumedevv1.ryanmcvey.me` |
+
+### Resource Groups
+
+| Resource Group | Purpose |
+|---|---|
+| `cus1-resume-be-dev-v1-rg` | Backend: Cosmos DB, Function App, Key Vault, Storage, App Insights |
+| `cus1-resume-fe-dev-v1-rg` | Frontend: Storage Account (static site), App Insights |
+| `glbl-ryanmcveyme-v1-rg` | DNS zones (pre-existing, shared with production) |
+
+### Backend Resources
+
+| Resource | Name | Type | SKU/Tier |
+|---|---|---|---|
+| Cosmos DB Account | `cus1-resume-dev-v1-cmsdb` | `Microsoft.DocumentDB/databaseAccounts` | Serverless |
+| Cosmos DB Database | `azure-resume-click-count` | SQL Database | — |
+| Cosmos DB Container | `Counter` | SQL Container | Partition key: `/id` |
+| Function App | `cus1-resumectr-dev-v1-fa` | `Microsoft.Web/sites` | Consumption (Y1) |
+| App Service Plan | `cus1-resumectr-dev-v1-asp` | `Microsoft.Web/serverfarms` | Y1 (Dynamic) |
+| Key Vault | `cus1-resume-dev-v1-kv` | `Microsoft.KeyVault/vaults` | Standard |
+| Storage Account | `cus1resumectrdevv1sa` | `Microsoft.Storage/storageAccounts` | StorageV2 |
+| App Insights | `cus1-resumectr-dev-v1-ai` | `Microsoft.Insights/components` | Web |
+
+### Frontend Resources
+
+| Resource | Name | Type | Custom Domain |
+|---|---|---|---|
+| Storage Acct | `cus1resumedevv1sa` | Static Website | `resumedevv1.ryanmcvey.me` |
+| App Insights | `cus1-resume-dev-v1-ai` | `Microsoft.Insights/components` | — |
+
+### DNS Configuration (Cloudflare)
+
+| Zone | Record Type | Name | Content | Proxy |
+|---|---|---|---|---|
+| `ryanmcvey.me` | CNAME | `resumedevv1` | `cus1resumedevv1sa.z13.web.core.windows.net` | Proxied (orange) |
+| `ryanmcvey.me` | CNAME | `asverify.resumedevv1` | `asverify.cus1resumedevv1sa.z13.web.core.windows.net` | DNS only |
+
+### Key URLs
+
+| URL | Purpose |
+|---|---|
+| `https://resumedevv1.ryanmcvey.me` | Dev frontend (via Cloudflare proxy + TLS) |
+| `https://cus1resumedevv1sa.z13.web.core.windows.net` | Dev static site (direct Azure Storage endpoint) |
+| `https://cus1-resumectr-dev-v1-fa.azurewebsites.net/api/GetResumeCounter` | Dev Function App API endpoint |
+
+### Key Vault Secrets
+
+| Secret Name | Content |
+|---|---|
+| `AzureResumeConnectionStringPrimary` | Cosmos DB primary connection string (from `cus1-resume-dev-v1-cmsdb`) |
+| `AzureResumeConnectionStringSecondary` | Cosmos DB secondary connection string (from `cus1-resume-dev-v1-cmsdb`) |
+
+### CI/CD Configuration
+
+| Setting | Value |
+|---|---|
+| Workflow | `dev-full-stack-cloudflare.yml` |
+| Branch | `develop` |
+| GitHub Environment | `development` |
+| CORS Origin | `https://resumedevv1.ryanmcvey.me` |
+| Function Runtime | `dotnet-isolated` (.NET 8, Functions v4) |
+| Change Detection | `dorny/paths-filter` on `.iac/**`, `backend/**`, `frontend/**` |
+| Job Flow | `changes` → `deployDevelopmentIac` → `buildDeployDevelopmentBackend` → `buildDeployDevelopmentFrontend` |
+
+> **See also:** [Dev Environment Architecture Diagram](dev-environment-diagram.md) for a visual representation of the development stack.
 
 ## Bicep Module Reference
 

@@ -46,18 +46,19 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 
 #### Job 1: `changes`
 - **Runner:** `ubuntu-latest`
-- **Action:** `dorny/paths-filter@v2`
+- **Action:** `dorny/paths-filter@v3` (pinned to commit SHA)
 - **Outputs:** `iac`, `backendApp`, `frontendSite` (boolean flags)
-- **Note:** These outputs are defined but the `if` conditions in downstream jobs are **commented out**, so all jobs always run.
+- **Note:** These outputs drive active `if:` conditions on downstream jobs. Jobs only run when their relevant paths have changed, or on `workflow_dispatch` events.
 
 #### Job 2: `deployProductionIac`
 - **Runner:** `ubuntu-latest`
 - **Depends on:** `changes`
+- **Condition:** `needs.changes.outputs.iac == 'true' || github.event_name == 'workflow_dispatch'`
 - **Steps:**
-  1. Azure Login using `Azure/login@v1.1` with `AZURE_RESUME_GITHUB_SP` secret
+  1. Azure Login using `Azure/login@v2` with `AZURE_RESUME_GITHUB_SP` secret
   2. Get subscription ID from `az account show`
-  3. Deploy `backend.bicep` via `Azure/arm-deploy@v1` at subscription scope
-  4. Deploy `frontend.bicep` via `Azure/arm-deploy@v1` at subscription scope
+  3. Deploy `backend.bicep` via `Azure/arm-deploy@v2` at subscription scope
+  4. Deploy `frontend.bicep` via `Azure/arm-deploy@v2` at subscription scope
   5. Enable static website on storage account via `az storage blob service-properties update`
   6. Get storage static site endpoints
   7. Create/update Cloudflare CNAME records (proxied) and verification CNAMEs (DNS-only) for ryanmcvey.me zone
@@ -65,21 +66,25 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
   9. Set custom domain on storage account
 
 #### Job 3: `buildDeployProductionBackend`
-- **Runner:** `windows-latest` (required for .NET Core 3.1)
+- **Runner:** `windows-latest`
 - **Depends on:** `changes`, `deployProductionIac`
+- **Condition:** `always() && (deployProductionIac succeeded or skipped) && (backendApp changed || workflow_dispatch)`
 - **Steps:**
   1. Azure Login
-  2. Setup .NET Core 3.1
+  2. Setup .NET 8
   3. `dotnet build --configuration Release --output ./output` in `backend/api/`
   4. `dotnet test` in `backend/tests/`
-  5. Deploy to Function App via `Azure/functions-action@v1.4.4`
+  5. Deploy to Function App via `Azure/functions-action@v1.5.4`
 
 #### Job 4: `buildDeployProductionFrontend`
 - **Runner:** `ubuntu-latest`
 - **Depends on:** `changes`, `buildDeployProductionBackend`
+- **Condition:** `always() && (buildDeployProductionBackend succeeded or skipped) && (frontendSite changed || workflow_dispatch)`
 - **Steps:**
   1. Azure Login
-  2. Upload `frontend/` to `$web` container on storage account via `az storage blob upload-batch`
+  2. Generate `config.js` with environment-specific API URL
+  3. Upload `frontend/` to `$web` container on storage account via `az storage blob upload-batch`
+  4. Purge Cloudflare cache (validates API response for success)
 
 ## Active Workflow: Development Full Stack Cloudflare
 

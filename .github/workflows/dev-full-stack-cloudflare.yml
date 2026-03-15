@@ -9,6 +9,7 @@ on:
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
+  workflow_dispatch:
 
 permissions:
   contents: read

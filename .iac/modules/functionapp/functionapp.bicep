@@ -177,6 +177,8 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
 
 //param guidValue string = newGuid()
 
+var functionAppStorageKeys = functionAppStorageAccount.listKeys()
+
 resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
   name: 'appsettings'
   dependsOn: [
@@ -189,8 +191,8 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
     AzureResumeConnectionStringSecondary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
     APPINSIGHTS_INSTRUMENTATIONKEY: functionAppAppInsights.properties.InstrumentationKey
     APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=${functionAppAppInsights.properties.InstrumentationKey}'
-    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${functionAppStorageKeys.keys[0].value}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${functionAppStorageKeys.keys[0].value}'
     FUNCTIONS_WORKER_RUNTIME: functionRuntime
     FUNCTIONS_EXTENSION_VERSION: '~4'
     WEBSITE_CONTENTSHARE: functionAppName

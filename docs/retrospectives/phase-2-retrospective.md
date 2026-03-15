@@ -7,6 +7,8 @@
 **Period:** 2026-03-14 → 2026-03-15
 **Duration:** 1 day
 
+> Note: The Phase 2 milestone is intentionally left open while this retrospective and associated readiness checklist items are being finalized. Once this document is ratified, the remaining tracking issue will be closed and the milestone will be updated.
+
 ---
 
 ## Phase Summary

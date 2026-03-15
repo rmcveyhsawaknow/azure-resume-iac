@@ -390,8 +390,8 @@ az ad sp show --id "$AZURE_SP_APP_ID" --query '{AppId:appId, DisplayName:display
 az ad sp create-for-rbac --name "github-azure-resume" \
   --role Contributor \
   --scopes /subscriptions/<SUBSCRIPTION_ID> \
-  --json-auth
-# The --json-auth output is the exact format needed for AZURE_RESUME_GITHUB_SP
+  --sdk-auth
+# The --sdk-auth output is the exact format needed for AZURE_RESUME_GITHUB_SP
 ```
 
 ### Cloudflare token returns 403

@@ -12,6 +12,10 @@ const functionKey = ''; // Set after deployment if needed
 const functionApiUrl = functionKey ? `${functionApi}?code=${functionKey}` : functionApi;
 
 const getVisitCount = () => {
+    if (!functionApiUrl) {
+        console.warn('Visitor counter: FUNCTION_API_BASE not configured in config.js');
+        return;
+    }
     fetch(functionApiUrl)
         .then(response => {
             if (!response.ok) {

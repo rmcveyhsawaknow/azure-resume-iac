@@ -35,6 +35,14 @@ DOCUMENT_ID="${COSMOS_DOCUMENT_ID:-1}"
 INITIAL_COUNT="${COSMOS_INITIAL_COUNT:-0}"
 
 ##############################################################################
+# Validate INITIAL_COUNT
+##############################################################################
+if ! [[ "${INITIAL_COUNT}" =~ ^[0-9]+$ ]]; then
+  echo "::error::COSMOS_INITIAL_COUNT must be a non-negative integer (got: '${INITIAL_COUNT}')"
+  exit 1
+fi
+
+##############################################################################
 # Validate required inputs
 ##############################################################################
 if [ -z "${COSMOS_ACCOUNT_NAME:-}" ]; then

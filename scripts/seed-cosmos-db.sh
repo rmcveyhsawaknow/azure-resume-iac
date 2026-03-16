@@ -250,9 +250,42 @@ elif [ "$POST_HTTP" -eq 409 ]; then
   # Race condition: document was created between our GET and POST
   echo "  ✅ Document already exists (created by concurrent process)"
   echo "::notice::Cosmos DB visitor counter document exists (concurrent creation detected)"
-  if [ -n "${GITHUB_OUTPUT:-}" ]; then
-    echo "counter_exists=true" >> "$GITHUB_OUTPUT"
+
+  # Re-fetch the document so we can surface the current counter value,
+  # matching the behavior of the "already exists" path.
+  RESOURCE_LINK_GET_AFTER_409="dbs/${DATABASE_NAME}/colls/${CONTAINER_NAME}/docs/${DOCUMENT_ID}"
+  DATE_STR_AFTER_409=$(TZ=GMT date '+%a, %d %b %Y %H:%M:%S GMT')
+  AUTH_TOKEN_AFTER_409=$(generate_cosmos_auth_token "GET" "docs" "${RESOURCE_LINK_GET_AFTER_409}" "${DATE_STR_AFTER_409}" "${MASTER_KEY}")
+
+  GET_HTTP_AFTER_409=$(curl -sS -o "${TMPDIR_COSMOS}/get-after-409.json" -w '%{http_code}' \
+    -X GET "${COSMOS_ENDPOINT}/${RESOURCE_LINK_GET_AFTER_409}" \
+    -H "Authorization: ${AUTH_TOKEN_AFTER_409}" \
+    -H "x-ms-date: ${DATE_STR_AFTER_409}" \
+    -H "x-ms-version: ${API_VERSION}" \
+    -H "x-ms-documentdb-partitionkey: [\"${DOCUMENT_ID}\"]")
+
+  if [ "$GET_HTTP_AFTER_409" -eq 200 ]; then
+    echo "  Document:"
+    jq '{id, count}' "${TMPDIR_COSMOS}/get-after-409.json"
+    CURRENT_COUNT_AFTER_409=$(jq -r '.count' "${TMPDIR_COSMOS}/get-after-409.json")
+    echo ""
+    echo "=== Cosmos DB Data Tier Introspection ==="
+    echo "  Database:  ${DATABASE_NAME}"
+    echo "  Container: ${CONTAINER_NAME}"
+    echo "  Document:  id=${DOCUMENT_ID}"
+    echo "  Counter:   ${CURRENT_COUNT_AFTER_409} (existing, concurrent creation detected)"
+    echo "::notice::Cosmos DB visitor counter current value: ${CURRENT_COUNT_AFTER_409} (document id=${DOCUMENT_ID} in ${DATABASE_NAME}/${CONTAINER_NAME}, concurrent creation detected)"
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+      echo "counter_value=${CURRENT_COUNT_AFTER_409}" >> "$GITHUB_OUTPUT"
+      echo "counter_exists=true" >> "$GITHUB_OUTPUT"
+    fi
+  else
+    echo "  ⚠ Unable to re-fetch document after 409 (HTTP ${GET_HTTP_AFTER_409}); skipping counter_value export"
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+      echo "counter_exists=true" >> "$GITHUB_OUTPUT"
+    fi
   fi
+
   exit 0
 else
   echo "::error::Failed to create seed document (HTTP ${POST_HTTP}):"

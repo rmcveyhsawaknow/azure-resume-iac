@@ -173,3 +173,4 @@ See: [Configure Azure credentials for GitHub Actions](https://learn.microsoft.co
 
 - GitHub Actions SP needs `Storage Blob Data Contributor` role on frontend storage accounts for `--auth-mode login`
 - `CLOUDFLARE_ZONE` secret must be configured in GitHub Secrets for cache purge step
+- `CLOUDFLARE_TOKEN` must include **Zone → Cache Purge → Purge** permission (in addition to Zone → DNS → Edit). A 401 authentication error was observed in [workflow run #58](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/runs/23121086640) when the token only had DNS Edit scope. The step now uses `continue-on-error: true` so cache purge failures do not block deployments.

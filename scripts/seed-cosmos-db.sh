@@ -160,6 +160,18 @@ if [ "$GET_HTTP" -eq 200 ]; then
 
   if [ "$VALID" = true ]; then
     echo "  ✅ Document already exists with valid structure (id=${DOC_ID}, count=${DOC_COUNT})"
+    echo ""
+    echo "=== Cosmos DB Data Tier Introspection ==="
+    echo "  Database:  ${DATABASE_NAME}"
+    echo "  Container: ${CONTAINER_NAME}"
+    echo "  Document:  id=${DOC_ID}"
+    echo "  Counter:   ${DOC_COUNT}"
+    echo "::notice::Cosmos DB visitor counter current value: ${DOC_COUNT} (document id=${DOC_ID} in ${DATABASE_NAME}/${CONTAINER_NAME})"
+    # Expose counter value as a workflow step output when running in GitHub Actions
+    if [ -n "${GITHUB_OUTPUT:-}" ]; then
+      echo "counter_value=${DOC_COUNT}" >> "$GITHUB_OUTPUT"
+      echo "counter_exists=true" >> "$GITHUB_OUTPUT"
+    fi
     exit 0
   else
     echo "::error::Document exists but has invalid structure. Manual intervention required."
@@ -205,10 +217,25 @@ if [ "$POST_HTTP" -eq 201 ]; then
   echo "  ✅ Seed document created successfully"
   echo "  Document:"
   jq '{id, count}' "${TMPDIR_COSMOS}/post.json"
+  echo ""
+  echo "=== Cosmos DB Data Tier Introspection ==="
+  echo "  Database:  ${DATABASE_NAME}"
+  echo "  Container: ${CONTAINER_NAME}"
+  echo "  Document:  id=${DOCUMENT_ID}"
+  echo "  Counter:   ${INITIAL_COUNT} (newly seeded)"
+  echo "::notice::Cosmos DB visitor counter seeded with initial value: ${INITIAL_COUNT} (document id=${DOCUMENT_ID} in ${DATABASE_NAME}/${CONTAINER_NAME})"
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "counter_value=${INITIAL_COUNT}" >> "$GITHUB_OUTPUT"
+    echo "counter_exists=false" >> "$GITHUB_OUTPUT"
+  fi
   exit 0
 elif [ "$POST_HTTP" -eq 409 ]; then
   # Race condition: document was created between our GET and POST
   echo "  ✅ Document already exists (created by concurrent process)"
+  echo "::notice::Cosmos DB visitor counter document exists (concurrent creation detected)"
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "counter_exists=true" >> "$GITHUB_OUTPUT"
+  fi
   exit 0
 else
   echo "::error::Failed to create seed document (HTTP ${POST_HTTP}):"

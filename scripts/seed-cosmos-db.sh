@@ -16,8 +16,9 @@
 #   COSMOS_INITIAL_COUNT   Initial counter value (default: 0)
 #
 # Prerequisites:
-#   - Azure CLI authenticated (az login)
+#   - Azure CLI (az) installed and authenticated (az login)
 #   - python3 available on PATH (used for auth-token generation)
+#   - curl and jq available on PATH
 #   - Contributor or Cosmos DB Account Contributor role on the account
 #
 # Exit codes:
@@ -44,6 +45,14 @@ if [ -z "${COSMOS_RESOURCE_GROUP:-}" ]; then
   echo "::error::COSMOS_RESOURCE_GROUP is required"
   exit 1
 fi
+
+# Verify required external tools are available early to provide clear errors.
+for cmd in az curl jq python3; do
+  if ! command -v "$cmd" >/dev/null 2>&1; then
+    echo "::error::Required command '$cmd' is not available on PATH. Please install it before running this script."
+    exit 1
+  fi
+done
 
 TMPDIR_COSMOS=$(mktemp -d)
 trap 'rm -rf -- "$TMPDIR_COSMOS"' EXIT

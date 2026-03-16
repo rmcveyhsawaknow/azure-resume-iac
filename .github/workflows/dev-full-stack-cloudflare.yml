@@ -21,7 +21,7 @@ env:
   # instead of updating the existing one. When you do this, make sure to:
   # - Decommission and delete the old dev resource groups to avoid orphaned costs.
   # - Clean up any obsolete Cloudflare DNS records that pointed to the old stack.
-  stackVersion: 'v1'
+  stackVersion: 'v2'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'
@@ -31,7 +31,7 @@ env:
   rgDns: 'glbl-ryanmcveyme-v1-rg'
   # Custom domain prefix — used for CORS origin, Cloudflare DNS CNAME, and storage custom domain.
   # Dev appends environment+version; prod uses just the AppName.
-  customDomainPrefix: 'resumedevv1'
+  customDomainPrefix: 'resumedevv2'
 
 jobs:
 

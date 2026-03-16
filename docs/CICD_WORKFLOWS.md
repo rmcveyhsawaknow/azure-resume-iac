@@ -172,11 +172,11 @@ az ad sp create-for-rbac \
 
 Record parameters:
 - `type: CNAME`
-- `name`: subdomain (e.g., `resume` or `asverify.resume`)
+- `name`: fully-qualified domain name (e.g., `resume.ryanmcvey.me` or `asverify.resume.ryanmcvey.me`)
 - `content`: Azure Storage static site endpoint domain
 - `proxied: true` for main records (enables Cloudflare CDN/TLS), `false` for `asverify` verification records
 
-This approach replaced the third-party `rez0n/create-dns-record` action to eliminate supply chain risk and "record already exists" error annotations.
+This approach replaced the third-party `rez0n/create-dns-record` action to eliminate supply chain risk and "record already exists" error annotations. The DNS logic is centralized in `scripts/cloudflare-dns-record.sh` and invoked from both dev and prod workflows.
 
 ## GitHub Environments
 

@@ -299,7 +299,9 @@ jobs:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
 
+    # Cache purge is best-effort — should not block a successful deployment.
     - name: Purge Cloudflare Cache
+      continue-on-error: true
       run: |
         HTTP_CODE=$(curl -sS -o /tmp/cf_response.json -w '%{http_code}' -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE }}/purge_cache" \
           -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_TOKEN }}" \

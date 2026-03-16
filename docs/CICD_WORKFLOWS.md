@@ -160,7 +160,8 @@ az ad sp create-for-rbac \
 | `CLOUDFLARE_ZONE` | Zone ID for `ryanmcvey.me` | Cloudflare Dashboard → select zone → Overview page → right sidebar "Zone ID" |
 
 **Cloudflare Token Permissions Required:**
-- Zone → DNS → Edit
+- Zone → DNS → Edit (for CNAME record creation)
+- Zone → Cache Purge → Purge (for cache invalidation after frontend deployment)
 - Scoped to the `ryanmcvey.me` zone
 
 **Cloudflare Action Used:** `rez0n/create-dns-record@v2.2` — creates CNAME records with these parameters:

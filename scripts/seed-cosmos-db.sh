@@ -99,20 +99,19 @@ generate_cosmos_auth_token() {
   local date_str="$4"
   local key="$5"
 
-  python3 -c "
-import hmac, hashlib, base64, urllib.parse
+  python3 - "$verb" "$resource_type" "$resource_link" "$date_str" "$key" <<'PYEOF'
+import hmac, hashlib, base64, urllib.parse, sys
 
-key   = base64.b64decode('${key}')
-text  = '${verb}'.lower() + '\n' + \
-        '${resource_type}'.lower() + '\n' + \
-        '${resource_link}' + '\n' + \
-        '${date_str}'.lower() + '\n' + '\n'
+verb, resource_type, resource_link, date_str, key_b64 = sys.argv[1:6]
+key   = base64.b64decode(key_b64)
+text  = (verb.lower() + '\n' + resource_type.lower() + '\n' +
+         resource_link + '\n' + date_str.lower() + '\n\n')
 body  = text.encode('utf-8')
 digest = hmac.new(key, body, hashlib.sha256).digest()
 sig    = base64.b64encode(digest).decode('utf-8')
 token  = urllib.parse.quote('type=master&ver=1.0&sig=' + sig)
 print(token)
-"
+PYEOF
 }
 
 COSMOS_ENDPOINT="https://${COSMOS_ACCOUNT_NAME}.documents.azure.com"

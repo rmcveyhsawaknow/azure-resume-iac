@@ -126,6 +126,12 @@ jobs:
   
   #                functionName=GetResumeCounter
   
+    - name: Seed Cosmos DB
+      env:
+        COSMOS_ACCOUNT_NAME: ${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
+        COSMOS_RESOURCE_GROUP: ${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+      run: bash scripts/seed-cosmos-db.sh
+
     - name: Bicep - Frontend
       uses: Azure/arm-deploy@v2
       with:

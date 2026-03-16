@@ -162,7 +162,7 @@ See: [Configure Azure credentials for GitHub Actions](https://learn.microsoft.co
 
 - Uncommented path-filter `if:` conditionals on deployment jobs (both dev and prod workflows)
 - Added `customDomainPrefix` env var for consistent domain/CORS construction
-- Pinned `dorny/paths-filter` and `rez0n/create-dns-record` to commit SHAs
+- Pinned `dorny/paths-filter` to commit SHA; replaced `rez0n/create-dns-record` with direct `curl` calls to Cloudflare API (check-before-create pattern)
 - Replaced `sleep 60s` DNS wait with `dig`-based retry loop (12 attempts × 10s)
 - Switched blob upload from `--auth-mode key` to `--auth-mode login`
 - Added Cloudflare cache purge step after frontend deployment

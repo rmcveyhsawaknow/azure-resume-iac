@@ -164,13 +164,19 @@ az ad sp create-for-rbac \
 - Zone → Cache Purge → Purge (for cache invalidation after frontend deployment)
 - Scoped to the `ryanmcvey.me` zone
 
-**Cloudflare Action Used:** `rez0n/create-dns-record@v2.2` — creates CNAME records with these parameters:
+**Cloudflare DNS Management:** DNS CNAME records are managed via direct `curl` calls to the Cloudflare API v4 using a check-before-create pattern:
+1. `GET /zones/{zone}/dns_records?type=CNAME&name={name}` — check if record exists
+2. If exists with correct content → skip (no error annotation)
+3. If exists with different content → log `::warning::` for operator review
+4. If missing → `POST /zones/{zone}/dns_records` to create
+
+Record parameters:
 - `type: CNAME`
-- `name`: subdomain (e.g., `resume` or `asverify.resume`)
+- `name`: fully-qualified domain name (e.g., `resume.ryanmcvey.me` or `asverify.resume.ryanmcvey.me`)
 - `content`: Azure Storage static site endpoint domain
 - `proxied: true` for main records (enables Cloudflare CDN/TLS), `false` for `asverify` verification records
 
-> **⚠️ Supply Chain Risk:** This third-party action is pinned to a mutable tag (`v2.2`), not a commit SHA. It runs with `CLOUDFLARE_TOKEN` and has DNS edit access. If the upstream tag is repointed to malicious code, an attacker could exfiltrate the token or hijack DNS records. **Remediation:** Pin the action to a specific commit SHA in all workflow files, or replace it with direct `curl` calls to the Cloudflare API.
+This approach replaced the third-party `rez0n/create-dns-record` action to eliminate supply chain risk and "record already exists" error annotations. The DNS logic is centralized in `scripts/cloudflare-dns-record.sh` and invoked from both dev and prod workflows.
 
 ## GitHub Environments
 

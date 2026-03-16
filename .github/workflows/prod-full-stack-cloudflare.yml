@@ -39,9 +39,9 @@ jobs:
       backendApp: ${{ steps.filter.outputs.backendApp }}
       frontendSite: ${{ steps.filter.outputs.frontendSite }}
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     # Checkout is required because dorny/paths-filter needs the repository contents (this workflow runs on push events).
-    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+    - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
       id: filter
       with:
         filters: |
@@ -60,7 +60,7 @@ jobs:
       name: production
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Azure Login
       uses: Azure/login@v2
       with:
@@ -176,32 +176,29 @@ jobs:
       run: echo "${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}"
    
 
-    # Idempotency: continue-on-error handles pre-existing DNS records.
-    # These are create-only; if the CNAME target changes, update manually via Cloudflare Dashboard or API.
+    # DNS records: check-before-create pattern using Cloudflare API via shared script.
+    # See scripts/cloudflare-dns-record.sh for implementation details.
     - name: Cloudflare - Frontend DNS
       continue-on-error: true
-      uses: rez0n/create-dns-record@6ed7986dfe67b8da8b79c3c1c38acf35dead112f # v2.2
-      with:
-        type: "CNAME"
-        name: ${{env.customDomainPrefix}}
-        content: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-        ttl: 1
-        proxied: true
-        token: ${{ secrets.CLOUDFLARE_TOKEN }}
-        zone: ${{ secrets.CLOUDFLARE_ZONE }}
+      env:
+        CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+        CF_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        RECORD_TYPE: CNAME
+        RECORD_NAME: ${{env.customDomainPrefix}}.${{env.dnsZone}}
+        RECORD_CONTENT: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
+        RECORD_PROXIED: "true"
+      run: bash scripts/cloudflare-dns-record.sh
 
-    
     - name: Cloudflare - Frontend DNS Verify
       continue-on-error: true
-      uses: rez0n/create-dns-record@6ed7986dfe67b8da8b79c3c1c38acf35dead112f # v2.2
-      with:
-        type: "CNAME"
-        name: asverify.${{env.customDomainPrefix}}
-        content: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-        ttl: 1
-        proxied: false
-        token: ${{ secrets.CLOUDFLARE_TOKEN }}
-        zone: ${{ secrets.CLOUDFLARE_ZONE }}
+      env:
+        CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+        CF_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        RECORD_TYPE: CNAME
+        RECORD_NAME: asverify.${{env.customDomainPrefix}}.${{env.dnsZone}}
+        RECORD_CONTENT: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
+        RECORD_PROXIED: "false"
+      run: bash scripts/cloudflare-dns-record.sh
     ### static site #1 - End
 
 
@@ -238,7 +235,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 'Login via Azure CLI'
       uses: Azure/login@v2
@@ -246,7 +243,7 @@ jobs:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}  
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -278,7 +275,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: 'Login via Azure CLI'
       uses: Azure/login@v2

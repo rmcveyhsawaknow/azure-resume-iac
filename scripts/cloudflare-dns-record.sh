@@ -15,7 +15,7 @@
 set -euo pipefail
 
 TMPDIR_CF=$(mktemp -d)
-trap 'rm -rf "$TMPDIR_CF"' EXIT
+trap 'rm -rf -- "$TMPDIR_CF"' EXIT
 
 API_BASE="https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/dns_records"
 AUTH_HEADER="Authorization: Bearer ${CF_TOKEN}"
@@ -46,11 +46,12 @@ COUNT=$(jq '.result | length' "${TMPDIR_CF}/get.json")
 
 if [ "$COUNT" -gt 0 ]; then
   CURRENT=$(jq -r '.result[0].content' "${TMPDIR_CF}/get.json")
-  if [ "$CURRENT" = "$RECORD_CONTENT" ]; then
-    echo "✅ DNS record ${RECORD_NAME} already exists with correct content"
+  CURRENT_PROXIED=$(jq -r '.result[0].proxied' "${TMPDIR_CF}/get.json")
+  if [ "$CURRENT" = "$RECORD_CONTENT" ] && [ "$CURRENT_PROXIED" = "$RECORD_PROXIED" ]; then
+    echo "✅ DNS record ${RECORD_NAME} already exists with correct content and proxy setting"
     exit 0
   else
-    echo "::warning::DNS record ${RECORD_NAME} exists but content differs (current: ${CURRENT}, expected: ${RECORD_CONTENT})"
+    echo "::warning::DNS record ${RECORD_NAME} exists but differs (content: ${CURRENT} vs ${RECORD_CONTENT}, proxied: ${CURRENT_PROXIED} vs ${RECORD_PROXIED})"
     exit 1
   fi
 fi

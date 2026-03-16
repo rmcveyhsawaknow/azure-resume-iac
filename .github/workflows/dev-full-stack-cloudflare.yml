@@ -181,57 +181,29 @@ jobs:
       run: echo "${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}"
    
 
-    # DNS records: check-before-create pattern using Cloudflare API directly.
-    # If the record exists with the correct content, skip. If it exists with different content, warn. If missing, create.
+    # DNS records: check-before-create pattern using Cloudflare API via shared script.
+    # See scripts/cloudflare-dns-record.sh for implementation details.
     - name: Cloudflare - Frontend DNS
       continue-on-error: true
       env:
         CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         CF_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        RECORD_TYPE: CNAME
         RECORD_NAME: ${{env.customDomainPrefix}}.${{env.dnsZone}}
         RECORD_CONTENT: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-      run: |
-        EXISTING=$(curl -sf -X GET "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/dns_records?type=CNAME&name=${RECORD_NAME}" \
-          -H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json")
-        COUNT=$(echo "$EXISTING" | jq '.result | length')
-        if [ "$COUNT" -gt 0 ]; then
-          CURRENT=$(echo "$EXISTING" | jq -r '.result[0].content')
-          if [ "$CURRENT" = "$RECORD_CONTENT" ]; then
-            echo "✅ DNS record ${RECORD_NAME} already exists with correct content"
-          else
-            echo "::warning::DNS record ${RECORD_NAME} exists but content differs (current: ${CURRENT}, expected: ${RECORD_CONTENT})"
-          fi
-        else
-          echo "Creating DNS record ${RECORD_NAME} → ${RECORD_CONTENT}"
-          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/dns_records" \
-            -H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json" \
-            --data '{"type":"CNAME","name":"'"${RECORD_NAME}"'","content":"'"${RECORD_CONTENT}"'","ttl":1,"proxied":true}' | jq .
-        fi
+        RECORD_PROXIED: "true"
+      run: bash scripts/cloudflare-dns-record.sh
 
     - name: Cloudflare - Frontend DNS Verify
       continue-on-error: true
       env:
         CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         CF_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        RECORD_TYPE: CNAME
         RECORD_NAME: asverify.${{env.customDomainPrefix}}.${{env.dnsZone}}
         RECORD_CONTENT: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-      run: |
-        EXISTING=$(curl -sf -X GET "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/dns_records?type=CNAME&name=${RECORD_NAME}" \
-          -H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json")
-        COUNT=$(echo "$EXISTING" | jq '.result | length')
-        if [ "$COUNT" -gt 0 ]; then
-          CURRENT=$(echo "$EXISTING" | jq -r '.result[0].content')
-          if [ "$CURRENT" = "$RECORD_CONTENT" ]; then
-            echo "✅ DNS record ${RECORD_NAME} already exists with correct content"
-          else
-            echo "::warning::DNS record ${RECORD_NAME} exists but content differs (current: ${CURRENT}, expected: ${RECORD_CONTENT})"
-          fi
-        else
-          echo "Creating DNS record ${RECORD_NAME} → ${RECORD_CONTENT}"
-          curl -sf -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/dns_records" \
-            -H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json" \
-            --data '{"type":"CNAME","name":"'"${RECORD_NAME}"'","content":"'"${RECORD_CONTENT}"'","ttl":1,"proxied":false}' | jq .
-        fi
+        RECORD_PROXIED: "false"
+      run: bash scripts/cloudflare-dns-record.sh
     ### static site #1 - End
 
     - name: Wait for DNS Propagation

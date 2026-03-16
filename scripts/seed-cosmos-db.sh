@@ -153,8 +153,8 @@ if [ "$GET_HTTP" -eq 200 ]; then
   if [ -z "$DOC_COUNT" ]; then
     echo "::warning::Document 'count' field is missing"
     VALID=false
-  elif ! [[ "$DOC_COUNT" =~ ^-?[0-9]+$ ]]; then
-    echo "::warning::Document 'count' field is not a valid integer: '${DOC_COUNT}'"
+  elif ! [[ "$DOC_COUNT" =~ ^[0-9]+$ ]]; then
+    echo "::warning::Document 'count' field is not a valid non-negative integer: '${DOC_COUNT}'"
     VALID=false
   fi
 

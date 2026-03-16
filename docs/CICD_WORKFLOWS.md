@@ -178,6 +178,37 @@ Record parameters:
 
 This approach replaced the third-party `rez0n/create-dns-record` action to eliminate supply chain risk and "record already exists" error annotations. The DNS logic is centralized in `scripts/cloudflare-dns-record.sh` and invoked from both dev and prod workflows.
 
+## Cosmos DB Seed
+
+After the Bicep backend deployment creates the Cosmos DB account, database, and container, the workflow runs `scripts/seed-cosmos-db.sh` to ensure the visitor counter document exists. This follows the same check-before-create pattern as the DNS script:
+
+1. Verify the Cosmos DB account exists via `az cosmosdb show`
+2. Retrieve the account primary key via `az cosmosdb keys list`
+3. Query the Cosmos DB REST API for document `id=1` in the `Counter` container
+4. If the document exists → validate its structure (`id` and `count` fields)
+5. If the document is missing → create it with `{ "id": "1", "count": 0 }`
+6. Handle race conditions (HTTP 409) gracefully
+
+The script uses environment variables set in the workflow:
+
+| Variable | Description | Default |
+|---|---|---|
+| `COSMOS_ACCOUNT_NAME` | Cosmos DB account name | *(required)* |
+| `COSMOS_RESOURCE_GROUP` | Resource group for the account | *(required)* |
+| `COSMOS_DATABASE_NAME` | Database name | `azure-resume-click-count` |
+| `COSMOS_CONTAINER_NAME` | Container name | `Counter` |
+| `COSMOS_DOCUMENT_ID` | Document ID | `1` |
+| `COSMOS_INITIAL_COUNT` | Initial counter value | `0` |
+
+The defaults match `CosmosConstants.cs` in the backend application. For manual use outside of CI/CD:
+
+```bash
+az login
+export COSMOS_ACCOUNT_NAME=cus1-resume-dev-v1-cmsdb
+export COSMOS_RESOURCE_GROUP=cus1-resume-be-dev-v1-rg
+bash scripts/seed-cosmos-db.sh
+```
+
 ## GitHub Environments
 
 The workflows reference two GitHub environments that can be configured with protection rules:

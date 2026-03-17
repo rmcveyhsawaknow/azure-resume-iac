@@ -232,8 +232,12 @@ jobs:
             MAIN_RESOLVED=true
             break
           fi
-          echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
-          sleep ${SLEEP_SECONDS}
+          if [ "$i" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
+            sleep ${SLEEP_SECONDS}
+          else
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved."
+          fi
         done
         if [ "$MAIN_RESOLVED" != "true" ]; then
           echo "::warning::Main DNS ${DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
@@ -247,8 +251,12 @@ jobs:
             ASVERIFY_RESOLVED=true
             break
           fi
-          echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
-          sleep ${SLEEP_SECONDS}
+          if [ "$i" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
+            sleep ${SLEEP_SECONDS}
+          else
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved."
+          fi
         done
         if [ "$ASVERIFY_RESOLVED" != "true" ]; then
           echo "::warning::asverify DNS ${ASVERIFY_DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"

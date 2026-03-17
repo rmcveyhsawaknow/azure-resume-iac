@@ -27,6 +27,10 @@
 #   1  Missing required variables or error during cleanup
 set -euo pipefail
 
+# Temp file for Cloudflare API calls — cleaned up on exit
+TMPFILE=$(mktemp)
+trap 'rm -f "$TMPFILE"' EXIT
+
 ##############################################################################
 # Argument parsing
 ##############################################################################
@@ -74,8 +78,8 @@ echo ""
 echo "🔍 Discovering Azure resource groups..."
 
 # Use az group list with a JMESPath query that matches our naming convention
-# Match resource groups following the convention: {locationCode}-*{appName}*-{environment}-{version}-rg
-# Uses a regex-like JMESPath query to validate the full naming pattern
+# Match resource groups following the convention: {locationCode}-{appName}-*-{environment}-{version}-rg
+# Uses a JMESPath query to validate the naming pattern
 RESOURCE_GROUPS=$(az group list \
   --query "[?starts_with(name, '${STACK_LOCATION_CODE}-') && contains(name, '${APP_NAME}') && ends_with(name, '-${STACK_ENVIRONMENT}-${STACK_VERSION}-rg')].{name:name, location:location, state:properties.provisioningState}" \
   --output json 2>/dev/null || echo "[]")
@@ -125,9 +129,6 @@ if [ -n "${CF_TOKEN:-}" ] && [ -n "${CF_ZONE:-}" ] && [ -n "${CUSTOM_DOMAIN_PREF
   AUTH_HEADER="Authorization: Bearer ${CF_TOKEN}"
 
   # Search for main CNAME and asverify CNAME
-  TMPFILE=$(mktemp)
-  trap 'rm -f "$TMPFILE"' EXIT
-
   HTTP_CODE=$(curl -sS -o "$TMPFILE" -w '%{http_code}' -X GET \
     "${API_BASE}?name=${SEARCH_NAME}" \
     -H "${AUTH_HEADER}" -H "Content-Type: application/json")

@@ -225,24 +225,34 @@ jobs:
         SLEEP_SECONDS=10
 
         echo "Waiting for main DNS to resolve: ${DOMAIN}"
+        MAIN_RESOLVED=false
         for i in $(seq 1 ${MAX_ATTEMPTS}); do
           if dig +short "${DOMAIN}" | grep -q '.'; then
             echo "✅ Main DNS resolved after $((i * SLEEP_SECONDS))s"
+            MAIN_RESOLVED=true
             break
           fi
           echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
           sleep ${SLEEP_SECONDS}
         done
+        if [ "$MAIN_RESOLVED" != "true" ]; then
+          echo "::warning::Main DNS ${DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
+        fi
 
         echo "Waiting for asverify DNS to resolve: ${ASVERIFY_DOMAIN}"
+        ASVERIFY_RESOLVED=false
         for i in $(seq 1 ${MAX_ATTEMPTS}); do
           if dig +short "${ASVERIFY_DOMAIN}" | grep -q '.'; then
             echo "✅ asverify DNS resolved after $((i * SLEEP_SECONDS))s"
+            ASVERIFY_RESOLVED=true
             break
           fi
           echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
           sleep ${SLEEP_SECONDS}
         done
+        if [ "$ASVERIFY_RESOLVED" != "true" ]; then
+          echo "::warning::asverify DNS ${ASVERIFY_DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
+        fi
 
     ### static site #1 - custom domain
     # Retry loop: Azure validates domain ownership via the asverify CNAME.

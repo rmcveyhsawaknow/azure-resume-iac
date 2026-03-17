@@ -211,14 +211,47 @@ bash scripts/seed-cosmos-db.sh
 
 ## GitHub Environments
 
-The workflows reference two GitHub environments that can be configured with protection rules:
+The workflows reference two GitHub environments configured with protection rules:
 
 | Environment | Used By | Purpose |
 |---|---|---|
 | `production` | prod-full-stack-cloudflare, prod-full-stack-azureCDN | Production deployment approval gate |
 | `development` | dev-full-stack-cloudflare, dev-full-stack-azureCDN | Development deployment approval gate |
 
-These can be configured in GitHub → Settings → Environments to require reviewers, wait timers, or restrict to specific branches.
+### Environment Protection Rules
+
+| Setting | Production | Development |
+|---|---|---|
+| Required reviewers | `rmcveyhsawaknow` (1 reviewer) | None |
+| Wait timer | 5 minutes | None |
+| Deployment branches | `main` only | `develop` only |
+
+### Branch Protection Rules
+
+| Setting | `main` | `develop` |
+|---|---|---|
+| Require PR before merging | ✅ (1 approval) | ✅ (1 approval) |
+| Require code owner reviews | ❌ (allows admin self-merge) | ❌ (allows admin self-merge) |
+| Enforce admins | ❌ (admin bypass enabled) | ❌ (admin bypass enabled) |
+| Require conversation resolution | ✅ | ✅ |
+| Allow force pushes | ❌ | ❌ |
+| Allow deletions | ❌ | ❌ |
+
+> **Note:** "Enforce admins: off" allows the repository owner to bypass the review requirement when needed (self-authored PRs). For Copilot-authored PRs, the owner provides normal review approval.
+
+### Configuration
+
+Protection rules can be configured manually (GitHub → Settings → Environments / Branches) or programmatically:
+
+```bash
+# Assess current state (dry run)
+bash scripts/configure-repo-protection.sh --dry-run
+
+# Apply all protection rules
+bash scripts/configure-repo-protection.sh --reviewer rmcveyhsawaknow
+```
+
+See [ENVIRONMENT_BRANCH_PROTECTION.md](ENVIRONMENT_BRANCH_PROTECTION.md) for detailed click-through instructions and script documentation.
 
 ## Credential Verification Checklist
 

@@ -216,7 +216,7 @@ The workflows reference two GitHub environments configured with protection rules
 | Environment | Used By | Purpose |
 |---|---|---|
 | `production` | prod-full-stack-cloudflare, prod-full-stack-azureCDN | Production deployment approval gate |
-| `development` | dev-full-stack-cloudflare, dev-full-stack-azureCDN | Development deployment approval gate |
+| `development` | dev-full-stack-cloudflare, dev-full-stack-azureCDN | Development deployment branch restriction |
 
 ### Environment Protection Rules
 

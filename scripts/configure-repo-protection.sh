@@ -25,7 +25,7 @@
 #   -h, --help          Show usage
 #
 # Prerequisites:
-#   - gh CLI authenticated with admin scope
+#   - gh CLI authenticated with 'repo' scope (verify with: gh auth status -t)
 #   - jq installed
 #   - Repository admin permissions
 
@@ -87,18 +87,31 @@ subhead() { echo -e "${BOLD}--- $1 ---${NC}"; }
 # Parse Arguments
 # =============================================================================
 
+require_arg() {
+  if [[ $# -lt 2 || -z "${2:-}" ]]; then
+    fail "Option '$1' requires a value."
+    usage
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run)        DRY_RUN=true; shift ;;
-    --reviewer)       REVIEWER="$2"; shift 2 ;;
-    --repo)           REPO="$2"; shift 2 ;;
-    --wait-timer)     WAIT_TIMER="$2"; shift 2 ;;
+    --reviewer)       require_arg "$1" "${2:-}"; REVIEWER="$2"; shift 2 ;;
+    --repo)           require_arg "$1" "${2:-}"; REPO="$2"; shift 2 ;;
+    --wait-timer)     require_arg "$1" "${2:-}"; WAIT_TIMER="$2"; shift 2 ;;
     --skip-branch)    SKIP_BRANCH=true; shift ;;
     --skip-environment) SKIP_ENVIRONMENT=true; shift ;;
     -h|--help)        usage ;;
     *)                echo "Unknown option: $1"; usage ;;
   esac
 done
+
+# Validate wait timer is a non-negative integer
+if ! [[ "$WAIT_TIMER" =~ ^[0-9]+$ ]]; then
+  fail "--wait-timer must be a non-negative integer, got: '$WAIT_TIMER'"
+  exit 1
+fi
 
 # =============================================================================
 # Prerequisite Checks
@@ -115,7 +128,8 @@ done
 success "Required tools found (gh, jq)"
 
 if ! gh auth status &>/dev/null; then
-  fail "GitHub CLI not authenticated. Run: gh auth login --scopes admin:org,repo"
+  fail "GitHub CLI not authenticated. Run: gh auth login --scopes repo"
+  fail "Verify scopes with: gh auth status -t"
   exit 1
 fi
 GH_USER=$(gh api user --jq .login 2>/dev/null || echo "unknown")
@@ -203,10 +217,13 @@ capture_branch_protection_state() {
   local output_file="$2"
 
   local protection_data
-  protection_data=$(gh api "repos/${REPO}/branches/${branch}/protection" 2>/dev/null || echo '{"error": "not found"}')
+  local api_exit_code=0
+  protection_data=$(gh api "repos/${REPO}/branches/${branch}/protection" 2>/dev/null) || api_exit_code=$?
 
-  if echo "$protection_data" | jq -e '.message' &>/dev/null; then
-    echo '{"exists": false, "message": "'"$(echo "$protection_data" | jq -r '.message // "not configured"')"'"}' > "$output_file"
+  if [[ "$api_exit_code" -ne 0 ]] || echo "$protection_data" | jq -e '.message // .error' &>/dev/null; then
+    local err_msg
+    err_msg=$(echo "$protection_data" | jq -r '.message // .error // "not configured"' 2>/dev/null || echo "API call failed (exit code: $api_exit_code)")
+    echo '{"exists": false, "message": "'"$err_msg"'"}' > "$output_file"
     return
   fi
 

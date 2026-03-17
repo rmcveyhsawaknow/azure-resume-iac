@@ -74,8 +74,10 @@ echo ""
 echo "🔍 Discovering Azure resource groups..."
 
 # Use az group list with a JMESPath query that matches our naming convention
+# Match resource groups following the convention: {locationCode}-*{appName}*-{environment}-{version}-rg
+# Uses a regex-like JMESPath query to validate the full naming pattern
 RESOURCE_GROUPS=$(az group list \
-  --query "[?starts_with(name, '${STACK_LOCATION_CODE}') && contains(name, '${STACK_ENVIRONMENT}') && contains(name, '${STACK_VERSION}')].{name:name, location:location, state:properties.provisioningState}" \
+  --query "[?starts_with(name, '${STACK_LOCATION_CODE}-') && contains(name, '${APP_NAME}') && ends_with(name, '-${STACK_ENVIRONMENT}-${STACK_VERSION}-rg')].{name:name, location:location, state:properties.provisioningState}" \
   --output json 2>/dev/null || echo "[]")
 
 RG_COUNT=$(echo "$RESOURCE_GROUPS" | jq 'length')
@@ -149,7 +151,7 @@ if [ -n "${CF_TOKEN:-}" ] && [ -n "${CF_ZONE:-}" ] && [ -n "${CUSTOM_DOMAIN_PREF
     echo "  ⚠️  Failed to query asverify DNS records (HTTP ${HTTP_CODE})"
   fi
 
-  CF_RECORDS=$(echo "[$MAIN_RECORDS, $ASVERIFY_RECORDS]" | jq 'flatten')
+  CF_RECORDS=$(jq -s 'add' <(echo "$MAIN_RECORDS") <(echo "$ASVERIFY_RECORDS"))
   CF_COUNT=$(echo "$CF_RECORDS" | jq 'length')
 
   if [ "$CF_COUNT" -eq 0 ]; then

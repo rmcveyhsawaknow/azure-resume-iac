@@ -65,6 +65,42 @@ When working with GitHub Actions workflows (`.github/workflows/`):
 - Use `continue-on-error: true` for DNS record creation (idempotent, may already exist)
 - Production deploys from `main` branch, development from `develop` branch
 
+## Blue/Green Deployment Strategy
+
+Both dev and prod tiers use a blue/green deployment pattern where each new major version deploys a **complete, isolated stack** (new resource groups, Cosmos DB, Key Vault, Function App, Storage Account, Cloudflare DNS records). Old stacks are never updated in place — they are replaced and then cleaned up.
+
+### Source of truth
+
+The `stackVersion` env var in each workflow file determines which stack is "live":
+
+| Tier | Workflow | `stackVersion` | `customDomainPrefix` | Public URL |
+|---|---|---|---|---|
+| Dev | `.github/workflows/dev-full-stack-cloudflare.yml` | e.g. `v10` | `resumedev` | `resumedev.ryanmcvey.me` |
+| Prod | `.github/workflows/prod-full-stack-cloudflare.yml` | e.g. `v1` | `resume` | `resume.ryanmcvey.me` |
+
+- `stackVersion` is embedded in all resource names: `{locationCode}-{appName}-{tier}-{environment}-{version}-{resourceType}`
+- `customDomainPrefix` controls the public DNS name and stays **stable** across version swaps — the DNS CNAME re-points to the new storage account automatically
+
+### Blue/green swap procedure
+
+1. Bump `stackVersion` in the workflow file to the new version (e.g. `v10` → `v11`)
+2. Keep `customDomainPrefix` unchanged — DNS re-points during deploy
+3. Merge to the trigger branch (`develop` for dev, `main` for prod) — deploys a new stack from scratch
+4. Validate the new stack end-to-end (frontend loads, counter API works, no console errors)
+5. Inventory the old stack: `scripts/cleanup-stack.sh --inventory --json-output artifacts/inventory-<env>-<oldVersion>.json`
+6. Purge the old stack: `scripts/cleanup-stack.sh --purge`
+
+### Stack cleanup script
+
+`scripts/cleanup-stack.sh` discovers and optionally destroys Azure resource groups and Cloudflare DNS records for a given stack version:
+
+- `--inventory` — list resources only
+- `--purge [--yes]` — delete resources (interactive confirmation unless `--yes`)
+- `--json-output <path>` — write structured JSON artifact for audit/traceability
+
+Required env vars: `STACK_ENVIRONMENT`, `STACK_VERSION`, `STACK_LOCATION_CODE`, `APP_NAME`
+Optional (for DNS cleanup): `CF_TOKEN`, `CF_ZONE`, `DNS_ZONE`, `CUSTOM_DOMAIN_PREFIX`
+
 ## Frontend (Static Site)
 
 Reference: [awesome-copilot JavaScript instructions](https://github.com/github/awesome-copilot/tree/main/instructions)

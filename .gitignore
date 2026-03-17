@@ -29,6 +29,9 @@ local.settings.json
 # Assessment output (generated during codespace sessions)
 assessment-output/
 
+# Inventory/purge artifacts (generated, not committed)
+artifacts/*.json
+
 # OS files
 .DS_Store
 Thumbs.db

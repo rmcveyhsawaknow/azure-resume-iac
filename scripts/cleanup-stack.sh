@@ -253,9 +253,11 @@ if [ "$RG_COUNT" -gt 0 ]; then
   echo "  Waiting for resource group deletions to complete..."
   for rg in $(echo "$RESOURCE_GROUPS" | jq -r '.[].name'); do
     echo "  Waiting on: ${rg}..."
-    az group wait --name "$rg" --deleted --timeout 600 2>/dev/null || \
+    if az group wait --name "$rg" --deleted --timeout 600 2>/dev/null; then
+      echo "  ✅ ${rg} deleted"
+    else
       echo "  ⚠️  Timed out or error waiting for ${rg}"
-    echo "  ✅ ${rg} deleted"
+    fi
   done
 fi
 

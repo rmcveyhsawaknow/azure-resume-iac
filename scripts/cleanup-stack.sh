@@ -146,7 +146,7 @@ if [ -n "${CF_TOKEN:-}" ] && [ -n "${CF_ZONE:-}" ] && [ -n "${CUSTOM_DOMAIN_PREF
 
   # Search for main CNAME and asverify CNAME
   HTTP_CODE=$(curl -sS -o "$TMPFILE" -w '%{http_code}' -X GET \
-    "${API_BASE}?name=${SEARCH_NAME}" \
+    "${API_BASE}?type=CNAME&name=${SEARCH_NAME}" \
     -H "${AUTH_HEADER}" -H "Content-Type: application/json")
 
   if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
@@ -158,7 +158,7 @@ if [ -n "${CF_TOKEN:-}" ] && [ -n "${CF_ZONE:-}" ] && [ -n "${CUSTOM_DOMAIN_PREF
 
   # Also search for asverify records
   HTTP_CODE=$(curl -sS -o "$TMPFILE" -w '%{http_code}' -X GET \
-    "${API_BASE}?name=asverify.${SEARCH_NAME}" \
+    "${API_BASE}?type=CNAME&name=asverify.${SEARCH_NAME}" \
     -H "${AUTH_HEADER}" -H "Content-Type: application/json")
 
   if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then

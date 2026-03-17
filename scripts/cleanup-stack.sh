@@ -97,7 +97,7 @@ echo "🔍 Discovering Azure resource groups..."
 # Match resource groups following the convention: {locationCode}-{appName}-*-{environment}-{version}-rg
 # Uses a JMESPath query to validate the naming pattern
 RESOURCE_GROUPS=$(az group list \
-  --query "[?starts_with(name, '${STACK_LOCATION_CODE}-') && contains(name, '${APP_NAME}') && ends_with(name, '-${STACK_ENVIRONMENT}-${STACK_VERSION}-rg')].{name:name, location:location, state:properties.provisioningState}" \
+  --query "[?starts_with(name, '${STACK_LOCATION_CODE}-${APP_NAME}-') && ends_with(name, '-${STACK_ENVIRONMENT}-${STACK_VERSION}-rg')].{name:name, location:location, state:properties.provisioningState}" \
   --output json 2>/dev/null || echo "[]")
 
 RG_COUNT=$(echo "$RESOURCE_GROUPS" | jq 'length')

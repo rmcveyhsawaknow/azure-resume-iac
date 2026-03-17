@@ -166,7 +166,7 @@ capture_environment_state() {
   local env_data
   env_data=$(gh api "repos/${REPO}/environments/${env_name}" 2>/dev/null || echo '{"error": "not found"}')
 
-  if echo "$env_data" | jq -e '.error' &>/dev/null 2>&1; then
+  if echo "$env_data" | jq -e '.error' &>/dev/null; then
     echo '{"exists": false}' > "$output_file"
     return
   fi
@@ -205,7 +205,7 @@ capture_branch_protection_state() {
   local protection_data
   protection_data=$(gh api "repos/${REPO}/branches/${branch}/protection" 2>/dev/null || echo '{"error": "not found"}')
 
-  if echo "$protection_data" | jq -e '.message' &>/dev/null 2>&1; then
+  if echo "$protection_data" | jq -e '.message' &>/dev/null; then
     echo '{"exists": false, "message": "'"$(echo "$protection_data" | jq -r '.message // "not configured"')"'"}' > "$output_file"
     return
   fi

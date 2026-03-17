@@ -39,9 +39,25 @@ AUTO_CONFIRM=false
 
 for arg in "$@"; do
   case "$arg" in
-    --inventory) ACTION="inventory" ;;
-    --purge)     ACTION="purge" ;;
-    --yes)       AUTO_CONFIRM=true ;;
+    --inventory)
+      if [ -n "$ACTION" ] && [ "$ACTION" != "inventory" ]; then
+        echo "Error: Cannot specify both --inventory and --purge"
+        echo "Usage: $0 --inventory | --purge [--yes]"
+        exit 1
+      fi
+      ACTION="inventory"
+      ;;
+    --purge)
+      if [ -n "$ACTION" ] && [ "$ACTION" != "purge" ]; then
+        echo "Error: Cannot specify both --inventory and --purge"
+        echo "Usage: $0 --inventory | --purge [--yes]"
+        exit 1
+      fi
+      ACTION="purge"
+      ;;
+    --yes)
+      AUTO_CONFIRM=true
+      ;;
     *)
       echo "Unknown argument: $arg"
       echo "Usage: $0 --inventory | --purge [--yes]"

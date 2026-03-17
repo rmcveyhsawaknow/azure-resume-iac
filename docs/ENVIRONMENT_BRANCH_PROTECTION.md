@@ -126,12 +126,12 @@ For development, required reviewers are **not recommended** (to keep iteration s
 
 8. **Do NOT** check "Require linear history" (optional, allows merge commits)
 
-9. Check ✅ **Include administrators** — **Leave UNCHECKED**
+9. **Include administrators** — leave this **UNCHECKED**
    - ⚠️ **Important:** Leaving this unchecked allows repo admins (you) to bypass the rule when needed. Since you're the sole contributor, you need the ability to self-approve and merge.
 
-10. Check ✅ **Allow force pushes** — **Leave UNCHECKED** (protect history)
+10. **Allow force pushes** — leave this **UNCHECKED** (protect history)
 
-11. Check ✅ **Allow deletions** — **Leave UNCHECKED** (protect branch)
+11. **Allow deletions** — leave this **UNCHECKED** (protect branch)
 
 12. Click **Create** (or **Save changes**)
 
@@ -139,8 +139,8 @@ For development, required reviewers are **not recommended** (to keep iteration s
 
 Since you are the sole contributor:
 
-- GitHub **does not** allow the PR author to approve their own PR by default
-- However, as a **repository admin** with "Include administrators" **unchecked**, you can bypass the review requirement and merge directly
+- The PR author can submit an approval on their own PR, but it **does not count** toward the required approval threshold
+- However, as a **repository admin** with "Include administrators" **unchecked**, you can bypass the review requirement and merge directly regardless
 - For Copilot-authored PRs, you (as non-author) can provide the required review approval normally
 
 ---
@@ -213,7 +213,8 @@ bash scripts/configure-repo-protection.sh --repo rmcveyhsawaknow/azure-resume-ia
 
 ### Prerequisites
 
-- `gh` CLI authenticated with `admin` scope: `gh auth login --scopes admin:org,repo`
+- `gh` CLI authenticated with `repo` scope: `gh auth login --scopes repo`
+  - Verify with: `gh auth status -t`
 - Repository admin permissions
 - `jq` installed for JSON processing
 

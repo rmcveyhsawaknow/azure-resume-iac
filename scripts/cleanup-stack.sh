@@ -6,6 +6,7 @@
 #   bash scripts/cleanup-stack.sh --inventory          # List resources only
 #   bash scripts/cleanup-stack.sh --purge              # Delete after confirmation
 #   bash scripts/cleanup-stack.sh --purge --yes        # Skip confirmation prompt
+#   bash scripts/cleanup-stack.sh --inventory --json-output inventory.json
 #
 # Required environment variables:
 #   STACK_ENVIRONMENT   Stack environment to clean (e.g., dev, prod)
@@ -36,13 +37,15 @@ trap 'rm -f "$TMPFILE"' EXIT
 ##############################################################################
 ACTION=""
 AUTO_CONFIRM=false
+JSON_OUTPUT=""
 
-for arg in "$@"; do
-  case "$arg" in
+args=("$@")
+for ((i=0; i<${#args[@]}; i++)); do
+  case "${args[$i]}" in
     --inventory)
       if [ -n "$ACTION" ] && [ "$ACTION" != "inventory" ]; then
         echo "Error: Cannot specify both --inventory and --purge"
-        echo "Usage: $0 --inventory | --purge [--yes]"
+        echo "Usage: $0 --inventory | --purge [--yes] [--json-output <path>]"
         exit 1
       fi
       ACTION="inventory"
@@ -50,7 +53,7 @@ for arg in "$@"; do
     --purge)
       if [ -n "$ACTION" ] && [ "$ACTION" != "purge" ]; then
         echo "Error: Cannot specify both --inventory and --purge"
-        echo "Usage: $0 --inventory | --purge [--yes]"
+        echo "Usage: $0 --inventory | --purge [--yes] [--json-output <path>]"
         exit 1
       fi
       ACTION="purge"
@@ -58,16 +61,24 @@ for arg in "$@"; do
     --yes)
       AUTO_CONFIRM=true
       ;;
+    --json-output)
+      i=$((i+1))
+      if [ $i -ge ${#args[@]} ]; then
+        echo "Error: --json-output requires a file path argument"
+        exit 1
+      fi
+      JSON_OUTPUT="${args[$i]}"
+      ;;
     *)
-      echo "Unknown argument: $arg"
-      echo "Usage: $0 --inventory | --purge [--yes]"
+      echo "Unknown argument: ${args[$i]}"
+      echo "Usage: $0 --inventory | --purge [--yes] [--json-output <path>]"
       exit 1
       ;;
   esac
 done
 
 if [ -z "$ACTION" ]; then
-  echo "Usage: $0 --inventory | --purge [--yes]"
+  echo "Usage: $0 --inventory | --purge [--yes] [--json-output <path>]"
   exit 1
 fi
 
@@ -113,6 +124,9 @@ echo ""
 ##############################################################################
 # Step 2 — Inventory resources within each resource group
 ##############################################################################
+# Build an array of {name, location, state, resources:[...]} for JSON output
+RG_DETAILS="[]"
+
 if [ "$RG_COUNT" -gt 0 ]; then
   echo "📦 Resources within matched resource groups:"
   for rg in $(echo "$RESOURCE_GROUPS" | jq -r '.[].name'); do
@@ -127,6 +141,13 @@ if [ "$RG_COUNT" -gt 0 ]; then
     else
       echo "$RESOURCES" | jq -r '.[] | "    • \(.type) / \(.name) (\(.kind // "—"))"'
     fi
+
+    # Merge resource details into the RG entry for JSON output
+    RG_LOCATION=$(echo "$RESOURCE_GROUPS" | jq -r --arg rg "$rg" '.[] | select(.name == $rg) | .location')
+    RG_STATE=$(echo "$RESOURCE_GROUPS" | jq -r --arg rg "$rg" '.[] | select(.name == $rg) | .state')
+    RG_ENTRY=$(jq -n --arg name "$rg" --arg location "$RG_LOCATION" --arg state "$RG_STATE" --argjson resources "$RESOURCES" \
+      '{name: $name, location: $location, state: $state, resources: $resources}')
+    RG_DETAILS=$(echo "$RG_DETAILS" | jq --argjson entry "$RG_ENTRY" '. + [$entry]')
   done
   echo ""
 fi
@@ -192,6 +213,40 @@ echo "============================================================"
 echo "  Azure Resource Groups: ${RG_COUNT}"
 echo "  Cloudflare DNS Records: ${CF_COUNT}"
 echo ""
+
+##############################################################################
+# Step 4b — Write JSON artifact (if --json-output was specified)
+##############################################################################
+if [ -n "$JSON_OUTPUT" ]; then
+  # Ensure the output directory exists
+  JSON_DIR=$(dirname "$JSON_OUTPUT")
+  if [ -n "$JSON_DIR" ] && [ "$JSON_DIR" != "." ]; then
+    mkdir -p "$JSON_DIR"
+  fi
+
+  jq -n \
+    --arg env "$STACK_ENVIRONMENT" \
+    --arg ver "$STACK_VERSION" \
+    --arg loc "$STACK_LOCATION_CODE" \
+    --arg app "$APP_NAME" \
+    --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    --arg action "$ACTION" \
+    --argjson rgs "$RG_DETAILS" \
+    --argjson cf "$CF_RECORDS" \
+    --argjson rgCount "$RG_COUNT" \
+    --argjson cfCount "$CF_COUNT" \
+    '{
+      stack: {environment: $env, version: $ver, locationCode: $loc, appName: $app},
+      action: $action,
+      timestamp: $ts,
+      resourceGroups: $rgs,
+      cloudflare: {records: $cf},
+      summary: {rgCount: $rgCount, cfRecordCount: $cfCount}
+    }' > "$JSON_OUTPUT"
+
+  echo "📄 JSON artifact written to: ${JSON_OUTPUT}"
+  echo ""
+fi
 
 if [ "$ACTION" = "inventory" ]; then
   echo "✅ Inventory complete. Run with --purge to delete these resources."

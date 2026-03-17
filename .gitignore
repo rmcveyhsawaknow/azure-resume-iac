@@ -29,8 +29,11 @@ local.settings.json
 # Assessment output (generated during codespace sessions)
 assessment-output/
 
-# Inventory/purge artifacts (generated, not committed)
-artifacts/*.json
+# Stack inventory artifacts — tracked for retrospective/milestone traceability.
+# These capture Azure resource group and Cloudflare DNS state at each blue/green
+# swap, documenting environment evolution across phases.
+# Only purge artifacts (pre-delete snapshots) are excluded.
+artifacts/purge-*.json
 
 # OS files
 .DS_Store

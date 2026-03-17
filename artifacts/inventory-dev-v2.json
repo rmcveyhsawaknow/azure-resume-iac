@@ -1,0 +1,118 @@
+{
+  "stack": {
+    "environment": "dev",
+    "version": "v2",
+    "locationCode": "cus1",
+    "appName": "resume"
+  },
+  "action": "inventory",
+  "timestamp": "2026-03-17T22:38:24Z",
+  "resourceGroups": [
+    {
+      "name": "cus1-resume-be-dev-v2-rg",
+      "location": "eastus",
+      "state": "Succeeded",
+      "resources": [
+        {
+          "kind": "GlobalDocumentDB",
+          "name": "cus1-resume-dev-v2-cmsdb",
+          "type": "Microsoft.DocumentDB/databaseAccounts"
+        },
+        {
+          "kind": "web",
+          "name": "cus1-resumectr-dev-v2-ai",
+          "type": "Microsoft.Insights/components"
+        },
+        {
+          "kind": "StorageV2",
+          "name": "cus1resumectrdevv2sa",
+          "type": "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "kind": "functionapp",
+          "name": "cus1-resumectr-dev-v2-asp",
+          "type": "Microsoft.Web/serverFarms"
+        },
+        {
+          "kind": "functionapp,linux",
+          "name": "cus1-resumectr-dev-v2-fa",
+          "type": "Microsoft.Web/sites"
+        },
+        {
+          "kind": null,
+          "name": "cus1-resume-dev-v2-kv",
+          "type": "Microsoft.KeyVault/vaults"
+        },
+        {
+          "kind": null,
+          "name": "Failure Anomalies - cus1-resumectr-dev-v2-ai",
+          "type": "microsoft.alertsmanagement/smartDetectorAlertRules"
+        }
+      ]
+    },
+    {
+      "name": "cus1-resume-fe-dev-v2-rg",
+      "location": "eastus",
+      "state": "Succeeded",
+      "resources": [
+        {
+          "kind": "web",
+          "name": "cus1-resume-dev-v2-ai",
+          "type": "Microsoft.Insights/components"
+        },
+        {
+          "kind": "StorageV2",
+          "name": "cus1resumedevv2sa",
+          "type": "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "kind": null,
+          "name": "Failure Anomalies - cus1-resume-dev-v2-ai",
+          "type": "microsoft.alertsmanagement/smartDetectorAlertRules"
+        }
+      ]
+    }
+  ],
+  "cloudflare": {
+    "records": [
+      {
+        "id": "29a468031d6c97a813a5a68bc0c6d47c",
+        "name": "resumedevv2.ryanmcvey.me",
+        "type": "CNAME",
+        "content": "cus1resumedevv2sa.z13.web.core.windows.net",
+        "proxiable": true,
+        "proxied": true,
+        "ttl": 1,
+        "settings": {
+          "flatten_cname": false
+        },
+        "meta": {},
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-03-16T23:46:26.474317Z",
+        "modified_on": "2026-03-16T23:46:26.474317Z"
+      },
+      {
+        "id": "e31445fbc6e40f0ce78354467e34e8a1",
+        "name": "asverify.resumedevv2.ryanmcvey.me",
+        "type": "CNAME",
+        "content": "asverify.cus1resumedevv2sa.z13.web.core.windows.net",
+        "proxiable": true,
+        "proxied": false,
+        "ttl": 1,
+        "settings": {
+          "flatten_cname": false
+        },
+        "meta": {},
+        "comment": null,
+        "tags": [],
+        "created_on": "2026-03-16T23:46:30.903224Z",
+        "modified_on": "2026-03-16T23:46:30.903224Z"
+      }
+    ]
+  },
+  "summary": {
+    "rgCount": 2,
+    "cfRecordCount": 2
+  }
+}

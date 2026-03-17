@@ -21,7 +21,7 @@ env:
   # instead of updating the existing one. When you do this, make sure to:
   # - Decommission and delete the old dev resource groups to avoid orphaned costs.
   # - Clean up any obsolete Cloudflare DNS records that pointed to the old stack.
-  stackVersion: 'v2'
+  stackVersion: 'v3'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'
@@ -31,7 +31,7 @@ env:
   rgDns: 'glbl-ryanmcveyme-v1-rg'
   # Custom domain prefix — used for CORS origin, Cloudflare DNS CNAME, and storage custom domain.
   # Dev appends environment+version; prod uses just the AppName.
-  customDomainPrefix: 'resumedevv2'
+  customDomainPrefix: 'resumedevv3'
 
 jobs:
 
@@ -220,22 +220,76 @@ jobs:
     - name: Wait for DNS Propagation
       run: |
         DOMAIN="${{env.customDomainPrefix}}.${{env.dnsZone}}"
-        echo "Waiting for DNS to resolve: ${DOMAIN}"
-        for i in $(seq 1 12); do
+        ASVERIFY_DOMAIN="asverify.${DOMAIN}"
+        MAX_ATTEMPTS=30
+        SLEEP_SECONDS=10
+
+        echo "Waiting for main DNS to resolve: ${DOMAIN}"
+        MAIN_RESOLVED=false
+        for i in $(seq 1 ${MAX_ATTEMPTS}); do
           if dig +short "${DOMAIN}" | grep -q '.'; then
-            echo "✅ DNS resolved after $((i * 10))s"
+            echo "✅ Main DNS resolved after $((i * SLEEP_SECONDS))s"
+            MAIN_RESOLVED=true
             break
           fi
-          echo "  Attempt ${i}/12 — not yet resolved, waiting 10s..."
-          sleep 10
+          if [ "$i" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
+            sleep ${SLEEP_SECONDS}
+          else
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved."
+          fi
         done
+        if [ "$MAIN_RESOLVED" != "true" ]; then
+          echo "::warning::Main DNS ${DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
+        fi
+
+        echo "Waiting for asverify DNS to resolve: ${ASVERIFY_DOMAIN}"
+        ASVERIFY_RESOLVED=false
+        for i in $(seq 1 ${MAX_ATTEMPTS}); do
+          if dig +short "${ASVERIFY_DOMAIN}" | grep -q '.'; then
+            echo "✅ asverify DNS resolved after $((i * SLEEP_SECONDS))s"
+            ASVERIFY_RESOLVED=true
+            break
+          fi
+          if [ "$i" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
+            sleep ${SLEEP_SECONDS}
+          else
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved."
+          fi
+        done
+        if [ "$ASVERIFY_RESOLVED" != "true" ]; then
+          echo "::warning::asverify DNS ${ASVERIFY_DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
+        fi
 
     ### static site #1 - custom domain
+    # Retry loop: Azure validates domain ownership via the asverify CNAME.
+    # On first deploy, DNS propagation may lag behind record creation, causing
+    # a transient "az cli script failed" error. Retrying with backoff resolves this.
     - name: Enable Storage Account Frontend Cloudflare Custom Domain 
       uses: azure/CLI@v2
       with:
         inlineScript: |
-            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.customDomainPrefix}}.${{env.dnsZone}} --use-subdomain true
+            MAX_RETRIES=5
+            RETRY_DELAY=30
+            for attempt in $(seq 1 $MAX_RETRIES); do
+              echo "Attempt ${attempt}/${MAX_RETRIES}: Setting custom domain..."
+              if az storage account update \
+                --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa \
+                --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg \
+                --custom-domain ${{env.customDomainPrefix}}.${{env.dnsZone}} \
+                --use-subdomain true; then
+                echo "✅ Custom domain set successfully on attempt ${attempt}"
+                exit 0
+              fi
+              if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+                WAIT=$((RETRY_DELAY * attempt))
+                echo "⏳ Failed on attempt ${attempt}, retrying in ${WAIT}s..."
+                sleep $WAIT
+              fi
+            done
+            echo "::error::Custom domain assignment failed after ${MAX_RETRIES} attempts"
+            exit 1
 
 
   buildDeployDevelopmentBackend:

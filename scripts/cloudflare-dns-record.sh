@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# cloudflare-dns-record.sh — Check-before-create a Cloudflare DNS record.
+# cloudflare-dns-record.sh — Upsert a Cloudflare DNS record (create or update).
 #
 # Required environment variables:
 #   CF_TOKEN         Cloudflare API Bearer token
@@ -10,8 +10,8 @@
 #   RECORD_PROXIED   "true" or "false" — whether to proxy through Cloudflare
 #
 # Exit codes:
-#   0  Record already exists with correct content, or was created successfully
-#   1  API error, HTTP error, or record exists with different content
+#   0  Record already exists with correct content, was created, or was updated
+#   1  API error or HTTP error
 set -euo pipefail
 
 TMPDIR_CF=$(mktemp -d)
@@ -40,7 +40,7 @@ if [ "$GET_SUCCESS" != "true" ]; then
 fi
 
 ##############################################################################
-# Step 2 — Decide: skip / warn / create
+# Step 2 — Decide: skip / update / create
 ##############################################################################
 COUNT=$(jq '.result | length' "${TMPDIR_CF}/get.json")
 
@@ -51,8 +51,36 @@ if [ "$COUNT" -gt 0 ]; then
     echo "✅ DNS record ${RECORD_NAME} already exists with correct content and proxy setting"
     exit 0
   else
-    echo "::warning::DNS record ${RECORD_NAME} exists but differs (content: ${CURRENT} vs ${RECORD_CONTENT}, proxied: ${CURRENT_PROXIED} vs ${RECORD_PROXIED})"
-    exit 1
+    # Record exists with different content — update it (blue/green re-point)
+    RECORD_ID=$(jq -r '.result[0].id' "${TMPDIR_CF}/get.json")
+    echo "Updating DNS record ${RECORD_NAME} (${RECORD_ID}): ${CURRENT} → ${RECORD_CONTENT}"
+
+    PUT_PAYLOAD=$(jq -n \
+      --arg type "$RECORD_TYPE" \
+      --arg name "$RECORD_NAME" \
+      --arg content "$RECORD_CONTENT" \
+      --argjson proxied "$RECORD_PROXIED" \
+      '{type: $type, name: $name, content: $content, ttl: 1, proxied: $proxied}')
+
+    PUT_HTTP=$(curl -sS -o "${TMPDIR_CF}/put.json" -w '%{http_code}' -X PUT \
+      "${API_BASE}/${RECORD_ID}" \
+      -H "${AUTH_HEADER}" -H "${CT_HEADER}" \
+      --data "$PUT_PAYLOAD")
+
+    if [ "$PUT_HTTP" -lt 200 ] || [ "$PUT_HTTP" -ge 300 ]; then
+      echo "::error::Cloudflare DNS PUT HTTP error ${PUT_HTTP}: $(cat "${TMPDIR_CF}/put.json")"
+      exit 1
+    fi
+
+    PUT_SUCCESS=$(jq -r '.success' "${TMPDIR_CF}/put.json")
+    if [ "$PUT_SUCCESS" != "true" ]; then
+      echo "::error::Cloudflare DNS PUT API failure: $(cat "${TMPDIR_CF}/put.json")"
+      exit 1
+    fi
+
+    echo "✅ DNS record ${RECORD_NAME} updated successfully"
+    jq . "${TMPDIR_CF}/put.json"
+    exit 0
   fi
 fi
 

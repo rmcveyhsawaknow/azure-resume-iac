@@ -1,5 +1,7 @@
 targetScope = 'subscription'
 
+// Trigger v11 blue/green deployment with TLS 1.2 + DNS upsert fix (#135, PR #213, PR #214)
+
 //common parameters
 param resourceGroupLocation string 
 param rgBackendName string

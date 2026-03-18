@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # Key Vault Access Verification Script
 # Verifies all acceptance criteria for Phase 1 - Verify Key Vault access
+#
+# Resource names are sourced dynamically from the workflow YAML files
+# (.github/workflows/dev-full-stack-cloudflare.yml or prod-full-stack-cloudflare.yml).
+#
+# Usage:
+#   bash scripts/verify-keyvault-access.sh [--dev | --prod]
+#
+# Options:
+#   --dev   Verify dev environment (default)
+#   --prod  Verify production environment
 set -euo pipefail
 
 # Prerequisite checks
@@ -16,10 +26,44 @@ require_cmd az
 require_cmd jq
 require_cmd curl
 
-# Configuration (edit for your environment)
-KEY_VAULT_NAME="${1:-cus1-resume-prod-v1-kv}"
-RESOURCE_GROUP="${2:-cus1-resume-be-prod-v1-rg}"
-FUNCTION_APP_NAME="${3:-cus1-resumectr-prod-v1-fa}"
+# =============================================================================
+# Dynamic stack configuration from workflow YAML
+# =============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEV_WORKFLOW="${SCRIPT_DIR}/../.github/workflows/dev-full-stack-cloudflare.yml"
+PROD_WORKFLOW="${SCRIPT_DIR}/../.github/workflows/prod-full-stack-cloudflare.yml"
+
+# Parse a top-level env var from a workflow YAML file.
+parse_workflow_var() {
+  local file="$1" var="$2"
+  grep -E "^\s+${var}:" "$file" | head -1 | sed -E "s/^\s+${var}:\s*['\"]?([^'\"]+)['\"]?.*$/\1/"
+}
+
+ENV_FLAG="${1:---dev}"
+case "$ENV_FLAG" in
+  --dev)  WF_FILE="$DEV_WORKFLOW" ;;
+  --prod) WF_FILE="$PROD_WORKFLOW" ;;
+  *)
+    echo "Usage: $0 [--dev | --prod]"
+    exit 1
+    ;;
+esac
+
+if [[ ! -f "$WF_FILE" ]]; then
+  echo "Error: Workflow file not found: $WF_FILE" >&2
+  exit 1
+fi
+
+_ver=$(parse_workflow_var "$WF_FILE" stackVersion)
+_loc=$(parse_workflow_var "$WF_FILE" stackLocationCode)
+_app=$(parse_workflow_var "$WF_FILE" AppName)
+_app_be=$(parse_workflow_var "$WF_FILE" AppBackendName)
+_env=$(parse_workflow_var "$WF_FILE" stackEnvironment)
+
+KEY_VAULT_NAME="${_loc}-${_app}-${_env}-${_ver}-kv"
+RESOURCE_GROUP="${_loc}-${_app}-be-${_env}-${_ver}-rg"
+FUNCTION_APP_NAME="${_loc}-${_app_be}-${_env}-${_ver}-fa"
 SECRET_NAME_PRIMARY="AzureResumeConnectionStringPrimary"
 SECRET_NAME_SECONDARY="AzureResumeConnectionStringSecondary"
 

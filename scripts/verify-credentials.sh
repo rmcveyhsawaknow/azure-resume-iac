@@ -38,24 +38,46 @@ done
 
 ENV="${1:---dev}"
 
-# Dev environment resource names
-DEV_BACKEND_RG="cus1-resume-be-dev-v1-rg"
-DEV_FRONTEND_RG="cus1-resume-fe-dev-v1-rg"
-DEV_KEYVAULT="cus1-resume-dev-v1-kv"
-DEV_FUNCTIONAPP="cus1-resumectr-dev-v1-fa"
-DEV_COSMOSDB="cus1-resume-dev-v1-cmsdb"
-DEV_DNS_RECORD="resumedevv1.ryanmcvey.me"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEV_WORKFLOW="${SCRIPT_DIR}/../.github/workflows/dev-full-stack-cloudflare.yml"
+PROD_WORKFLOW="${SCRIPT_DIR}/../.github/workflows/prod-full-stack-cloudflare.yml"
 
-# Production environment resource names
-PROD_BACKEND_RG="cus1-resume-be-prod-v1-rg"
-PROD_FRONTEND_RG="cus1-resume-fe-prod-v1-rg"
-PROD_KEYVAULT="cus1-resume-prod-v1-kv"
-PROD_FUNCTIONAPP="cus1-resumectr-prod-v1-fa"
-PROD_COSMOSDB="cus1-resume-prod-v1-cmsdb"
-PROD_DNS_RECORD="resume.ryanmcvey.me"
+# Parse a top-level env var from a workflow YAML file.
+# Usage: parse_workflow_var <file> <varName>
+parse_workflow_var() {
+  local file="$1" var="$2"
+  grep -E "^\s+${var}:" "$file" | head -1 | sed -E "s/^\s+${var}:\s*['\"]?([^'\"]+)['\"]?.*$/\1/"
+}
 
-DNS_ZONE="ryanmcvey.me"
+# Load stack config from a workflow file and set resource name variables.
+# Sets: BACKEND_RG, FRONTEND_RG, KEYVAULT, FUNCTIONAPP, COSMOSDB, DNS_RECORD, DNS_ZONE
+load_stack_config() {
+  local wf_file="$1"
+  if [[ ! -f "$wf_file" ]]; then
+    echo "Error: Workflow file not found: $wf_file" >&2
+    exit 1
+  fi
+  local ver loc app app_be prefix zone
+  ver=$(parse_workflow_var "$wf_file" stackVersion)
+  loc=$(parse_workflow_var "$wf_file" stackLocationCode)
+  app=$(parse_workflow_var "$wf_file" AppName)
+  app_be=$(parse_workflow_var "$wf_file" AppBackendName)
+  env_tier=$(parse_workflow_var "$wf_file" stackEnvironment)
+  prefix=$(parse_workflow_var "$wf_file" customDomainPrefix)
+  zone=$(parse_workflow_var "$wf_file" dnsZone)
+
+  BACKEND_RG="${loc}-${app}-be-${env_tier}-${ver}-rg"
+  FRONTEND_RG="${loc}-${app}-fe-${env_tier}-${ver}-rg"
+  KEYVAULT="${loc}-${app}-${env_tier}-${ver}-kv"
+  FUNCTIONAPP="${loc}-${app_be}-${env_tier}-${ver}-fa"
+  COSMOSDB="${loc}-${app}-${env_tier}-${ver}-cmsdb"
+  DNS_RECORD="${prefix}.${zone}"
+  DNS_ZONE="${zone}"
+}
+
 SP_DISPLAY_NAME="azureresumeiac-github-sp"
+# DNS zone is the same for all environments — load it early for Cloudflare checks
+DNS_ZONE=$(parse_workflow_var "$DEV_WORKFLOW" dnsZone)
 
 PASS=0
 WARN=0
@@ -215,11 +237,11 @@ else
     pass "GitHub CLI authenticated as: $GH_USER"
 
     # Check repo access
-    REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown")
-    if [[ "$REPO" != "unknown" ]]; then
-      pass "Repository access: $REPO"
+    REPO=$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\1#' || echo "unknown")
+    if [[ "$REPO" != "unknown" && -n "$REPO" ]]; then
+      pass "Repository detected from git origin: $REPO"
     else
-      warn "Could not detect repository context"
+      warn "Could not detect repository from git origin remote"
     fi
   else
     fail "GitHub CLI not authenticated — run: gh auth login"
@@ -298,14 +320,18 @@ check_env_resources() {
 
 case "$ENV" in
   --dev)
-    check_env_resources "Development" "$DEV_BACKEND_RG" "$DEV_FRONTEND_RG" "$DEV_KEYVAULT" "$DEV_FUNCTIONAPP" "$DEV_COSMOSDB" "$DEV_DNS_RECORD"
+    load_stack_config "$DEV_WORKFLOW"
+    check_env_resources "Development" "$BACKEND_RG" "$FRONTEND_RG" "$KEYVAULT" "$FUNCTIONAPP" "$COSMOSDB" "$DNS_RECORD"
     ;;
   --prod)
-    check_env_resources "Production" "$PROD_BACKEND_RG" "$PROD_FRONTEND_RG" "$PROD_KEYVAULT" "$PROD_FUNCTIONAPP" "$PROD_COSMOSDB" "$PROD_DNS_RECORD"
+    load_stack_config "$PROD_WORKFLOW"
+    check_env_resources "Production" "$BACKEND_RG" "$FRONTEND_RG" "$KEYVAULT" "$FUNCTIONAPP" "$COSMOSDB" "$DNS_RECORD"
     ;;
   --all)
-    check_env_resources "Development" "$DEV_BACKEND_RG" "$DEV_FRONTEND_RG" "$DEV_KEYVAULT" "$DEV_FUNCTIONAPP" "$DEV_COSMOSDB" "$DEV_DNS_RECORD"
-    check_env_resources "Production" "$PROD_BACKEND_RG" "$PROD_FRONTEND_RG" "$PROD_KEYVAULT" "$PROD_FUNCTIONAPP" "$PROD_COSMOSDB" "$PROD_DNS_RECORD"
+    load_stack_config "$DEV_WORKFLOW"
+    check_env_resources "Development" "$BACKEND_RG" "$FRONTEND_RG" "$KEYVAULT" "$FUNCTIONAPP" "$COSMOSDB" "$DNS_RECORD"
+    load_stack_config "$PROD_WORKFLOW"
+    check_env_resources "Production" "$BACKEND_RG" "$FRONTEND_RG" "$KEYVAULT" "$FUNCTIONAPP" "$COSMOSDB" "$DNS_RECORD"
     ;;
   *)
     echo "Usage: $0 [--dev | --prod | --all]"

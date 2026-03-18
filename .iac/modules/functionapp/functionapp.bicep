@@ -96,6 +96,7 @@ resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01
   kind: 'StorageV2'
   properties: {
     supportsHttpsTrafficOnly: true
+    minimumTlsVersion: 'TLS1_2'
     encryption: {
       services: {
         file: {

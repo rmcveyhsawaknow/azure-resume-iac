@@ -21,7 +21,7 @@ env:
   # instead of updating the existing one. When you do this, make sure to:
   # - Decommission and delete the old dev resource groups to avoid orphaned costs.
   # - Clean up any obsolete Cloudflare DNS records that pointed to the old stack.
-  stackVersion: 'v10'
+  stackVersion: 'v11'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'

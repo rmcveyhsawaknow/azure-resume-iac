@@ -43,7 +43,7 @@ done
 
 # Fall back to current repo if not provided
 if [[ -z "$REPO" ]]; then
-  REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+  REPO="$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\1#')"
 fi
 
 if [[ ! -d "$ISSUES_DIR" ]]; then

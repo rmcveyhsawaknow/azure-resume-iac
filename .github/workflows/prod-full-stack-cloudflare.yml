@@ -5,11 +5,17 @@ on:
     branches:
     - main
     paths:
+    # Deployment-relevant paths only. Changes to scripts/, docs/, or other
+    # operational files intentionally do NOT trigger this workflow — those
+    # changes don't modify deployed infrastructure or application code.
+    # Use workflow_dispatch (below) for a manual full re-deploy when needed.
     - '.github/workflows/prod-full-stack-cloudflare.yml'
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
   workflow_dispatch:
+    # Manual trigger bypasses all path filters and runs all deploy jobs.
+    # Use this after scripts-only merges or to force a full stack re-deploy.
 
 permissions:
   contents: read

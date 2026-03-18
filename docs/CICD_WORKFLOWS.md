@@ -11,11 +11,16 @@ This document provides a detailed reference for all GitHub Actions CI/CD workflo
 | Production Full Stack Azure CDN | `prod-full-stack-azureCDN.yml` | `disabled` | **Disabled** | Azure DNS + Front Door |
 | Development Full Stack Azure CDN | `dev-full-stack-azureCDN.yml` | `disabled` | **Disabled** | Azure DNS + Front Door |
 
-All workflows trigger on `push` events to their configured branch, filtered by paths:
-- `.github/workflows/<workflow-file>`
-- `.iac/**`
-- `backend/**`
-- `frontend/**`
+Active workflows trigger on two events:
+
+1. **`push`** to their configured branch, filtered by paths:
+   - `.github/workflows/<workflow-file>`
+   - `.iac/**`
+   - `backend/**`
+   - `frontend/**`
+   > **Note:** Changes to `scripts/`, `docs/`, or other non-deployment paths do **not** trigger workflows. This is intentional — operational scripts (e.g., `configure-repo-protection.sh`, `verify-credentials.sh`) are not deployed code and should not cause a stack re-deploy.
+
+2. **`workflow_dispatch`** — manual trigger from the GitHub Actions UI or CLI, bypassing all path filters and running all deploy jobs unconditionally.
 
 ## Active Workflow: Production Full Stack Cloudflare
 
@@ -89,7 +94,7 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 ## Active Workflow: Development Full Stack Cloudflare
 
 **File:** `.github/workflows/dev-full-stack-cloudflare.yml`  
-**Trigger:** Push to `develop` branch  
+**Trigger:** Push to `develop` branch (path-filtered) or `workflow_dispatch`  
 **GitHub Environments Used:** `development`
 
 ### Key Differences from Production
@@ -97,11 +102,12 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 | Setting | Production | Development |
 |---|---|---|
 | Branch | `main` | `develop` |
-| `stackVersion` | `v1` | `v1` |
+| `stackVersion` | `v1` | `v10` |
 | `stackEnvironment` | `prod` | `dev` |
 | `AppName` | `resume` | `resume` |
-| DNS subdomain | `resume.ryanmcvey.me` | `resumedevv1.ryanmcvey.me` |
-| CORS URIs | `https://resume.ryanmcvey.me` | `https://resumedevv1.ryanmcvey.me` |
+| `customDomainPrefix` | `resume` | `resumedev` |
+| DNS subdomain | `resume.ryanmcvey.me` | `resumedev.ryanmcvey.me` |
+| CORS URIs | `https://resume.ryanmcvey.me` | `https://resumedev.ryanmcvey.me` |
 | GitHub environment | `production` | `development` |
 
 The development workflow structure is identical to production but with these variable substitutions. It deploys a fully separate stack.
@@ -289,3 +295,63 @@ echo "SUBID=${SUBID}" >> $GITHUB_OUTPUT
 ```
 
 This will need to be updated across all workflows as GitHub may remove support for the old syntax.
+
+## Workflow Trigger FAQ
+
+### Why didn't the workflow trigger after my last merge?
+
+The most common reason is the **path filter**. A push to `develop` (or `main`) only triggers a workflow when at least one changed file matches the configured paths:
+
+```
+.github/workflows/dev-full-stack-cloudflare.yml
+.iac/**
+backend/**
+frontend/**
+```
+
+**If your PR changed only `scripts/`, `docs/`, `.github/copilot-instructions.md`, or other non-deployment files, the workflow will correctly skip.** This is expected behavior — those changes don't modify deployed infrastructure, application code, or frontend assets.
+
+| PR changes only… | Workflow triggers? | Reason |
+|---|---|---|
+| `.iac/**` | ✅ Yes | IaC path matched |
+| `backend/**` | ✅ Yes | Backend path matched |
+| `frontend/**` | ✅ Yes | Frontend path matched |
+| `.github/workflows/dev-full-stack-cloudflare.yml` | ✅ Yes | Workflow file itself matched |
+| `scripts/**` | ❌ No | Not in path filter (by design) |
+| `docs/**` | ❌ No | Not in path filter (by design) |
+| `.github/copilot-instructions.md` | ❌ No | Not in path filter (by design) |
+
+### Does using admin bypass affect workflow triggering?
+
+**No.** When the repository owner merges a pull request using the admin bypass (merging without meeting branch protection requirements such as reviewer approval), GitHub still fires the normal `push` event on the target branch. Workflow triggers are unaffected by how the merge was performed.
+
+The branch protection rule in this repo uses `enforce_admins: false`, which allows the owner to self-merge PRs without a separate reviewer. This does **not** suppress push events or prevent workflow runs.
+
+If a workflow did not trigger after an admin-bypass merge, the cause is always the path filter — not the bypass mechanism.
+
+### How do I manually trigger a workflow?
+
+Use `workflow_dispatch` via the GitHub UI or CLI:
+
+**GitHub UI:**
+1. Go to **Actions** → select the workflow (e.g., "Development Full Stack Cloudflare")
+2. Click **Run workflow** → select branch `develop` → click **Run workflow**
+
+**GitHub CLI:**
+```bash
+# Trigger dev workflow on develop branch
+gh workflow run dev-full-stack-cloudflare.yml --ref develop
+
+# Trigger prod workflow on main branch
+gh workflow run prod-full-stack-cloudflare.yml --ref main
+```
+
+When triggered via `workflow_dispatch`, **all deploy jobs run unconditionally** — the path-filter `if:` conditions are bypassed. This is useful when you need to force a full re-deploy after a scripts-only or docs-only merge.
+
+### Why would I want to manually re-trigger the workflow?
+
+Common scenarios:
+- A scripts-only PR (e.g., `configure-repo-protection.sh`, `verify-credentials.sh`) was merged and you want to verify the deployment is still healthy
+- An Azure credential rotation requires redeployment to pick up the new secrets
+- Infrastructure drift was detected and you want to re-apply the desired state
+- A previous workflow run failed for a transient reason (network timeout, rate limit, etc.)

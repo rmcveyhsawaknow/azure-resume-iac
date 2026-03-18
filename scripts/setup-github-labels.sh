@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-REPO="${1:-$(gh repo view --json nameWithOwner -q .nameWithOwner)}"
+REPO="${1:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\1#')}"
 
 echo "Setting up labels for: $REPO"
 

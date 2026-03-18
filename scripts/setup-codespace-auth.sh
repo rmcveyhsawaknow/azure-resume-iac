@@ -82,7 +82,7 @@ echo ""
 if [[ -n "$REPO_ARG" ]]; then
   REPO="$REPO_ARG"
 elif command -v gh &>/dev/null; then
-  REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null || echo "unknown")
+  REPO=$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?$#\1#' || echo "unknown")
 else
   REPO="unknown"
 fi

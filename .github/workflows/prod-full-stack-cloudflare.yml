@@ -349,11 +349,23 @@ jobs:
     
     - name: Generate Frontend Config
       run: |
+        # Retrieve the frontend App Insights connection string from the deployed resource
+        AI_CONN_STR=$(az monitor app-insights component show \
+          --app ${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai \
+          --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg \
+          --query connectionString --output tsv 2>/dev/null || echo "")
+        if [ -n "${AI_CONN_STR}" ]; then
+          echo "App Insights connection string retrieved successfully"
+        else
+          echo "::warning::Failed to retrieve App Insights connection string — frontend telemetry will be disabled"
+        fi
+
         cat > frontend/config.js << CFGEOF
         var defined_FUNCTION_API_BASE = 'https://${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa.azurewebsites.net/api/GetResumeCounter';
+        var defined_APPINSIGHTS_CONNECTION_STRING = '${AI_CONN_STR}';
+        var defined_CLARITY_PROJECT_ID = '${{ secrets.CLARITY_PROJECT_ID }}';
         CFGEOF
-        echo "Generated config.js:"
-        cat frontend/config.js
+        echo "Generated frontend/config.js (contents not logged to avoid exposing secrets)"
 
     - name: Upload to blob storage
       uses: azure/CLI@v2

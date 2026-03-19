@@ -122,12 +122,33 @@ resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01
   }
 }
 
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: '${functionAppAppInsightsName}-law'
+  location: resourceGroupLocation
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+  tags: {
+    Environment: tagEnvironmentNameTier
+    CostCenter: tagCostCenter
+    GitActionIaCRunId : tagGitActionIacRunId
+    GitActionIaCRunNumber : tagGitActionIacRunNumber 
+    GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
+  }
+}
+
 resource functionAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: functionAppAppInsightsName
   location: resourceGroupLocation
   kind: 'web'
   properties: {
     Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+    IngestionMode: 'LogAnalytics'
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
@@ -206,7 +227,7 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
     AzureResumeConnectionStringPrimary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
     AzureResumeConnectionStringSecondary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
     APPINSIGHTS_INSTRUMENTATIONKEY: functionAppAppInsights.properties.InstrumentationKey
-    APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=${functionAppAppInsights.properties.InstrumentationKey}'
+    APPLICATIONINSIGHTS_CONNECTION_STRING: functionAppAppInsights.properties.ConnectionString
     AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${functionAppStorageKeys.keys[0].value}'
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${functionAppStorageKeys.keys[0].value}'
     FUNCTIONS_WORKER_RUNTIME: functionRuntime

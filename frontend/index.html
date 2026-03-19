@@ -37,6 +37,20 @@
    <script src="main.js"></script>
    <script src="js/azure_app_insights.js"></script>
 
+   <!-- Microsoft Clarity - End User Monitoring
+        Project ID injected via config.js at deploy time.
+        Set up a free account at https://clarity.microsoft.com and store the
+        project ID as CLARITY_PROJECT_ID in your GitHub repository secrets.
+   ================================================== -->
+   <script type="text/javascript">
+   (function(c,l,a,r,i,t,y){
+       if (typeof defined_CLARITY_PROJECT_ID === 'undefined' || !defined_CLARITY_PROJECT_ID) return;
+       c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+       t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+   })(window, document, "clarity", "script", defined_CLARITY_PROJECT_ID);
+   </script>
+
 
    <!-- Favicons
    ================================================== -->

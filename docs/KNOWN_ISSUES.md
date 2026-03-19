@@ -35,7 +35,9 @@ This document catalogs known issues, broken functionality, and technical debt in
 **Impact:** Medium — Security concern  
 **Files Affected:**
 - `frontend/main.js` — Contains Azure Function URL with function authorization code (`?code=M4oh...`)
-- `frontend/js/azure_app_insights.js` — Contains Application Insights instrumentation key
+- ~~`frontend/js/azure_app_insights.js` — Contains Application Insights instrumentation key~~
+
+**Status: PARTIALLY RESOLVED** — The App Insights connection string in `azure_app_insights.js` is now injected at deploy time via `config.js` (no longer hardcoded). The function key in `main.js` remains a known issue.
 
 **Risk:** The function key grants access to call the Function App. While the counter function is low-risk, this is a security anti-pattern.
 
@@ -103,13 +105,13 @@ This document catalogs known issues, broken functionality, and technical debt in
 **Steps that require manual intervention after a new stack deployment:**
 
 1. Retrieve Function App URL and function key → Update `frontend/main.js`
-2. Retrieve App Insights connection string → Update `frontend/js/azure_app_insights.js`
-3. Create initial Cosmos DB document via Azure Portal Data Explorer
+2. ~~Retrieve App Insights connection string → Update `frontend/js/azure_app_insights.js`~~ — **RESOLVED:** Now auto-injected via `config.js` at deploy time
+3. ~~Create initial Cosmos DB document via Azure Portal Data Explorer~~ — **RESOLVED:** Auto-seeded via `scripts/seed-cosmos-db.sh`
 
 **Remediation Options:**
 - Add a workflow step to query the Function App URL and key from Azure, then inject into frontend files before upload
-- Add a Bicep deployment script or Azure CLI step to seed the Cosmos DB document
-- Use environment-specific configuration files instead of hardcoded values
+- ~~Add a Bicep deployment script or Azure CLI step to seed the Cosmos DB document~~
+- ~~Use environment-specific configuration files instead of hardcoded values~~ — **DONE:** `config.js` pattern implemented
 
 ### 5. jQuery and Frontend Library Versions
 

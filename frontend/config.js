@@ -3,3 +3,12 @@
 // For local development, set defined_FUNCTION_API_BASE to your Function App URL, e.g.:
 //   var defined_FUNCTION_API_BASE = 'https://cus1-resumectr-dev-v1-fa.azurewebsites.net/api/GetResumeCounter';
 var defined_FUNCTION_API_BASE = '';
+
+// Application Insights connection string — injected by CI/CD from the deployed App Insights resource.
+// For local development, copy the connection string from the Azure Portal App Insights resource overview.
+var defined_APPINSIGHTS_CONNECTION_STRING = '';
+
+// Microsoft Clarity project ID — injected by CI/CD from GitHub Secrets.
+// To set up Clarity: create a free account at https://clarity.microsoft.com, create a project,
+// and store the project ID as CLARITY_PROJECT_ID in your GitHub repository secrets.
+var defined_CLARITY_PROJECT_ID = '';

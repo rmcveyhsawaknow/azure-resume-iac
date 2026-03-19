@@ -30,6 +30,9 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
       family: 'A'
       name: keyVaultSku
     }
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 90
+    enablePurgeProtection: true
     accessPolicies: [
       //need to fix this - https://stackoverflow.com/questions/69577692/assign-managedid-to-keyvault-access-policy
     ]

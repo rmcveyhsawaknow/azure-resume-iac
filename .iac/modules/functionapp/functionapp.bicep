@@ -60,8 +60,8 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     enabledForTemplateDeployment: false
     enablePurgeProtection: true
     enableRbacAuthorization: false
-    enableSoftDelete: false
-    softDeleteRetentionInDays: 7
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 90
     accessPolicies: [
       {
         // applicationId: functionApp.identity.principalId

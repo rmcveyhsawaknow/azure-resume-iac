@@ -262,8 +262,7 @@ Used only by the Azure CDN workflow variant (currently disabled):
 |---|---|---|
 | `AzureResumeConnectionStringPrimary` | Key Vault reference | Cosmos DB primary connection string |
 | `AzureResumeConnectionStringSecondary` | Key Vault reference | Cosmos DB secondary connection string |
-| `APPINSIGHTS_INSTRUMENTATIONKEY` | App Insights output | APM instrumentation |
-| `APPLICATIONINSIGHTS_CONNECTION_STRING` | App Insights output | APM connection |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | App Insights output | APM connection (full format with IngestionEndpoint and LiveEndpoint) |
 | `AzureWebJobsStorage` | Storage account | Function runtime storage |
 | `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` | Storage account | Content share |
 | `FUNCTIONS_WORKER_RUNTIME` | `dotnet` | Runtime identifier |

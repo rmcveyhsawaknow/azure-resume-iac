@@ -276,8 +276,7 @@ jobs:
         var defined_APPINSIGHTS_CONNECTION_STRING = '${AI_CONN_STR}';
         var defined_CLARITY_PROJECT_ID = '${{ secrets.CLARITY_PROJECT_ID }}';
         CFGEOF
-        echo "Generated config.js:"
-        cat frontend/config.js
+        echo "Generated frontend/config.js (contents not logged to avoid exposing secrets)"
 
     - name: Upload to blob storage
       uses: azure/CLI@v2

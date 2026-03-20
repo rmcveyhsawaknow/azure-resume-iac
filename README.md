@@ -187,13 +187,9 @@ See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) for complete details and remedi
 2. Configure Cloudflare API token and zone IDs as GitHub secrets
 3. Update workflow environment variables for your environment
 4. Push to trigger the workflow — Bicep deploys all infrastructure
-5. **Post-deployment steps**:
-   - Update `frontend/main.js` with the Function App URL and function key
-   - Update `frontend/js/azure_app_insights.js` with the App Insights connection string
-6. Push again to deploy frontend with updated configuration values
+5. Frontend configuration (Function App URL, function key, and Application Insights connection string) is injected into `frontend/config.js` at deploy time by the GitHub Actions workflows — no manual edits to frontend JavaScript files are required.
 
    > Note: Cosmos DB seed document is created automatically by the deployment workflow (see `scripts/seed-cosmos-db.sh`).
-
 ## Documentation
 
 | Document | Description |

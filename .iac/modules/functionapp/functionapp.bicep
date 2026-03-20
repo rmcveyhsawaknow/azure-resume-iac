@@ -37,7 +37,7 @@ var linuxFxVersionMap = {
   java: 'JAVA|17'
 }
 
-resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
+resource keyvault 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: keyVaultName
   location: resourceGroupLocation
   tags: {
@@ -86,7 +86,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   }
 }
 
-resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   name: functionAppStorageAccountName
   location: resourceGroupLocation
   sku: {
@@ -215,7 +215,7 @@ resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
 
 var functionAppStorageKeys = functionAppStorageAccount.listKeys()
 
-resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
+resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2023-12-01' = {
   name: 'appsettings'
   dependsOn: [
     cosmosKeyVaultSecretPrimaryConnectionString

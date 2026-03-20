@@ -730,7 +730,6 @@ The following source files define the Key Vault and Function App managed identit
 | File | Purpose |
 |---|---|
 | `.iac/modules/functionapp/functionapp.bicep` | Key Vault resource, access policies, managed identity, app settings with Key Vault references, secret creation |
-| `.iac/modules/keyvault/kv.bicep` | Standalone Key Vault module (empty access policies — not actively used) |
 | `.iac/modules/keyvault/createKeyVaultSecret.bicep` | Creates a secret in Key Vault |
 | `.iac/backend.bicep` | Orchestration — passes Key Vault params to Function App module |
 | `backend/api/GetResumeCounter.cs` | Function App code using `Connection = "AzureResumeConnectionStringPrimary"` |

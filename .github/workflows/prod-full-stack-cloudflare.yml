@@ -16,7 +16,7 @@ permissions:
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v1'
+  stackVersion: 'v11'
   stackEnvironment: 'prod'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'

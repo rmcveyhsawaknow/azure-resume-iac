@@ -44,7 +44,8 @@ When working with the Function App backend (`backend/` directory):
 - Follow C# coding conventions: PascalCase for public members, `_camelCase` for private fields
 - Use dependency injection for services
 - Use `ILogger<T>` for structured logging
-- Function auth level should be `Function` (requires function key) for non-public endpoints
+- By default, use `Function` auth level (requires function key) for non-public endpoints.
+- Exception: the `GetResumeCounter` HTTP-triggered function is intentionally configured with `AuthorizationLevel.Anonymous` because it serves the public visitor counter consumed by the frontend.
 - CORS is configured at the infrastructure level in Bicep, not in application code
 - Keep the Cosmos DB schema simple: `{ "id": "1", "count": N }` in the `Counter` container
 - Write xUnit tests in `backend/tests/`

@@ -8,7 +8,8 @@ var defined_FUNCTION_API_BASE = '';
 // For local development, copy the connection string from the Azure Portal App Insights resource overview.
 var defined_APPINSIGHTS_CONNECTION_STRING = '';
 
-// Microsoft Clarity project ID — injected by CI/CD from GitHub Secrets.
+// Microsoft Clarity project ID — injected by CI/CD from GitHub Secrets (repository or environment level).
 // To set up Clarity: create a free account at https://clarity.microsoft.com, create a project,
-// and store the project ID as CLARITY_PROJECT_ID in your GitHub repository secrets.
+// and store the project ID as CLARITY_PROJECT_ID in your GitHub repository or environment secrets.
+// Environment secrets (e.g. on 'development' or 'production') work alongside repo-level secrets.
 var defined_CLARITY_PROJECT_ID = '';

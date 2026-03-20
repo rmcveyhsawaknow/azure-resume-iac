@@ -54,7 +54,9 @@
 
    <!-- Favicons
    ================================================== -->
-   <link rel="icon" type="image/png" href="favicon.png">
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 
 </head>
 
@@ -155,12 +157,14 @@
             </ul>
 
             <h3>Philosophy</h3>
+            <div class="philosophy-quote">
             <p>I believe strong architecture should do three things well:</p>
             <ul>
                <li>Make complex systems easier to operate</li>
                <li>Create room for innovation without losing control</li>
                <li>Keep humans meaningfully involved where judgment matters most</li>
             </ul>
+            </div>
 
             <h3>Beyond Architecture</h3>
             <p>I am a builder and tinkerer at heart. My interests include CAD, CNC, 3D printing, fabrication workflows,
@@ -180,6 +184,106 @@
    ================================================== -->
    <section id="resume">
 
+      <!-- Work Experience
+      ----------------------------------------------- -->
+      <div class="row work">
+
+         <div class="three columns header-col">
+            <h1><span>Experience</span></h1>
+         </div>
+
+         <div class="nine columns main-col">
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Indiana Office of Technology</h3>
+                  <p class="info">Cloud Solutions Enterprise Architect <span>&bull;</span> <em class="date">October 2018 - Present</em></p>
+                  <ul>
+                     <li>Primary solutions architect for Azure Commercial and Azure US Government cloud identity, networking, and governance.</li>
+                     <li>Designed hub-and-spoke network model enabling hybrid connectivity via Internet2 / ExpressRoute private peering.</li>
+                     <li>Led Azure Virtual Desktop rollout for thousands of state employees during COVID-19.</li>
+                     <li>Technical advisor and escalation point for dedicated cloud operations engineers.</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Aprimo</h3>
+                  <p class="info">Azure DevOps Engineer <span>&bull;</span> <em class="date">March 2012 - April 2018</em></p>
+                  <ul>
+                     <li>Cloud DevOps Engineer modernizing monolithic application architecture from private cloud to Azure Public Cloud.</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Lockheed Martin</h3>
+                  <p class="info">IT System Administrator <span>&bull;</span> <em class="date">September 2008 - January 2012</em></p>
+                  <ul>
+                     <li>Tier 2 and Tier 3 IT Services support for the Federal Department of Homeland Security (DHS).</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>United States Marine Corps</h3>
+                  <p class="info">Tactical Data Systems Administrator (MOS-5974) <span>&bull;</span> <em class="date">October 2003 - December 2007</em></p>
+                  <ul>
+                     <li>Subject Matter Expert for Theater Battle Management Core System (TBMCS) and Perimeter Security System (PSS), supporting up to 40,000 Unix and Windows clients.</li>
+                     <li>Operated and tested tactical data links in the Marine Tactical Air Command Center in a joint multi-TADIL environment.</li>
+                  </ul>
+               </div>
+            </div>
+
+         </div> <!-- main-col end -->
+
+      </div> <!-- End Experience -->
+
+
+      <!-- Expertise
+      ----------------------------------------------- -->
+      <div class="row work">
+
+         <div class="three columns header-col">
+            <h1><span>Expertise</span></h1>
+         </div>
+
+         <div class="nine columns main-col">
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Current Focus</h3>
+                  <ul class="expertise-list">
+                     <li>Building and maturing statewide cloud and AI capabilities in complex enterprise environments</li>
+                     <li>Advancing software delivery standards and platform governance for custom application teams</li>
+                     <li>Applying AI and workflow automation to practical business and operational use cases</li>
+                     <li>Demonstrating modern architecture patterns through hands-on project work, prototypes, and structured technical documentation</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Areas of Practice</h3>
+                  <ul class="expertise-list">
+                     <li><strong>Cloud &amp; Hybrid Architecture</strong> &mdash; Azure, AWS, GCP, and traditional enterprise infrastructure</li>
+                     <li><strong>AI Platform Strategy</strong> &mdash; Governed experimentation, enterprise AI services, indexing, and applied ML workflows</li>
+                     <li><strong>Adaptive Agent Workflows</strong> &mdash; Human-in-the-loop design for reliability, safety, and operational usefulness</li>
+                     <li><strong>SDLC Modernization</strong> &mdash; Policy-driven platforms, IaC, CI/CD, and delivery guardrails</li>
+                     <li><strong>Application Observability</strong> &mdash; APM integration for performance, supportability, and operational maturity</li>
+                     <li><strong>Enterprise Governance</strong> &mdash; Security, compliance, cost accountability, and scalable service delivery</li>
+                  </ul>
+               </div>
+            </div>
+
+         </div> <!-- main-col end -->
+
+      </div> <!-- End Expertise -->
+
+
       <!-- Certifications
       ----------------------------------------------- -->
       <div id="section-certifications" class="row education">
@@ -194,7 +298,7 @@
                <div class="twelve columns">
                   <h3>Microsoft Certified: Azure Solutions Architect Expert</h3>
                   <p class="info"><em class="date">December 2021 - Present</em></p>
-                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/C55601ACB0B5C6B2?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure Solutions Architect Expert credential">Verify Credential</a></p>
+                  <p class="verify-credential"><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/C55601ACB0B5C6B2?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure Solutions Architect Expert credential">Verify Credential</a></p>
                   <p><img class="cert-badge" src="images/certs/microsoft-certified-azure-solutions-architect-expert.1.png" alt="Azure Solutions Architect Expert badge" /></p>
                </div>
             </div>
@@ -203,7 +307,7 @@
                <div class="twelve columns">
                   <h3>Microsoft Certified: Azure AI Engineer Associate</h3>
                   <p class="info"><em class="date">2024 - Current / Active</em></p>
-                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/46185601A6524765?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure AI Engineer Associate credential">Verify Credential</a></p>
+                  <p class="verify-credential"><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/46185601A6524765?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure AI Engineer Associate credential">Verify Credential</a></p>
                </div>
             </div>
 
@@ -211,7 +315,7 @@
                <div class="twelve columns">
                   <h3>Microsoft Certified: Azure Data Scientist Associate</h3>
                   <p class="info"><em class="date">2024 - Current / Active</em></p>
-                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/3E35CB11F2302707?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure Data Scientist Associate credential">Verify Credential</a></p>
+                  <p class="verify-credential"><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/3E35CB11F2302707?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure Data Scientist Associate credential">Verify Credential</a></p>
                </div>
             </div>
 
@@ -219,7 +323,7 @@
                <div class="twelve columns">
                   <h3>Microsoft Certified: Azure AI Fundamentals</h3>
                   <p class="info"><em class="date">2024 - Current / Active</em></p>
-                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/A1594D56F28D9A07?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure AI Fundamentals credential">Verify Credential</a></p>
+                  <p class="verify-credential"><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/A1594D56F28D9A07?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure AI Fundamentals credential">Verify Credential</a></p>
                </div>
             </div>
 
@@ -286,106 +390,6 @@
          </div> <!-- main-col end -->
 
       </div> <!-- End Education -->
-
-
-      <!-- Expertise
-      ----------------------------------------------- -->
-      <div class="row work">
-
-         <div class="three columns header-col">
-            <h1><span>Expertise</span></h1>
-         </div>
-
-         <div class="nine columns main-col">
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>Current Focus</h3>
-                  <ul class="expertise-list">
-                     <li>Building and maturing statewide cloud and AI capabilities in complex enterprise environments</li>
-                     <li>Advancing software delivery standards and platform governance for custom application teams</li>
-                     <li>Applying AI and workflow automation to practical business and operational use cases</li>
-                     <li>Demonstrating modern architecture patterns through hands-on project work, prototypes, and structured technical documentation</li>
-                  </ul>
-               </div>
-            </div>
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>Areas of Practice</h3>
-                  <ul class="expertise-list">
-                     <li><strong>Cloud &amp; Hybrid Architecture</strong> &mdash; Azure, AWS, GCP, and traditional enterprise infrastructure</li>
-                     <li><strong>AI Platform Strategy</strong> &mdash; Governed experimentation, enterprise AI services, indexing, and applied ML workflows</li>
-                     <li><strong>Adaptive Agent Workflows</strong> &mdash; Human-in-the-loop design for reliability, safety, and operational usefulness</li>
-                     <li><strong>SDLC Modernization</strong> &mdash; Policy-driven platforms, IaC, CI/CD, and delivery guardrails</li>
-                     <li><strong>Application Observability</strong> &mdash; APM integration for performance, supportability, and operational maturity</li>
-                     <li><strong>Enterprise Governance</strong> &mdash; Security, compliance, cost accountability, and scalable service delivery</li>
-                  </ul>
-               </div>
-            </div>
-
-         </div> <!-- main-col end -->
-
-      </div> <!-- End Expertise -->
-
-
-      <!-- Work Experience
-      ----------------------------------------------- -->
-      <div class="row work">
-
-         <div class="three columns header-col">
-            <h1><span>Experience</span></h1>
-         </div>
-
-         <div class="nine columns main-col">
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>Indiana Office of Technology</h3>
-                  <p class="info">Cloud Solutions Enterprise Architect <span>&bull;</span> <em class="date">October 2018 - Present</em></p>
-                  <ul>
-                     <li>Primary solutions architect for Azure Commercial and Azure US Government cloud identity, networking, and governance.</li>
-                     <li>Designed hub-and-spoke network model enabling hybrid connectivity via Internet2 / ExpressRoute private peering.</li>
-                     <li>Led Azure Virtual Desktop rollout for thousands of state employees during COVID-19.</li>
-                     <li>Technical advisor and escalation point for dedicated cloud operations engineers.</li>
-                  </ul>
-               </div>
-            </div>
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>Aprimo</h3>
-                  <p class="info">Azure DevOps Engineer <span>&bull;</span> <em class="date">March 2012 - April 2018</em></p>
-                  <ul>
-                     <li>Cloud DevOps Engineer modernizing monolithic application architecture from private cloud to Azure Public Cloud.</li>
-                  </ul>
-               </div>
-            </div>
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>Lockheed Martin</h3>
-                  <p class="info">IT System Administrator <span>&bull;</span> <em class="date">September 2008 - January 2012</em></p>
-                  <ul>
-                     <li>Tier 2 and Tier 3 IT Services support for the Federal Department of Homeland Security (DHS).</li>
-                  </ul>
-               </div>
-            </div>
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>United States Marine Corps</h3>
-                  <p class="info">Tactical Data Systems Administrator (MOS-5974) <span>&bull;</span> <em class="date">October 2003 - December 2007</em></p>
-                  <ul>
-                     <li>Subject Matter Expert for Theater Battle Management Core System (TBMCS) and Perimeter Security System (PSS), supporting up to 40,000 Unix and Windows clients.</li>
-                     <li>Operated and tested tactical data links in the Marine Tactical Air Command Center in a joint multi-TADIL environment.</li>
-                  </ul>
-               </div>
-            </div>
-
-         </div> <!-- main-col end -->
-
-      </div> <!-- End Experience -->
 
    </section> <!-- Resume Section End-->
 
@@ -553,27 +557,6 @@
                      Azure Functions (.NET 8), and Cosmos DB with Cloudflare CDN. Demonstrates the AgentGitOps backlog builder
                      workflow with phased delivery, GitHub Copilot coding agent integration, and automated phase retrospectives
                      tracking Human vs. AI productivity KPIs.</p>
-               </div>
-            </div>
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3><a href="https://github.com/rmcveyhsawaknow/ThisOrThatDesign">ThisOrThatDesign Digital Product Pipeline</a></h3>
-                  <p class="info">Maker-Business &amp; GitOps Workflow <span>&bull;</span> <em class="date">Active</em></p>
-                  <p>Operates <a href="https://thisorthatdesign.com">thisorthatdesign.com</a> as a maker-business platform
-                     using GitHub Agent/GitOps-style backlog management to turn concepts into shippable UV-printed and
-                     engraved products. Integrates Shopify order flow, custom design validation, AI-assisted patch concept
-                     generation, and digital asset preparation for production.</p>
-               </div>
-            </div>
-
-            <div class="row item">
-               <div class="twelve columns">
-                  <h3>CAD/CAM Dragster Build</h3>
-                  <p class="info">Digital Fabrication &amp; Precision Manufacturing <span>&bull;</span> <em class="date">Completed</em></p>
-                  <p>Self-taught CAD/CAM effort using Fusion 360 and a Pocket NC V2 five-axis mill to design and machine a
-                     1:10 scale dragster from billet aluminum. Demonstrated hands-on digital fabrication skills with
-                     end-to-end design-to-toolpath execution and precision manufacturing techniques.</p>
                </div>
             </div>
 

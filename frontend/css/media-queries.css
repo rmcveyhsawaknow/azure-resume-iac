@@ -133,7 +133,7 @@
       color: transparent;
 
       position: relative;
-      top: 0px;
+      top: 12px;
       right: 30px;
    }
 
@@ -232,7 +232,10 @@
 
    /* About Section
    -------------------------------------------------------------------- */
-   #about .profile-pic { display: none; }
+   #about .profile-pic {
+      display: block;
+      margin: 0 auto 24px auto;
+   }
    #about .download .button {
       width: 100%;
       text-align: center;

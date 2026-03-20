@@ -10,7 +10,7 @@ This directory holds committed retrospective summaries generated at each phase b
 | `phase-1-retrospective.md` | Phase 1 — Fix Function App | ✅ Complete |
 | `phase-2-retrospective.md` | Phase 2 — Content Update | ✅ Complete (milestone closure pending) |
 | `phase-3-retrospective.md` | Phase 3 — Dev Deployment | ✅ Complete |
-| `phase-4-retrospective.md` | Phase 4 — Prod Deployment | ✅ Complete |
+| `phase-4-retrospective.md` | Phase 4 — Prod Deployment | ✅ Complete (milestone closure pending) |
 | `phase-5-retrospective.md` | Phase 5 — Cleanup & Docs | Pending |
 
 ## How They're Generated

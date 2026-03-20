@@ -37,14 +37,15 @@ This document catalogs known issues, broken functionality, and technical debt in
 - `frontend/main.js` — Contains Azure Function URL with function authorization code (`?code=M4oh...`)
 - ~~`frontend/js/azure_app_insights.js` — Contains Application Insights instrumentation key~~
 
-**Status: PARTIALLY RESOLVED** — The App Insights connection string in `azure_app_insights.js` is now injected at deploy time via `config.js` (no longer hardcoded). The function key in `main.js` remains a known issue.
+**Status: RESOLVED (with compensating control pending)** — The App Insights connection string in `azure_app_insights.js` is now injected at deploy time via `config.js` (no longer hardcoded). The function key in `main.js` has been eliminated by switching to `AuthorizationLevel.Anonymous` (see below).
 
-**Risk:** The function key grants access to call the Function App. While the counter function is low-risk, this is a security anti-pattern.
+**Decision — `AuthorizationLevel.Anonymous`:** `AuthorizationLevel.Function` was evaluated but caused HTTP 401 and 404 errors in browser network traces because the frontend JavaScript had no runtime mechanism to supply the key without hard-coding it in source. `AuthorizationLevel.Anonymous` was therefore chosen as the pragmatic solution for this low-risk, non-sensitive counter endpoint.
 
-**Remediation Options:**
-- Change function auth level to `Anonymous` (counter is not sensitive)
-- Use a backend-for-frontend pattern
-- Inject values at build/deploy time instead of committing to source
+**Compensating control required:** Because the endpoint is publicly callable, a **Cloudflare rate-limiting rule** must be added to prevent scripted increments and cost abuse. This is tracked in `scripts/backlog-issues/5.16.md` (backlog task 5.16). Until the rate-limiting rule is deployed, the endpoint remains at low-but-non-zero abuse risk.
+
+**If `AuthorizationLevel.Function` is desired in future:** Inject the key at CI/CD deploy time into `config.js` (alongside `FUNCTION_API_BASE`) and read it from `window.FUNCTION_KEY` in `main.js`. This would allow the auth level to be upgraded without hard-coding the key in source.
+
+**References:** PR #223, `backend/api/GetResumeCounter.cs` line 20, backlog task 5.16.
 
 ## Technical Debt
 

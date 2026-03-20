@@ -35,7 +35,7 @@ header {
    height: 800px;
    min-height: 500px;
    width: 100%;
-   background: #000c04 no-repeat top center;
+   background: #000814 no-repeat top center;
    background-size: cover !important;
 	-webkit-background-size: cover !important;
    text-align: center;
@@ -106,7 +106,7 @@ header .social li {
    padding: 0;
 }
 header .social li a { color: #fff; }
-header .social li a:hover { color: #1da74b; }
+header .social li a:hover { color: #C5A028; }
 
 /* scrolldown link */
 header .scrolldown a {
@@ -128,7 +128,7 @@ header .scrolldown a {
    -o-transition: all .3s ease-in-out;
    transition: all .3s ease-in-out;
 }
-header .scrolldown a:hover { color: #1da74b; }
+header .scrolldown a:hover { color: #C5A028; }
 
 /* primary navigation
 --------------------------------------------------------------------- */
@@ -190,7 +190,7 @@ ul#nav li a {
 }
 
 ul#nav li a:active { background-color: transparent !important; }
-ul#nav li.current a { color: #216e3b; }
+ul#nav li.current a { color: #BF0A30; }
 
 
 /* ------------------------------------------------------------------ */
@@ -205,7 +205,7 @@ ul#nav li.current a { color: #216e3b; }
 }
 
 #about a, #about a:visited  { color: #fff; }
-#about a:hover, #about a:focus { color: #1da74b; }
+#about a:hover, #about a:focus { color: #C5A028; }
 
 #about h2 {
    font: 22px/30px 'opensans-bold', sans-serif;
@@ -269,13 +269,13 @@ ul#nav li.current a { color: #216e3b; }
 /* ------------------------------------------------------------------ */
 
 #resume {
-   background: #bac0bc;
+   background: #b0bac5;
    padding-top: 90px;
    padding-bottom: 72px;
    overflow: hidden;
 }
 
-#resume a, #resume a:visited  { color: #1da74b; }
+#resume a, #resume a:visited  { color: #C5A028; }
 #resume a:hover, #resume a:focus { color: #313131; }
 
 #resume h1 {
@@ -284,7 +284,7 @@ ul#nav li.current a { color: #216e3b; }
    letter-spacing: 1px;
 }
 #resume h1 span {
-   border-bottom: 3px solid #1da74b;
+   border-bottom: 3px solid #BF0A30;
    padding-bottom: 6px;
 }
 #resume h3 {
@@ -365,7 +365,7 @@ ul#nav li.current a { color: #216e3b; }
 
    margin: 0;
    padding-right: 24px;
-  	background: #313131;
+  	background: #00205B;
    display: inline-block;
   	height: 42px;
    line-height: 42px;
@@ -458,7 +458,7 @@ ul#nav li.current a { color: #216e3b; }
 /* ------------------------------------------------------------------ */
 
 #portfolio {
-   background: #c1d3c2;
+   background: #bcc7d4;
    padding-top: 90px;
    padding-bottom: 60px;
 }
@@ -635,7 +635,7 @@ ul#nav li.current a { color: #216e3b; }
    overflow: hidden;
 }
 
-#agentgitops a, #agentgitops a:visited { color: #1da74b; }
+#agentgitops a, #agentgitops a:visited { color: #C5A028; }
 #agentgitops a:hover, #agentgitops a:focus { color: #fff; }
 
 #agentgitops h1 {
@@ -645,7 +645,7 @@ ul#nav li.current a { color: #216e3b; }
    color: #fff;
 }
 #agentgitops h1 span {
-   border-bottom: 3px solid #1da74b;
+   border-bottom: 3px solid #BF0A30;
    padding-bottom: 6px;
 }
 #agentgitops h2 {
@@ -673,7 +673,7 @@ ul#nav li.current a { color: #216e3b; }
    background: #444;
    padding: 2px 6px;
    border-radius: 3px;
-   color: #1da74b;
+   color: #C5A028;
    font-size: 14px;
 }
 
@@ -691,7 +691,7 @@ ul.agentgitops-list li strong {
    color: #fff;
 }
 ul.agentgitops-list li em {
-   color: #1da74b;
+   color: #C5A028;
    font-style: italic;
 }
 
@@ -700,13 +700,13 @@ ul.agentgitops-list li em {
 /* ------------------------------------------------------------------ */
 
 #projects {
-   background: #c1d3c2;
+   background: #bcc7d4;
    padding-top: 90px;
    padding-bottom: 72px;
    overflow: hidden;
 }
 
-#projects a, #projects a:visited { color: #1da74b; }
+#projects a, #projects a:visited { color: #C5A028; }
 #projects a:hover, #projects a:focus { color: #313131; }
 
 #projects h1 {
@@ -715,7 +715,7 @@ ul.agentgitops-list li em {
    letter-spacing: 1px;
 }
 #projects h1 span {
-   border-bottom: 3px solid #1da74b;
+   border-bottom: 3px solid #BF0A30;
    padding-bottom: 6px;
 }
 #projects h3 {
@@ -736,7 +736,7 @@ ul.agentgitops-list li em {
 #projects .item {
    margin-bottom: 48px;
    padding-bottom: 24px;
-   border-bottom: 1px solid #A8B0A8;
+   border-bottom: 1px solid #9aaabb;
 }
 
 /* ------------------------------------------------------------------ */
@@ -758,6 +758,52 @@ ul.cert-sub-list li {
    line-height: 28px;
    margin-bottom: 4px;
    font-size: 14px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Compact Certifications section
+/* ------------------------------------------------------------------ */
+
+#section-certifications {
+   margin-bottom: 24px;
+   padding-bottom: 12px;
+}
+#section-certifications .row.item {
+   margin-bottom: 0;
+   padding-bottom: 10px;
+   border-bottom: 1px solid #c8d2db;
+}
+#section-certifications .row.item:last-child {
+   border-bottom: none;
+   padding-bottom: 0;
+}
+#section-certifications h3 {
+   font-size: 16px;
+   line-height: 22px;
+   margin-bottom: 2px;
+}
+#section-certifications p.info {
+   margin-bottom: 2px;
+   margin-top: 2px;
+   font-size: 14px;
+}
+#section-certifications p {
+   margin-bottom: 4px;
+   line-height: 22px;
+}
+#section-certifications .cert-badge {
+   width: 72px;
+   height: 72px;
+   margin-top: 2px;
+}
+#section-certifications ul.cert-sub-list {
+   margin-top: 2px;
+   margin-bottom: 4px;
+}
+#section-certifications ul.cert-sub-list li {
+   line-height: 20px;
+   margin-bottom: 2px;
+   font-size: 13px;
 }
 
 /* ------------------------------------------------------------------ */
@@ -991,7 +1037,7 @@ call-to-action .button {
 }
 #contact .section-head { margin-bottom: 42px; }
 
-#contact a, #contact a:visited  { color: #1da74b; }
+#contact a, #contact a:visited  { color: #C5A028; }
 #contact a:hover, #contact a:focus { color: #fff; }
 
 #contact h1 {
@@ -1052,7 +1098,7 @@ call-to-action .button {
 #contact textarea:focus,
 #contact select:focus {
 	color: #fff;
-	background-color: #1da74b;
+	background-color: #00205B;
 }
 #contact button.submit {
 	text-transform: uppercase;
@@ -1071,7 +1117,7 @@ call-to-action .button {
 	background: #fff;
 }
 #contact span.required {
-	color: #1da74b;
+	color: #C5A028;
 	font-size: 13px;
 }
 #message-warning, #message-success {
@@ -1083,7 +1129,7 @@ call-to-action .button {
    margin-left: 26%;
 }
 #message-warning { color: #D72828; }
-#message-success { color: #1da74b; }
+#message-success { color: #C5A028; }
 
 #message-warning i,
 #message-success i {
@@ -1150,7 +1196,7 @@ footer .copyright li:before {
     content: "\2022";
     padding-left: 10px;
     padding-right: 10px;
-    color: #095153;
+    color: #00205B;
 }
 footer .copyright  li:first-child:before {
     display: none;
@@ -1198,5 +1244,5 @@ footer .social-links li:first-child { margin-left: 0; }
    line-height: 60px;
  	border-radius: 100%;
 }
-#go-top a:hover { background-color: #0F9095; }
+#go-top a:hover { background-color: #BF0A30; }
 

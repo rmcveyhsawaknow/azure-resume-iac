@@ -14,7 +14,7 @@
 **Phase 4 — Prod Deployment** covered the following workstreams:
 
 - **17** issues assigned to milestone
-- **10** issues closed, **7** remaining open (this retrospective + deferred gap-analysis duplicates #164/#165)
+- **12** issues closed, **5** remaining open
 - **4** issues originated from gap analysis (2 resolved: #163, #166; 2 duplicates deferred: #164, #165)
 
 ### Scope

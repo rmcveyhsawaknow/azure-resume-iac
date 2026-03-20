@@ -1,25 +1,37 @@
-window.addEventListener('DOMContentLoaded', (event) =>{
-    getVisitCount()
-})
+window.addEventListener('DOMContentLoaded', (event) => {
+    getVisitCount();
+});
 
-
-const functionApiUrl = 'https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter?code=M4ohKtXdNpeequpYibByW4KR8xXkrGHkCaxsTqsGATtFAzFuDvxeag==';
-
-
+// Azure Function App API endpoint — injected by CI/CD via config.js
+// Hostname pattern: {locationCode}-{appBackendName}-{environment}-{version}-fa
+// config.js sets defined_FUNCTION_API_BASE per environment; see deployment workflows.
+const functionApi = (typeof defined_FUNCTION_API_BASE !== 'undefined' && defined_FUNCTION_API_BASE)
+    ? defined_FUNCTION_API_BASE
+    : '';
+const functionKey = ''; // Set after deployment if needed
+const functionApiUrl = functionApi
+    ? (functionKey ? `${functionApi}?code=${functionKey}` : functionApi)
+    : '';
 
 const getVisitCount = () => {
-    let count = 30;
-    fetch(functionApiUrl).then(response =>{
-        return response.json()
-    }).then(response =>{
-        console.log("Website called function API.");
-        count = response.count;
-        document.getElementById("counter").innerText = count;
-    }).catch(function(error){
-        console.log(error);
-    });
-    return count;
-}
+    if (!functionApiUrl) {
+        console.warn('Visitor counter: defined_FUNCTION_API_BASE (from config.js) not configured');
+        return;
+    }
+    fetch(functionApiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('API returned ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("counter").innerText = data.count;
+        })
+        .catch(error => {
+            console.error("Visitor counter error:", error);
+        });
+};
 
 var TxtRotate = function(el, toRotate, period) {
     this.toRotate = toRotate;

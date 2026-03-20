@@ -9,10 +9,19 @@ on:
     - '.iac/**'
     - 'backend/**'
     - 'frontend/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 env: 
   dnsZone: 'ryanmcvey.me'
-  stackVersion: 'v1'
+  # NOTE: Changing stackVersion and/or AppName will deploy a NEW dev stack
+  # (new resource groups, Key Vault, Cosmos DB, Function App, storage, etc.)
+  # instead of updating the existing one. When you do this, make sure to:
+  # - Decommission and delete the old dev resource groups to avoid orphaned costs.
+  # - Clean up any obsolete Cloudflare DNS records that pointed to the old stack.
+  stackVersion: 'v11'
   stackEnvironment: 'dev'
   stackLocation: 'eastus'
   stackLocationCode: 'cus1'
@@ -20,6 +29,9 @@ env:
   AppBackendName: 'resumectr'
   tagCostCenter: 'azCF'
   rgDns: 'glbl-ryanmcveyme-v1-rg'
+  # Custom domain prefix — used for CORS origin, Cloudflare DNS CNAME, and storage custom domain.
+  # Dev appends environment+version; prod uses just the AppName.
+  customDomainPrefix: 'resumedev'
 
 jobs:
 
@@ -32,9 +44,9 @@ jobs:
       backendApp: ${{ steps.filter.outputs.backendApp }}
       frontendSite: ${{ steps.filter.outputs.frontendSite }}
     steps:
-    - uses: actions/checkout@main
-    # For pull requests it's not necessary to checkout the code
-    - uses: dorny/paths-filter@v2
+    - uses: actions/checkout@v5
+    # Checkout is required so dorny/paths-filter can inspect changed files
+    - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
       id: filter
       with:
         filters: |
@@ -47,15 +59,15 @@ jobs:
 
   deployDevelopmentIac:
     needs: changes
-    # if: ${{ needs.changes.outputs.iac == 'true' }}
+    if: ${{ needs.changes.outputs.iac == 'true' || github.event_name == 'workflow_dispatch' }}
     name: Deploy IaC to development
     environment:
       name: development
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v5
     - name: Azure Login
-      uses: Azure/login@v1.1
+      uses: Azure/login@v2
       with:
         creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}   
     
@@ -63,7 +75,7 @@ jobs:
       id: subs
       run: |
         SUBID=$(az account show --query id --output tsv)
-        echo "::set-output name=SUBID::${SUBID}"
+        echo "subid=${SUBID}" >> $GITHUB_OUTPUT
     - name: Echo SubscriptionId
       run: echo "${{ steps.subs.outputs.subid }}"      
     
@@ -87,10 +99,10 @@ jobs:
       run: |
         echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-cloudflare.yml"
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/dev-full-stack-cloudflare.yml
-        echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
+        echo "iacactionslink=${IACACTIONSLINK}" >> $GITHUB_OUTPUT
  
     - name: Bicep - Backend
-      uses: Azure/arm-deploy@v1
+      uses: Azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -116,16 +128,26 @@ jobs:
                   functionAppName=${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
                   functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
-                  corsFriendlyDnsUri=https://${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}}
-                  corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
-                  functionRuntime=dotnet
+                  corsFriendlyDnsUri=https://${{env.customDomainPrefix}}.${{env.dnsZone}}
+                  functionRuntime=dotnet-isolated
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
                   keyVaultSku=standard
   
   #                functionName=GetResumeCounter
   
+    - name: Seed Cosmos DB
+      id: cosmosDbSeed
+      env:
+        COSMOS_ACCOUNT_NAME: ${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
+        COSMOS_RESOURCE_GROUP: ${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+      run: bash scripts/seed-cosmos-db.sh
+
+    - name: Echo Cosmos DB Counter Value
+      if: steps.cosmosDbSeed.outputs.counter_value != ''
+      run: echo "Cosmos DB visitor counter value is ${{ steps.cosmosDbSeed.outputs.counter_value }}"
+
     - name: Bicep - Frontend
-      uses: Azure/arm-deploy@v1
+      uses: Azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -144,8 +166,9 @@ jobs:
                   staticSiteStorageAccountName=${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa
                   staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
+    ### static site #1 - Begin
     - name: Enable Storage Account Frontend Static Website
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
             az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document error.html --index-document index.html
@@ -154,7 +177,7 @@ jobs:
       id: staticSiteEndPoint
       run: |
         ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
-        echo "::set-output name=ssEndPoint::${ssEndPoint}"
+        echo "ssEndPoint=${ssEndPoint}" >> $GITHUB_OUTPUT
   
     - name: Echo Static Site Endpoint
       run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
@@ -163,69 +186,133 @@ jobs:
       id: convert_url_domain
       run: |
           export ssEndpoint_url=$(echo ${{ steps.staticSiteEndPoint.outputs.ssEndPoint }} |  awk -F[/:] '{print $4}')
-          echo ::set-output name=ssEndpoint_domain::$ssEndpoint_url
+          echo "ssEndpoint_domain=$ssEndpoint_url" >> $GITHUB_OUTPUT
 
     - name: Echo Static Site Endpoint Domain
       run: echo "${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}"
    
 
+    # DNS records: check-before-create pattern using Cloudflare API via shared script.
+    # See scripts/cloudflare-dns-record.sh for implementation details.
     - name: Cloudflare - Frontend DNS
       continue-on-error: true
-      uses: rez0n/create-dns-record@v2.2
-      with:
-        type: "CNAME"
-        name: ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
-        content: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-        ttl: 1
-        proxied: true
-        token: ${{ secrets.CLOUDFLARE_TOKEN }}
-        zone: ${{ secrets.CLOUDFLARE_ZONE }}
+      env:
+        CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+        CF_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        RECORD_TYPE: CNAME
+        RECORD_NAME: ${{env.customDomainPrefix}}.${{env.dnsZone}}
+        RECORD_CONTENT: ${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
+        RECORD_PROXIED: "true"
+      run: bash scripts/cloudflare-dns-record.sh
 
-    
     - name: Cloudflare - Frontend DNS Verify
       continue-on-error: true
-      uses: rez0n/create-dns-record@v2.2
-      with:
-        type: "CNAME"
-        name: asverify.${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}
-        content: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
-        ttl: 1
-        proxied: false
-        token: ${{ secrets.CLOUDFLARE_TOKEN }}
-        zone: ${{ secrets.CLOUDFLARE_ZONE }}
+      env:
+        CF_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+        CF_ZONE: ${{ secrets.CLOUDFLARE_ZONE }}
+        RECORD_TYPE: CNAME
+        RECORD_NAME: asverify.${{env.customDomainPrefix}}.${{env.dnsZone}}
+        RECORD_CONTENT: asverify.${{ steps.convert_url_domain.outputs.ssEndpoint_domain }}
+        RECORD_PROXIED: "false"
+      run: bash scripts/cloudflare-dns-record.sh
+    ### static site #1 - End
 
-    - name: DNS Propagation Sleeper
-      run: sleep 90s
+    - name: Wait for DNS Propagation
+      run: |
+        DOMAIN="${{env.customDomainPrefix}}.${{env.dnsZone}}"
+        ASVERIFY_DOMAIN="asverify.${DOMAIN}"
+        MAX_ATTEMPTS=30
+        SLEEP_SECONDS=10
 
+        echo "Waiting for main DNS to resolve: ${DOMAIN}"
+        MAIN_RESOLVED=false
+        for i in $(seq 1 ${MAX_ATTEMPTS}); do
+          if dig +short "${DOMAIN}" | grep -q '.'; then
+            echo "✅ Main DNS resolved after $((i * SLEEP_SECONDS))s"
+            MAIN_RESOLVED=true
+            break
+          fi
+          if [ "$i" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
+            sleep ${SLEEP_SECONDS}
+          else
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved."
+          fi
+        done
+        if [ "$MAIN_RESOLVED" != "true" ]; then
+          echo "::warning::Main DNS ${DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
+        fi
+
+        echo "Waiting for asverify DNS to resolve: ${ASVERIFY_DOMAIN}"
+        ASVERIFY_RESOLVED=false
+        for i in $(seq 1 ${MAX_ATTEMPTS}); do
+          if dig +short "${ASVERIFY_DOMAIN}" | grep -q '.'; then
+            echo "✅ asverify DNS resolved after $((i * SLEEP_SECONDS))s"
+            ASVERIFY_RESOLVED=true
+            break
+          fi
+          if [ "$i" -lt "${MAX_ATTEMPTS}" ]; then
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved, waiting ${SLEEP_SECONDS}s..."
+            sleep ${SLEEP_SECONDS}
+          else
+            echo "  Attempt ${i}/${MAX_ATTEMPTS} — not yet resolved."
+          fi
+        done
+        if [ "$ASVERIFY_RESOLVED" != "true" ]; then
+          echo "::warning::asverify DNS ${ASVERIFY_DOMAIN} did not resolve within $((MAX_ATTEMPTS * SLEEP_SECONDS))s — continuing to custom domain step with retry"
+        fi
+
+    ### static site #1 - custom domain
+    # Retry loop: Azure validates domain ownership via the asverify CNAME.
+    # On first deploy, DNS propagation may lag behind record creation, causing
+    # a transient "az cli script failed" error. Retrying with backoff resolves this.
     - name: Enable Storage Account Frontend Cloudflare Custom Domain 
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
-            az storage account update --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --custom-domain ${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}.${{env.dnsZone}} --use-subdomain true
+            MAX_RETRIES=5
+            RETRY_DELAY=30
+            for attempt in $(seq 1 $MAX_RETRIES); do
+              echo "Attempt ${attempt}/${MAX_RETRIES}: Setting custom domain..."
+              if az storage account update \
+                --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa \
+                --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg \
+                --custom-domain ${{env.customDomainPrefix}}.${{env.dnsZone}} \
+                --use-subdomain true; then
+                echo "✅ Custom domain set successfully on attempt ${attempt}"
+                exit 0
+              fi
+              if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+                WAIT=$((RETRY_DELAY * attempt))
+                echo "⏳ Failed on attempt ${attempt}, retrying in ${WAIT}s..."
+                sleep $WAIT
+              fi
+            done
+            echo "::error::Custom domain assignment failed after ${MAX_RETRIES} attempts"
+            exit 1
 
 
   buildDeployDevelopmentBackend:
-    # needs: deployDevelopmentIac
     needs: [changes, deployDevelopmentIac]
-    # if: ${{ needs.changes.outputs.backendApp == 'true' }}
-    name: Build and Deploy Backend App to Development - aspnetcore31_cs
+    if: ${{ always() && (needs.deployDevelopmentIac.result == 'success' || needs.deployDevelopmentIac.result == 'skipped') && (needs.changes.outputs.backendApp == 'true' || github.event_name == 'workflow_dispatch') }}
+    name: Build and Deploy Backend App to Development - net8_isolated
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
-      DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
+      DOTNET_VERSION: '8.0.x'              # set this to the dotnet version to use
     environment:
       name: development
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@main
+      uses: actions/checkout@v5
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: Azure/login@v2
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}  
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -241,7 +328,7 @@ jobs:
         pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/tests'
         dotnet test
     - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1.4.4
+      uses: Azure/functions-action@v1.5.4
       id: fa
       with:
         app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
@@ -249,24 +336,69 @@ jobs:
 
 
   buildDeployDevelopmentFrontend:
-    # needs: buildDeployDevelopmentBackend
     needs: [changes, buildDeployDevelopmentBackend]
-    # if: ${{ needs.changes.outputs.frontendSite == 'true' }}
+    if: ${{ always() && (needs.buildDeployDevelopmentBackend.result == 'success' || needs.buildDeployDevelopmentBackend.result == 'skipped') && (needs.changes.outputs.frontendSite == 'true' || github.event_name == 'workflow_dispatch') }}
     name: Deploy Frontend Static App to Development
     environment:
       name: development
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@main
+      uses: actions/checkout@v5
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: Azure/login@v2
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }} 
     
+    - name: Generate Frontend Config
+      run: |
+        # Retrieve the frontend App Insights connection string from the deployed resource
+        AI_CONN_STR=$(az monitor app-insights component show \
+          --app ${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai \
+          --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg \
+          --query connectionString --output tsv 2>/dev/null || echo "")
+        if [ -n "${AI_CONN_STR}" ]; then
+          echo "App Insights connection string retrieved successfully"
+        else
+          echo "::warning::Failed to retrieve App Insights connection string — frontend telemetry will be disabled"
+        fi
+
+        CLARITY_ID='${{ secrets.CLARITY_PROJECT_ID }}'
+        if [ -n "${CLARITY_ID}" ]; then
+          echo "Clarity project ID is configured — EUM will be enabled"
+        else
+          echo "::warning::CLARITY_PROJECT_ID secret is not set (check repo or environment secrets) — Clarity EUM will be disabled"
+        fi
+
+        cat > frontend/config.js << CFGEOF
+        var defined_FUNCTION_API_BASE = 'https://${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa.azurewebsites.net/api/GetResumeCounter';
+        var defined_APPINSIGHTS_CONNECTION_STRING = '${AI_CONN_STR}';
+        var defined_CLARITY_PROJECT_ID = '${CLARITY_ID}';
+        CFGEOF
+        echo "Generated frontend/config.js (avoid logging contents to prevent secret exposure)"
+
     - name: Upload to blob storage
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
+
+    # Cache purge is best-effort — should not block a successful deployment.
+    - name: Purge Cloudflare Cache
+      continue-on-error: true
+      run: |
+        HTTP_CODE=$(curl -sS -o /tmp/cf_response.json -w '%{http_code}' -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CLOUDFLARE_ZONE }}/purge_cache" \
+          -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          --data '{"purge_everything":true}')
+        if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+          echo "::error::Cloudflare cache purge HTTP error $HTTP_CODE: $(cat /tmp/cf_response.json)"
+          exit 1
+        fi
+        SUCCESS=$(jq -r '.success' /tmp/cf_response.json)
+        if [ "$SUCCESS" != "true" ]; then
+          echo "::error::Cloudflare cache purge API failure: $(cat /tmp/cf_response.json)"
+          exit 1
+        fi
+        echo "Cloudflare cache purge succeeded"

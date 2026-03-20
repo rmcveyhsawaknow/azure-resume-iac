@@ -11,19 +11,31 @@ param tagGitActionIacActionsLink string
 
 //function app parameters
 param corsFriendlyDnsUri string
-param corsFriendlyDnsUri2 string
-param corsFriendlyDnsUri3 string
-param corsCdnUri string
 param functionAppStorageAccountName string
 param functionAppAppInsightsName string
 param functionAppAppServicePlanName string
 param functionAppName string
+@allowed([
+  'dotnet-isolated'
+  'dotnet'
+  'node'
+  'python'
+  'java'
+])
 param functionRuntime string
 param functionAppKeySecretNamePrimary string
 param functionAppKeySecretNameSecondary string
 param keyVaultName string
 param keyVaultSku string
 param cosmosName string
+
+var linuxFxVersionMap = {
+  'dotnet-isolated': 'DOTNET-ISOLATED|8.0'
+  dotnet: 'DOTNET|8.0'
+  node: 'NODE|20'
+  python: 'PYTHON|3.11'
+  java: 'JAVA|17'
+}
 
 resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
   name: keyVaultName
@@ -48,8 +60,7 @@ resource keyvault 'Microsoft.KeyVault/vaults@2019-09-01' = {
     enabledForTemplateDeployment: false
     enablePurgeProtection: true
     enableRbacAuthorization: false
-    enableSoftDelete: false
-    softDeleteRetentionInDays: 7
+    enableSoftDelete: true
     accessPolicies: [
       {
         // applicationId: functionApp.identity.principalId
@@ -84,6 +95,7 @@ resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01
   kind: 'StorageV2'
   properties: {
     supportsHttpsTrafficOnly: true
+    minimumTlsVersion: 'TLS1_2'
     encryption: {
       services: {
         file: {
@@ -109,12 +121,33 @@ resource functionAppStorageAccount 'Microsoft.Storage/storageAccounts@2021-04-01
   }
 }
 
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
+  name: '${functionAppAppInsightsName}-law'
+  location: resourceGroupLocation
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+  tags: {
+    Environment: tagEnvironmentNameTier
+    CostCenter: tagCostCenter
+    GitActionIaCRunId : tagGitActionIacRunId
+    GitActionIaCRunNumber : tagGitActionIacRunNumber 
+    GitActionIaCRunAttempt : tagGitActionIacRunAttempt
+    GitActionIacActionsLink : tagGitActionIacActionsLink
+  }
+}
+
 resource functionAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: functionAppAppInsightsName
   location: resourceGroupLocation
   kind: 'web'
   properties: {
     Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspace.id
+    IngestionMode: 'LogAnalytics'
     publicNetworkAccessForIngestion: 'Enabled'
     publicNetworkAccessForQuery: 'Enabled'
   }
@@ -128,7 +161,7 @@ resource functionAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource functionAppPlan 'Microsoft.Web/serverfarms@2020-12-01' = {
+resource functionAppPlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: functionAppAppServicePlanName
   location: resourceGroupLocation
   kind: 'functionapp'
@@ -148,7 +181,7 @@ resource functionAppPlan 'Microsoft.Web/serverfarms@2020-12-01' = {
   }
 }
 
-resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
+resource functionApp 'Microsoft.Web/sites@2023-12-01' = {
   name: functionAppName
   location: resourceGroupLocation
   identity: {
@@ -158,12 +191,11 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
   properties: {
     serverFarmId: functionAppPlan.id
     siteConfig: {
+      linuxFxVersion: linuxFxVersionMap[functionRuntime]
+      ftpsState: 'Disabled'
       cors: {
         allowedOrigins: [
           corsFriendlyDnsUri
-          corsFriendlyDnsUri2
-          corsFriendlyDnsUri3
-          corsCdnUri
         ]
       }
     }
@@ -181,6 +213,8 @@ resource functionApp 'Microsoft.Web/sites@2020-12-01' = {
 
 //param guidValue string = newGuid()
 
+var functionAppStorageKeys = functionAppStorageAccount.listKeys()
+
 resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
   name: 'appsettings'
   dependsOn: [
@@ -191,12 +225,11 @@ resource functionAppCosmosAppSetting 'Microsoft.Web/sites/config@2021-03-01' = {
   properties: {
     AzureResumeConnectionStringPrimary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNamePrimary})'
     AzureResumeConnectionStringSecondary: '@Microsoft.KeyVault(SecretUri=https://${keyVaultName}.vault.azure.net/secrets/${functionAppKeySecretNameSecondary})'
-    APPINSIGHTS_INSTRUMENTATIONKEY: functionAppAppInsights.properties.InstrumentationKey
-    APPLICATIONINSIGHTS_CONNECTION_STRING: 'InstrumentationKey=${functionAppAppInsights.properties.InstrumentationKey}'
-    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(functionAppStorageAccount.id, functionAppStorageAccount.apiVersion).keys[0].value}'
+    APPLICATIONINSIGHTS_CONNECTION_STRING: functionAppAppInsights.properties.ConnectionString
+    AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${functionAppStorageKeys.keys[0].value}'
+    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${functionAppStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${functionAppStorageKeys.keys[0].value}'
     FUNCTIONS_WORKER_RUNTIME: functionRuntime
-    FUNCTIONS_EXTENSION_VERSION: '~3'
+    FUNCTIONS_EXTENSION_VERSION: '~4'
     WEBSITE_CONTENTSHARE: functionAppName
   }
 }

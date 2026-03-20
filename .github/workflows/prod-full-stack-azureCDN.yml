@@ -10,6 +10,9 @@ on:
     - 'backend/**'
     - 'frontend/**'
 
+permissions:
+  contents: read
+
 env: 
   dnsZone: 'ryanmcvey.me'
   stackVersion: 'v1'
@@ -32,9 +35,9 @@ jobs:
       backendApp: ${{ steps.filter.outputs.backendApp }}
       frontendSite: ${{ steps.filter.outputs.frontendSite }}
     steps:
-    - uses: actions/checkout@main
-    # For pull requests it's not necessary to checkout the code
-    - uses: dorny/paths-filter@v2
+    - uses: actions/checkout@v4
+    # Checkout is required so paths-filter can inspect changed files (this workflow runs on push).
+    - uses: dorny/paths-filter@v3
       id: filter
       with:
         filters: |
@@ -53,9 +56,9 @@ jobs:
       name: production
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v4
     - name: Azure Login
-      uses: Azure/login@v1.1
+      uses: Azure/login@v2
       with:
         creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}   
     
@@ -63,7 +66,7 @@ jobs:
       id: subs
       run: |
         SUBID=$(az account show --query id --output tsv)
-        echo "::set-output name=SUBID::${SUBID}"
+        echo "subid=${SUBID}" >> $GITHUB_OUTPUT
     - name: Echo SubscriptionId
       run: echo "${{ steps.subs.outputs.subid }}"      
     
@@ -87,10 +90,10 @@ jobs:
       run: |
         echo "${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack-azureCDN.yml"
         IACACTIONSLINK=${{ github.server_url }}/${{ github.repository }}/actions/workflows/prod-full-stack-azureCDN.yml
-        echo "::set-output name=IACACTIONSLINK::${IACACTIONSLINK}"
+        echo "iacactionslink=${IACACTIONSLINK}" >> $GITHUB_OUTPUT
      
     - name: Bicep - Backend
-      uses: Azure/arm-deploy@v1
+      uses: Azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -117,15 +120,25 @@ jobs:
                   functionAppKeySecretNamePrimary=AzureResumeConnectionStringPrimary
                   functionAppKeySecretNameSecondary=AzureResumeConnectionStringSecondary
                   corsFriendlyDnsUri=https://${{env.AppName}}.${{env.dnsZone}}
-                  corsCdnUri=https://${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn.azureedge.net
-                  functionRuntime=dotnet
+                  functionRuntime=dotnet-isolated
                   keyVaultName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-kv
                   keyVaultSku=standard
   
   #                functionName=GetResumeCounter
   
+    - name: Seed Cosmos DB
+      id: cosmosDbSeed
+      env:
+        COSMOS_ACCOUNT_NAME: ${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-cmsdb
+        COSMOS_RESOURCE_GROUP: ${{env.stackLocationCode}}-${{env.AppName}}-be-${{env.stackEnvironment}}-${{env.stackVersion}}-rg
+      run: bash scripts/seed-cosmos-db.sh
+
+    - name: Echo Cosmos DB Counter Value
+      if: steps.cosmosDbSeed.outputs.counter_value != ''
+      run: echo "Cosmos DB visitor counter value is ${{ steps.cosmosDbSeed.outputs.counter_value }}"
+
     - name: Bicep - Frontend
-      uses: Azure/arm-deploy@v1
+      uses: Azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -145,7 +158,7 @@ jobs:
                   staticSiteStorageAccountAppInsightsName=${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai
     
     - name: Enable Storage Account Frontend Static Website
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
             az storage blob service-properties update --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode login --static-website --404-document index.html --index-document index.html
@@ -154,12 +167,12 @@ jobs:
       id: staticSiteEndPoint
       run: |
         ssEndPoint=$(az storage account show --name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg --query "primaryEndpoints.web" --output tsv)
-        echo "::set-output name=ssEndPoint::${ssEndPoint}"
+        echo "ssEndPoint=${ssEndPoint}" >> $GITHUB_OUTPUT
     - name: Echo Static Site Endpoint
       run: echo "${{ steps.staticSiteEndPoint.outputs.ssEndPoint }}"
     
     - name: Bicep - Frontend CDN
-      uses: azure/arm-deploy@v1
+      uses: azure/arm-deploy@v2
       with:
         scope: subscription
         subscriptionId: ${{ steps.subs.outputs.subid }}
@@ -189,24 +202,24 @@ jobs:
     # needs: deployProductionIac
     needs: [changes, deployProductionIac]
     # if: ${{ needs.changes.outputs.backendApp == 'true' }}
-    name: Build and Deploy Backend App to Production - aspnetcore31_cs
+    name: Build and Deploy Backend App to Production - net8_isolated
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
-      DOTNET_VERSION: '3.1'              # set this to the dotnet version to use
+      DOTNET_VERSION: '8.0.x'              # set this to the dotnet version to use
     environment:
       name: production
     runs-on: windows-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }}  
 
     - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -222,7 +235,7 @@ jobs:
         pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/tests'
         dotnet test
     - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1.4.4
+      uses: Azure/functions-action@v1.5.4
       id: fa
       with:
         app-name: ${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa
@@ -238,21 +251,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 'Checkout GitHub Action'
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
 
     - name: 'Login via Azure CLI'
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
           creds: ${{ secrets.AZURE_RESUME_GITHUB_SP }} 
     
+    - name: Generate Frontend Config
+      run: |
+        # Retrieve the frontend App Insights connection string from the deployed resource
+        AI_CONN_STR=$(az monitor app-insights component show \
+          --app ${{env.stackLocationCode}}-${{env.AppName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-ai \
+          --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg \
+          --query connectionString --output tsv 2>/dev/null || echo "")
+        if [ -n "${AI_CONN_STR}" ]; then
+          echo "App Insights connection string retrieved successfully"
+        else
+          echo "::warning::Failed to retrieve App Insights connection string — frontend telemetry will be disabled"
+        fi
+
+        CLARITY_ID='${{ secrets.CLARITY_PROJECT_ID }}'
+        if [ -n "${CLARITY_ID}" ]; then
+          echo "Clarity project ID is configured — EUM will be enabled"
+        else
+          echo "::warning::CLARITY_PROJECT_ID secret is not set (check repo or environment secrets) — Clarity EUM will be disabled"
+        fi
+
+        cat > frontend/config.js << CFGEOF
+        var defined_FUNCTION_API_BASE = 'https://${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa.azurewebsites.net/api/GetResumeCounter';
+        var defined_APPINSIGHTS_CONNECTION_STRING = '${AI_CONN_STR}';
+        var defined_CLARITY_PROJECT_ID = '${CLARITY_ID}';
+        CFGEOF
+        echo "Generated frontend/config.js (avoid logging contents to prevent secret exposure)"
+
     - name: Upload to blob storage
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
             az storage blob upload-batch --account-name ${{env.stackLocationCode}}${{env.AppName}}${{env.stackEnvironment}}${{env.stackVersion}}sa --auth-mode key -d '$web' -s frontend/ --overwrite
     
     - name: Purge CDN endpoint
-      uses: azure/CLI@v1
+      uses: azure/CLI@v2
       with:
         inlineScript: |
            az afd endpoint purge --content-paths  "/*" --profile-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdn --endpoint-name glbl-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-cdnep --resource-group ${{env.stackLocationCode}}-${{env.AppName}}-fe-${{env.stackEnvironment}}-${{env.stackVersion}}-rg

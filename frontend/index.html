@@ -7,31 +7,54 @@
    <!--- Basic Page Needs
    ================================================= -->
    <meta charset="utf-8">
-	<title>Ryan's Resume</title>
-	<meta name="single page website containing my resume elements" content="">
-	<meta name="ryan mcvey" content="">
+   <title>Ryan McVey | Cloud Solutions Architect</title>
+   <meta name="description" content="Ryan McVey — Cloud Solutions Architect specializing in Azure infrastructure, hybrid networking, and DevOps. View my resume, skills, and professional experience.">
+   <meta name="author" content="Ryan McVey">
+
+   <!-- Open Graph / Social Sharing
+   ================================================= -->
+   <meta property="og:type" content="website">
+   <meta property="og:title" content="Ryan McVey | Cloud Solutions Architect">
+   <meta property="og:description" content="Cloud Solutions Architect specializing in Azure infrastructure, hybrid networking, and DevOps. View my resume, skills, and professional experience.">
+   <meta property="og:image" content="https://ryanmcvey.me/images/me.jpg">
+   <meta property="og:url" content="https://ryanmcvey.me">
 
    <!-- Mobile Specific Metas
    ================================================== -->
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-	<!-- CSS
+<!-- CSS
     ================================================== -->
    <link rel="stylesheet" href="css/default.css">
-	<link rel="stylesheet" href="css/layout.css">
+   <link rel="stylesheet" href="css/layout.css">
    <link rel="stylesheet" href="css/media-queries.css">
    <link rel="stylesheet" href="css/magnific-popup.css">
 
    <!-- Script
    ================================================== -->
    <script src="js/modernizr.js"></script>
+   <script src="config.js"></script>
    <script src="main.js"></script>
    <script src="js/azure_app_insights.js"></script>
 
+   <!-- Microsoft Clarity - End User Monitoring
+        Project ID injected via config.js at deploy time.
+        Set up a free account at https://clarity.microsoft.com and store the
+        project ID as CLARITY_PROJECT_ID in your GitHub repository secrets.
+   ================================================== -->
+   <script type="text/javascript">
+   (function(c,l,a,r,i,t,y){
+       if (typeof defined_CLARITY_PROJECT_ID === 'undefined' || !defined_CLARITY_PROJECT_ID) return;
+       c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+       t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+       y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+   })(window, document, "clarity", "script", defined_CLARITY_PROJECT_ID);
+   </script>
+
 
    <!-- Favicons
-	================================================== -->
-	<link rel="shortcut icon" href="favicon.png" >
+   ================================================== -->
+   <link rel="icon" type="image/png" href="favicon.png">
 
 </head>
 
@@ -44,36 +67,36 @@
       <nav id="nav-wrap">
 
          <a class="mobile-btn" href="#nav-wrap" title="Show navigation">Show navigation</a>
-	      <a class="mobile-btn" href="#" title="Hide navigation">Hide navigation</a>
+      <a class="mobile-btn" href="#" title="Hide navigation">Hide navigation</a>
 
          <ul id="nav" class="nav">
             <li class="current"><a class="smoothscroll" href="#home">Home</a></li>
-            <li><a class="smoothscroll" href="#about">About Me</a></li>
-	         <li><a class="smoothscroll" href="#resume">Resume</a></li>
+            <li><a class="smoothscroll" href="#about">About</a></li>
+            <li><a class="smoothscroll" href="#resume">Resume</a></li>
+            <li><a class="smoothscroll" href="#agentgitops">AgentGitOps</a></li>
+            <li><a class="smoothscroll" href="#projects">Projects</a></li>
          </ul> <!-- end #nav -->
 
       </nav> <!-- end #nav-wrap -->
 
       <div class="row banner">
          <div class="banner-text">
-            <h1 class="responsive-headline">Ryan McVey </h1>
-            <!-- <h2 class="responsive-headline">a Cloud Solutions Architect</h2> -->
-            
+            <h1 class="responsive-headline">Ryan McVey</h1>
 
-            <h4><span>I'm a  </span>
-               <span 
-               class="txt-rotate "
+            <h4>
+               <span
+               class="txt-rotate"
                data-period="2000"
-               data-rotate='["Cloud Solutions Architect", "Father to Josi", "Productive Citizen", "Tinkerer of many things..."]'>
+               data-rotate='["I&apos;m an Innovative Technology Architect", "I&apos;m a Cloud &amp; AI Specialist", "I&apos;m a Hybrid Infrastructure Expert", "I&apos;m an SDLC Modernization Leader"]'>
                </span>
              </h4>
-             
-             <p>You are click # <a id="counter"></a> , on this page ¯\_(ツ)_/¯ </p> 
+
+             <p>You are visitor # <span id="counter" aria-live="polite"></span> to this page ¯\_(ツ)_/¯</p>
 
             <ul class="social">
-               <!--<li><a href="https://blog.ryanmcvey.me"><i class="fa fa-external-link"></i></a></li>-->
-               <li><a href="https://www.linkedin.com/in/ryan-mcvey-897008228/"><i class="fa fa-linkedin"></i></a></li>
-               <li><a href="https://github.com/rmcveyhsawaknow/"><i class="fa fa-github"></i></a></li>
+               <li><a href="https://www.linkedin.com/in/ryan-mcvey-897008228/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" title="LinkedIn"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+               <li><a href="https://github.com/rmcveyhsawaknow/" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+               <li><a href="https://learn.microsoft.com/en-us/users/rmcveyhsawaknow/" target="_blank" rel="noopener noreferrer" aria-label="Microsoft Learn" title="Microsoft Learn"><i class="fa fa-book" aria-hidden="true"></i></a></li>
             </ul>
          </div>
       </div>
@@ -93,7 +116,10 @@
 
          <div class="three columns">
 
-            <img class="profile-pic"  src="images/me.png" alt="" />
+            <picture>
+               <source srcset="images/me.webp" type="image/webp" />
+               <img class="profile-pic" src="images/me.jpg" alt="Ryan McVey profile photo" />
+            </picture>
 
          </div>
 
@@ -101,22 +127,47 @@
 
             <h2>ABOUT ME</h2>
 
-            <p> Hi, I'm Ryan McVey, <span>Cloud Solutions Architect by trade at <a href="https://www.in.gov/iot">Indiana Office of Technology</a></span> 
-               , single father as a duty and a tinkerer at heart. I will probably ask just enough questions to perk the interest of some and likely just annoy the rest ... 
+            <p>I'm Ryan McVey &mdash; <span>Innovative Technology Architect</span> specializing in Cloud, AI, and Hybrid Infrastructure.
+               I design practical, secure, and scalable technology systems that connect strategy to execution. My background spans
+               public sector, private sector, and military environments, with more than 20 years of experience across systems administration,
+               application modernization, cloud architecture, observability, governance, and AI-enabled solution design.</p>
 
-            <p>Initially trained as an electronics engineer and systems administrator in the military. Followed with 17 years of experience in the public and private sectors fulfilling Information Technology service support, administration, development, and architectural roles. At each of these progressive stages in the technology services ecosystem I have worked in the capacity of an individual contributor and management. I am technology agnostic yet rapidly adaptable to diverse solution architectures where business initiatives drive technical projects to deliver reliable yet cost-effective solutions.
- 
-            <p>Understands business challenges and assess the primary organizational goals to guide solutions design to maximize utilization of existing investments while at the same time positioning the organization to leverage modern practices to quantitatively reach a “Business IT Goal”.
+            <p>Today, my work centers on hybrid and multi-cloud architecture, SDLC modernization, platform governance, and responsible
+               AI adoption. I focus on helping organizations move beyond one-time migration efforts into durable operating models that
+               improve security, compliance, delivery speed, cost visibility, and long-term resilience.</p>
 
-            <p>Gains the respect and confidence of others by demonstrating leadership tact and the practical application of technical skills needed to be an effective managing architect.
+            <h3>Rooted in Service</h3>
+            <p>My career began with service in the <span>United States Marine Corps</span>, where I developed a strong foundational
+               understanding of technology principles, disciplined processes, and governance standards. That early experience shaped
+               a career-long commitment to accountability, mission readiness, and structured problem-solving &mdash; themes that have
+               carried through the majority of my work in government and technology fields.</p>
 
-            <p>This page is inspired by the  <span><a href="https://acloudguru.com/blog/engineering/cloudguruchallenge-your-resume-in-azure">Cloud Guru Azure Resume Challenge</a></span>.  </p>
-            
-            <h3>Enhancements</h3>
-       
+            <p>Today, service remains a defining part of my family's life. My spouse is an active-duty Navy sailor currently
+               training as a Hospital Corpsman. Commitment to service is a choice &mdash; and one I plan to keep choosing.</p>
+
+            <h3>Core Skills</h3>
             <ul>
-               <li>Include Cloudflare with Web Application Firewall (WAF) permitting only traffic orginating from the United States of America and blocking known bots / tor nodes.</li>
+               <li><strong>Cloud &amp; Infrastructure:</strong> Azure, hybrid/multi-cloud architecture, IaC (Bicep, Terraform), serverless, containers</li>
+               <li><strong>DevOps &amp; Delivery:</strong> CI/CD (GitHub Actions), GitOps, SDLC modernization, platform engineering</li>
+               <li><strong>Governance &amp; Security:</strong> Policy as code, compliance frameworks, identity management, zero-trust design</li>
+               <li><strong>AI &amp; Automation:</strong> Responsible AI adoption, Copilot-assisted development, intelligent automation</li>
+               <li><strong>Leadership:</strong> Technical strategy, cross-functional delivery, stakeholder alignment, mentorship</li>
             </ul>
+
+            <h3>Philosophy</h3>
+            <p>I believe strong architecture should do three things well:</p>
+            <ul>
+               <li>Make complex systems easier to operate</li>
+               <li>Create room for innovation without losing control</li>
+               <li>Keep humans meaningfully involved where judgment matters most</li>
+            </ul>
+
+            <h3>Beyond Architecture</h3>
+            <p>I am a builder and tinkerer at heart. My interests include CAD, CNC, 3D printing, fabrication workflows,
+               and turning ideas into usable systems and physical prototypes.</p>
+
+            <p>This page is inspired by the <span><a href="https://acloudguru.com/blog/engineering/cloudguruchallenge-your-resume-in-azure">Cloud Guru Azure Resume Challenge</a></span>
+               and is being modernized end-to-end using <a class="smoothscroll" href="#agentgitops">AgentGitOps</a>.</p>
 
          </div> <!-- end .main-col -->
 
@@ -129,7 +180,7 @@
    ================================================== -->
    <section id="resume">
 
-      <!-- Education
+      <!-- Certifications
       ----------------------------------------------- -->
       <div class="row education">
 
@@ -138,204 +189,399 @@
          </div>
 
          <div class="nine columns main-col">
-            
+
             <div class="row item">
-
                <div class="twelve columns">
-
                   <h3>Microsoft Certified: Azure Solutions Architect Expert</h3>
                   <p class="info"><em class="date">December 2021 - Present</em></p>
-                  <p><a href="https://www.credly.com/badges/90a51c45-5a9a-4cd4-bbda-75db37169a71/public_url"> Credential ID I079-6855.</a></p> 
-                  <P><img class="profile-pic"  src="images/certs/microsoft-certified-azure-solutions-architect-expert.1.png" alt="" /></P>
-                  
-
+                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/C55601ACB0B5C6B2?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure Solutions Architect Expert credential">Verify Credential</a></p>
+                  <p><img class="cert-badge" src="images/certs/microsoft-certified-azure-solutions-architect-expert.1.png" alt="Azure Solutions Architect Expert badge" /></p>
                </div>
-
             </div>
-            <!-- COMMENT OUT ROW, ADD WHEN I GET CERT
+
             <div class="row item">
-
                <div class="twelve columns">
-
-                  <h3>Microsoft Azure Security Technologies (AZ-500) </h3>
-                  <p class="info"><em class="date">June 2022</em></p>
-
+                  <h3>Microsoft Certified: Azure AI Engineer Associate</h3>
+                  <p class="info"><em class="date">2024 - Current / Active</em></p>
+                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/46185601A6524765?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure AI Engineer Associate credential">Verify Credential</a></p>
                </div>
+            </div>
 
-            </div> <!-- item end --
-            -->
-
-            <!-- COMMENT OUT, REMOVE WHEN GET CERT
             <div class="row item">
-
                <div class="twelve columns">
-
-                  <h3>Microsoft Identity and Access Administrator (SC-300)</h3>
-                  <p class="info"><em class="date">July 2022</em></p>
-
+                  <h3>Microsoft Certified: Azure Data Scientist Associate</h3>
+                  <p class="info"><em class="date">2024 - Current / Active</em></p>
+                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/3E35CB11F2302707?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure Data Scientist Associate credential">Verify Credential</a></p>
                </div>
+            </div>
 
-            </div> <!-- item end --
-            -->
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Microsoft Certified: Azure AI Fundamentals</h3>
+                  <p class="info"><em class="date">2024 - Current / Active</em></p>
+                  <p><a href="https://learn.microsoft.com/api/credentials/share/en-us/rmcveyhsawaknow/A1594D56F28D9A07?sharingId=3A7420C88C7933D6" target="_blank" rel="noopener noreferrer" aria-label="Verify Azure AI Fundamentals credential">Verify Credential</a></p>
+               </div>
+            </div>
 
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>USMC Tactical Data Administrator (5974)</h3>
+                  <p class="info"><em class="date">Military Service</em></p>
+                  <p><a href="https://www.cool.osd.mil/usmc/moc/index.html?moc=5974&amp;tab=overview" target="_blank" rel="noopener noreferrer">MOS Description</a></p>
+                  <p>Administered and maintained C4I tactical data systems in joint operational environments, including
+                     TBMCS (Theater Battle Management Core System),
+                     CAC2S (Common Aviation Command &amp; Control System),
+                     AFATDS (Advanced Field Artillery Tactical Data System), and
+                     ADSI (Air Defense Systems Integrator).</p>
+                  <p><strong>Equivalent Civilian Certifications</strong> (<a href="https://www.cool.osd.mil/usmc/moc/index.html?moc=5974&amp;tab=cred" target="_blank" rel="noopener noreferrer">Marine Corps COOL</a>):</p>
+                  <ul class="cert-sub-list">
+                     <li><a href="https://www.comptia.org/certifications/a" target="_blank" rel="noopener noreferrer">CompTIA A+</a></li>
+                     <li><a href="https://www.comptia.org/certifications/network" target="_blank" rel="noopener noreferrer">CompTIA Network+</a></li>
+                     <li><a href="https://www.comptia.org/certifications/security" target="_blank" rel="noopener noreferrer">CompTIA Security+</a></li>
+                     <li><a href="https://www.cisco.com/site/us/en/learn/training-certifications/certifications/enterprise/ccna/index.html" target="_blank" rel="noopener noreferrer">Cisco Certified Network Associate (CCNA)</a></li>
+                     <li><a href="https://learn.microsoft.com/en-us/credentials/certifications/windows-server-hybrid-administrator/" target="_blank" rel="noopener noreferrer">Microsoft Certified: Windows Server Hybrid Administrator Associate</a> (successor to retired MTA: Windows Server Fundamentals)</li>
+                     <li><a href="https://www.isc2.org/Certifications/CISSP" target="_blank" rel="noopener noreferrer">Certified Information Systems Security Professional (CISSP)</a></li>
+                     <li><a href="https://www.isaca.org/credentialing/cism" target="_blank" rel="noopener noreferrer">Certified Information Security Manager (CISM)</a></li>
+                     <li><a href="https://www.eccouncil.org/train-certify/certified-network-defender-cnd-north-america/" target="_blank" rel="noopener noreferrer">EC-Council Certified Network Defender (CND)</a></li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>NERC Reliability Coordinator</h3>
+                  <p class="info"><em class="date">Past - Not Active (Earned)</em></p>
+                  <p>
+                     <a href="https://www.nerc.com/globalassets/programs/system-operator-certification--continuing-education/system_operator_reference_guide.pdf" target="_blank" rel="noopener noreferrer">Operator Reference Guide</a>
+                     &nbsp;|&nbsp;
+                     <a href="https://www.nerc.com/globalassets/programs/system-operator-certification--continuing-education/soc_exam_statistics.pdf" target="_blank" rel="noopener noreferrer">Certification Exam Statistics</a>
+                  </p>
+               </div>
+            </div>
+
+         </div> <!-- main-col end -->
+
+      </div> <!-- End Certifications -->
+
+
+      <!-- Education
+      ----------------------------------------------- -->
+      <div class="row education">
+
+         <div class="three columns header-col">
+            <h1><span>Education</span></h1>
+         </div>
+
+         <div class="nine columns main-col">
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>United States Marine Corps</h3>
+                  <p class="info">Tactical Data Systems Technology (MOS-5974) <span>&bull;</span> <em class="date">January 2003 - January 2007</em></p>
+                  <p>Formal military technical training in tactical data systems administration, network infrastructure,
+                     and secure communications supporting joint operations environments.</p>
+               </div>
+            </div>
 
          </div> <!-- main-col end -->
 
       </div> <!-- End Education -->
 
 
-      <!-- Work
+      <!-- Expertise
       ----------------------------------------------- -->
       <div class="row work">
 
          <div class="three columns header-col">
-            <h1><span>Work</span></h1>
+            <h1><span>Expertise</span></h1>
          </div>
 
          <div class="nine columns main-col">
 
             <div class="row item">
-
                <div class="twelve columns">
-
-                  <h3>Indiana Office of Technology</h3>
-                  <p class="info">Cloud Solutions Enterprise Architect <span>&bull;</span> <em class="date">October 2018 - Present</em></p>
-
-                  <p>
-                     <li>Primary solutions architect responsible for implmenting the management groups/subscriptions Identity Access Management scafolding model within the Microsoft Azure Commercial and Azure US Government clouds being leveraged by State of Indiana executive agencies.</li>
-                     <li>Developed and implemented a hub and spoke network model to enable hybrid connectivity between many segmented cloud and on-premises workloads via Internet2 / ExpressRoute private peering. </li>
-                     <li>Envisioned the strategy for implementing multiple Azure DevOps organization and project structures in order for executive agencies to deploy programs to cloud and on-premises runtimes. </li>
-                     <li>Rapidly implemented a solution and means for operationally managing Azure Virtual Desktops in March 2020 for thousands of state employees to continue fulfilling critical duties throughout the COVID-19 pandemic.  </li>
-                     <li>Functions as a technical advisor and escalation point for dedicated cloud operations engineers.</li>
-                  </p>
-
+                  <h3>Current Focus</h3>
+                  <ul class="expertise-list">
+                     <li>Building and maturing statewide cloud and AI capabilities in complex enterprise environments</li>
+                     <li>Advancing software delivery standards and platform governance for custom application teams</li>
+                     <li>Applying AI and workflow automation to practical business and operational use cases</li>
+                     <li>Demonstrating modern architecture patterns through hands-on project work, prototypes, and structured technical documentation</li>
+                  </ul>
                </div>
-
-            </div> <!-- item end -->
+            </div>
 
             <div class="row item">
-
                <div class="twelve columns">
-
-                  <h3>Aprimo</h3>
-                  <p class="info">Azure DevOps Engineer <span>&bull;</span> <em class="date">March 2012 - April 2018</em></p>
-
-                  <p>
-                  <li>Cloud DevOps Engineer that assisted the company modernize a monolithic application architecture from private cloud to Azure Public Cloud.</li>
-                  </p>
-
+                  <h3>Areas of Practice</h3>
+                  <ul class="expertise-list">
+                     <li><strong>Cloud &amp; Hybrid Architecture</strong> &mdash; Azure, AWS, GCP, and traditional enterprise infrastructure</li>
+                     <li><strong>AI Platform Strategy</strong> &mdash; Governed experimentation, enterprise AI services, indexing, and applied ML workflows</li>
+                     <li><strong>Adaptive Agent Workflows</strong> &mdash; Human-in-the-loop design for reliability, safety, and operational usefulness</li>
+                     <li><strong>SDLC Modernization</strong> &mdash; Policy-driven platforms, IaC, CI/CD, and delivery guardrails</li>
+                     <li><strong>Application Observability</strong> &mdash; APM integration for performance, supportability, and operational maturity</li>
+                     <li><strong>Enterprise Governance</strong> &mdash; Security, compliance, cost accountability, and scalable service delivery</li>
+                  </ul>
                </div>
-
-            </div> <!-- item end -->
-
-            <div class="row item">
-
-               <div class="twelve columns">
-
-                  <h3>Lockheed Martin</h3>
-                  <p class="info">Information Technology System Administrator <span>&bull;</span> <em class="date">September 2008 - January 2012 </em></p>
-                  <p>
-                  <li>Tier 2 and then Tier 3 Support of the IT Services for the Federal Department of Homeland Security (DHS)</li>
-                  </p>
-
-               </div>
-
-            </div> <!-- item end -->
-
-            <div class="row item">
-
-               <div class="twelve columns">
-
-                  <h3>United State Marine Corps</h3>
-                  <p class="info">Tactical Data Systems Administrator (MOS-5974)<span>&bull;</span> <em class="date">October 2003 - December 2007</em></p>
-
-                  <p>
-                  <li>Subject Matter Expert responsible for maintaining an operational ready Theater Battle Management Core System (TBMCS) and Perimeter Security System (PSS). TBMCS contains: Exchange server, domain controller, terminal server, web host, Oracle database server, and facilitates an up to 40,000 Unix and Windows clients.</li>
-                  <li>Responsible for the operation, testing, and cooperative engagement capability of tactical data links in the Marine Tactical Air Command Center in a joint multi-TADIL environment.</li>
-                  </p>
-
-               </div>
-
-            </div> <!-- item end -->
+            </div>
 
          </div> <!-- main-col end -->
 
-      </div> <!-- End Work -->
+      </div> <!-- End Expertise -->
 
 
-      
+      <!-- Work Experience
+      ----------------------------------------------- -->
+      <div class="row work">
+
+         <div class="three columns header-col">
+            <h1><span>Experience</span></h1>
+         </div>
+
+         <div class="nine columns main-col">
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Indiana Office of Technology</h3>
+                  <p class="info">Cloud Solutions Enterprise Architect <span>&bull;</span> <em class="date">October 2018 - Present</em></p>
+                  <ul>
+                     <li>Primary solutions architect for Azure Commercial and Azure US Government cloud identity, networking, and governance.</li>
+                     <li>Designed hub-and-spoke network model enabling hybrid connectivity via Internet2 / ExpressRoute private peering.</li>
+                     <li>Led Azure Virtual Desktop rollout for thousands of state employees during COVID-19.</li>
+                     <li>Technical advisor and escalation point for dedicated cloud operations engineers.</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Aprimo</h3>
+                  <p class="info">Azure DevOps Engineer <span>&bull;</span> <em class="date">March 2012 - April 2018</em></p>
+                  <ul>
+                     <li>Cloud DevOps Engineer modernizing monolithic application architecture from private cloud to Azure Public Cloud.</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Lockheed Martin</h3>
+                  <p class="info">IT System Administrator <span>&bull;</span> <em class="date">September 2008 - January 2012</em></p>
+                  <ul>
+                     <li>Tier 2 and Tier 3 IT Services support for the Federal Department of Homeland Security (DHS).</li>
+                  </ul>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>United States Marine Corps</h3>
+                  <p class="info">Tactical Data Systems Administrator (MOS-5974) <span>&bull;</span> <em class="date">October 2003 - December 2007</em></p>
+                  <ul>
+                     <li>Subject Matter Expert for Theater Battle Management Core System (TBMCS) and Perimeter Security System (PSS), supporting up to 40,000 Unix and Windows clients.</li>
+                     <li>Operated and tested tactical data links in the Marine Tactical Air Command Center in a joint multi-TADIL environment.</li>
+                  </ul>
+               </div>
+            </div>
+
+         </div> <!-- main-col end -->
+
+      </div> <!-- End Experience -->
 
    </section> <!-- Resume Section End-->
 
-    <!-- Tech Stack Section
+
+   <!-- AgentGitOps Section
    ================================================== -->
-   <section id="portfolio">
+   <section id="agentgitops">
 
-      <!-- Azure Services
-      ----------------------------------------------- -->
-      <div class="row portfolio-item">
+      <div class="row">
 
          <div class="three columns header-col">
-            <h1><span>Azure Services</span></h1>
+            <h1><span>AgentGitOps</span></h1>
          </div>
 
          <div class="nine columns main-col">
-            
+
+            <h2>AI-Driven Project Delivery</h2>
+
+            <p>This resume site is being modernized end-to-end using <strong>AgentGitOps</strong> &mdash; a methodology
+               that combines GitHub Copilot coding agent, GitHub Issues, GitHub Projects, and GitHub Actions workflows
+               to deliver infrastructure and application changes through an AI-assisted, human-supervised pipeline.</p>
+
+            <h3>How It Works</h3>
+
+            <p>The approach follows a structured, multi-phase workflow:</p>
+
+            <ul class="agentgitops-list">
+               <li><strong>Assessment</strong> &mdash; An AI agent reads the entire codebase, IaC templates, workflows, and configuration
+                  to produce architecture documentation, assessment CLI commands, and a known-issues inventory.</li>
+               <li><strong>Backlog Research</strong> &mdash; The agent generates a phased backlog plan with individual issue definitions
+                  stored as markdown files with YAML frontmatter, enabling scripted label extraction and creation.</li>
+               <li><strong>Issue Population</strong> &mdash; Automation scripts create GitHub labels, milestones, and issues via the
+                  <code>gh</code> CLI, producing a fully labeled, project-tracked backlog ready for sprint planning.</li>
+               <li><strong>Backlog Burn-Down</strong> &mdash; Issues labeled <em>Copilot: Yes</em> are assigned to the GitHub Copilot
+                  coding agent, which creates feature branches, implements changes, and opens pull requests.
+                  <em>Copilot: Partial</em> tasks are worked collaboratively in Codespaces with human oversight.</li>
+               <li><strong>Phase Retrospectives</strong> &mdash; At each phase boundary, a retrospective script collects issue, PR, and
+                  commit statistics to calculate Human vs. Copilot AI Productivity KPIs, tracking AI leverage at both
+                  the task level and commit level.</li>
+            </ul>
+
+            <h3>Applied to This Site</h3>
+
+            <p>This <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac">azure-resume-iac</a> repository uses
+               the AgentGitOps workflow across six phases: Assessment, Fix Function App, Content Update, Dev Deployment,
+               Prod Deployment, and Cleanup &amp; Docs. The project backlog includes 59+ issues with structured labels for
+               phase, priority, size, area, and Copilot suitability &mdash; enabling filtered views for sprint planning,
+               roadmap tracking, and an AI task queue.</p>
+
+            <p>Key project infrastructure includes:</p>
+            <ul class="agentgitops-list">
+               <li>Azure Bicep IaC targeting Azure Functions (.NET 8), Cosmos DB, Key Vault, and Storage Accounts</li>
+               <li>Cloudflare CDN with WAF for origin protection and geo-restricted access</li>
+               <li>GitHub Actions CI/CD with path-filtered workflows for backend, frontend, and infrastructure</li>
+               <li>GitHub Projects (V2) with custom fields for Phase, Priority, Size, and Copilot Suitability</li>
+            </ul>
+
+            <h3>Bootstrap for Any Repository</h3>
+
+            <p>The AgentGitOps workflow is designed to be <strong>repository-agnostic</strong>. The same backlog builder
+               pattern can be applied to any new or existing repository for:</p>
+
+            <ul class="agentgitops-list">
+               <li>Application framework upgrades (e.g., .NET Core 3.1 &rarr; .NET 8)</li>
+               <li>Cloud service provider migrations (e.g., Azure CDN &rarr; Cloudflare)</li>
+               <li>Security hardening and compliance remediation</li>
+               <li>Cost optimization and resource right-sizing</li>
+               <li>Greenfield project scaffolding with structured delivery phases</li>
+            </ul>
+
+            <p>The process is documented in
+               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/docs/backlog_workflow.md">docs/backlog_workflow.md</a>
+               and the backlog planning guide at
+               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/docs/BACKLOG_PLANNING.md">docs/BACKLOG_PLANNING.md</a>,
+               providing a repeatable bootstrap approach for any team looking to leverage AI-assisted project delivery.</p>
+
+         </div> <!-- end .main-col -->
+
+      </div>
+
+   </section> <!-- AgentGitOps Section End-->
+
+
+   <!-- Projects Section
+   ================================================== -->
+   <section id="projects">
+
+      <div class="row">
+
+         <div class="three columns header-col">
+            <h1><span>Projects</span></h1>
+         </div>
+
+         <div class="nine columns main-col">
+
             <div class="row item">
-
                <div class="twelve columns">
-
-                  <h3>Azure Cosmos Document DB</h3>
-                  <p class="info"><em class="date">Some Info</em></p>
-                  <p><a href="https://azure.microsoft.com/en-us/services/cosmos-db/developer-resources/#reference-architectures"> Reference Architectures</a></p> 
-                  <!-- <P><img class="profile-pic"  src="images/certs/microsoft-certified-azure-solutions-architect-expert.1.png" alt="" /></P> -->
-                  
-
+                  <h3>Enterprise CI/CD Platform Strategy</h3>
+                  <p class="info">Developer Enablement &amp; Governance <span>&bull;</span> <em class="date">Ongoing</em></p>
+                  <p>Led long-term standardization of state delivery platforms, beginning with an Azure DevOps multi-organization
+                     strategy and evolving toward GitHub Enterprise Cloud core services that enable governed adoption of GitHub
+                     Copilot at scale. Drove developer enablement, enterprise governance, and secure SDLC modernization across
+                     executive agency engineering teams.</p>
                </div>
-
             </div>
-            
-         </div> <!-- main-col end -->
-
-      </div> <!-- End Tech Stack Section -->
-
-
-      <!-- Implementation Section
-      ----------------------------------------------- -->
-      <div class="row work">
-
-         <div class="three columns header-col">
-            <h1><span>Implementation</span></h1>
-         </div>
-
-         <div class="nine columns main-col">
 
             <div class="row item">
-
                <div class="twelve columns">
-
-                  <h3>GitHub</h3>
-                  <p class="info">Repositories <span>&bull;</span> <em class="date">Azure-Resume</em></p>
-
-                  <!-- <p>
-                     <li>Primary solutions architect responsible for implmenting the management groups/subscriptions Identity Access Management scafolding model within the Microsoft Azure Commercial and Azure US Government clouds being leveraged by State of Indiana executive agencies.</li>
-                     <li>Developed and implemented a hub and spoke network model to enable hybrid connectivity between many segmented cloud and on-premises workloads via Internet2 / ExpressRoute private peering. </li>
-                     <li>Envisioned the strategy for implementing multiple Azure DevOps organization and project structures in order for executive agencies to deploy programs to cloud and on-premises runtimes. </li>
-                     <li>Rapidly implemented a solution and means for operationally managing Azure Virtual Desktops in March 2020 for thousands of state employees to continue fulfilling critical duties throughout the COVID-19 pandemic.  </li>
-                     <li>Functions as a technical advisor and escalation point for dedicated cloud operations engineers.</li>
-                  </p> -->
-
+                  <h3>Indiana DOE Ed-Fi Replatforming</h3>
+                  <p class="info">Azure PaaS &amp; Platform Engineering <span>&bull;</span> <em class="date">Completed</em></p>
+                  <p>Architected the migration of a major Ed-Fi-based education data system from traditional infrastructure
+                     to Azure PaaS delivery using CI/CD pipelines, Azure DevOps, Octopus Deploy, ARM, and later Bicep.
+                     Improved deployment reliability and operational resilience for a high-volume state system serving
+                     thousands of schools statewide.</p>
                </div>
+            </div>
 
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Google Identity / GCP Landing Zone Remediation</h3>
+                  <p class="info">Cloud Identity &amp; IAM Strategy <span>&bull;</span> <em class="date">Completed</em></p>
+                  <p>Assessed a misconfigured Google identity environment with hundreds of unmanaged users, then planned a
+                     corrected IAM strategy centered on Okta federation, Google Cloud organization hierarchy, and workload
+                     alignment by agency and environment tier. Designed a Cloud Foundation Fabric FAST-style staged landing
+                     zone deployment orchestrated through GitHub workflows.</p>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Azure Hub-and-Spoke Enterprise Network Strategy</h3>
+                  <p class="info">Enterprise Cloud Governance <span>&bull;</span> <em class="date">Ongoing</em></p>
+                  <p>Designed enterprise Azure management group and hub-and-spoke architecture with centralized connectivity,
+                     shared services, policy alignment, and workload isolation across landing zones. Established scalable
+                     governance patterns and repeatable enterprise cloud design supporting multiple agency workloads.</p>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>eGroup RAG for State Law Research</h3>
+                  <p class="info">Applied Generative AI &amp; Search <span>&bull;</span> <em class="date">Completed</em></p>
+                  <p>Built a retrieval-augmented generation application on Azure AI Services, adapted from a Postgres/OpenAI
+                     sample to index approximately 33,000 pages of Indiana State Code PDFs. Extended the architecture with a
+                     California State Code variant that converted database objects into document-style embeddings for Azure AI
+                     Search-backed chat retrieval, accelerating legal research and improving search relevance.</p>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>Azure ML Stock Model Training</h3>
+                  <p class="info">Machine Learning &amp; MLOps <span>&bull;</span> <em class="date">Completed</em></p>
+                  <p>Developed an Azure Machine Learning workflow that trained market models from ticker stream data and
+                     produced serialized <code>.pkl</code> artifacts for downstream inference. Managed experiment execution,
+                     model registration and versioning, and practical ML pipeline design within Azure ML Studio.</p>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3><a href="https://github.com/rmcveyhsawaknow/azure-resume-iac">azure-resume-iac</a></h3>
+                  <p class="info">Azure PaaS Resume Site with AgentGitOps <span>&bull;</span> <em class="date">Active</em></p>
+                  <p>End-to-end infrastructure-as-code and application delivery for this resume site, built on Azure Storage,
+                     Azure Functions (.NET 8), and Cosmos DB with Cloudflare CDN. Demonstrates the AgentGitOps backlog builder
+                     workflow with phased delivery, GitHub Copilot coding agent integration, and automated phase retrospectives
+                     tracking Human vs. AI productivity KPIs.</p>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3><a href="https://github.com/rmcveyhsawaknow/ThisOrThatDesign">ThisOrThatDesign Digital Product Pipeline</a></h3>
+                  <p class="info">Maker-Business &amp; GitOps Workflow <span>&bull;</span> <em class="date">Active</em></p>
+                  <p>Operates <a href="https://thisorthatdesign.com">thisorthatdesign.com</a> as a maker-business platform
+                     using GitHub Agent/GitOps-style backlog management to turn concepts into shippable UV-printed and
+                     engraved products. Integrates Shopify order flow, custom design validation, AI-assisted patch concept
+                     generation, and digital asset preparation for production.</p>
+               </div>
+            </div>
+
+            <div class="row item">
+               <div class="twelve columns">
+                  <h3>CAD/CAM Dragster Build</h3>
+                  <p class="info">Digital Fabrication &amp; Precision Manufacturing <span>&bull;</span> <em class="date">Completed</em></p>
+                  <p>Self-taught CAD/CAM effort using Fusion 360 and a Pocket NC V2 five-axis mill to design and machine a
+                     1:10 scale dragster from billet aluminum. Demonstrated hands-on digital fabrication skills with
+                     end-to-end design-to-toolpath execution and precision manufacturing techniques.</p>
+               </div>
+            </div>
 
          </div> <!-- main-col end -->
 
-      </div> <!-- End Work -->
+      </div>
 
-
-      
-
-   </section> <!-- End Implementation Section-->
+   </section> <!-- Projects Section End-->
 
 
    <!-- footer
@@ -347,10 +593,9 @@
          <div class="twelve columns">
 
             <ul class="social-links">
-               <li><a href="https://www.linkedin.com/in/ryan-mcvey-897008228/"><i class="fa fa-linkedin"></i></a></li>
-               <!--<li><a href="https://blog.ryanmcvey.me"><i class="fa fa-external-link"></i></a></li> -->
-               <li><a href="https://github.com/rmcveyhsawaknow/"><i class="fa fa-github"></i></a></li>
-               <li><a href="https://community.pocketnc.com/u/daclubber/summary/"><i class='fa fa-barcode' style='color: green'></i></a></li>
+               <li><a href="https://www.linkedin.com/in/ryan-mcvey-897008228/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile" title="LinkedIn profile"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+               <li><a href="https://github.com/rmcveyhsawaknow/" target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" title="GitHub profile"><i class="fa fa-github" aria-hidden="true"></i></a></li>
+               <li><a href="https://learn.microsoft.com/en-us/users/rmcveyhsawaknow/" target="_blank" rel="noopener noreferrer" aria-label="Microsoft Learn profile" title="Microsoft Learn profile"><i class="fa fa-book" aria-hidden="true"></i></a></li>
             </ul>
 
             <ul class="copyright">

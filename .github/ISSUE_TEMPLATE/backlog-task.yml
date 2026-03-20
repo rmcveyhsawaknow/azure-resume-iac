@@ -1,0 +1,110 @@
+name: Backlog Task
+description: Task from the Azure resume site update backlog
+title: "[Phase {phase}] {task_title}"
+labels: ["backlog"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Backlog Task Details
+        Fill in the details for this backlog item. Fields marked with * are required.
+
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      description: "Unique identifier matching phase.sequence (e.g., 0.1, 1.3)"
+      placeholder: "0.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: "Which project phase does this task belong to?"
+      options:
+        - "Phase 0 - Assessment"
+        - "Phase 1 - Fix Function App"
+        - "Phase 2 - Content Update"
+        - "Phase 3 - Dev Deployment"
+        - "Phase 4 - Prod Deployment"
+        - "Phase 5 - Cleanup & Docs"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: "Detailed description of the work to be done"
+    validations:
+      required: true
+
+  - type: input
+    id: depends_on
+    attributes:
+      label: Dependencies (Task IDs)
+      description: "Comma-separated list of task IDs this depends on"
+      placeholder: "0.1, 0.2"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - "P1 – Critical"
+        - "P2 – High"
+        - "P3 – Medium"
+        - "P4 – Low"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Estimated Size
+      description: "T-shirt size estimate for effort"
+      options:
+        - "S (half-day)"
+        - "M (1–2 days)"
+        - "L (3–5 days)"
+        - "XL (1 week+)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: copilot_suitable
+    attributes:
+      label: Copilot Suitable
+      description: "Can this task be completed or assisted by GitHub Copilot agents?"
+      options:
+        - "Yes"
+        - "Partial"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: "What must be true for this task to be considered done?"
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: copilot_instructions
+    attributes:
+      label: Copilot Instructions Reference
+      description: "Applicable copilot instructions or awesome-copilot references for this task"
+      placeholder: "e.g., github/awesome-copilot/instructions/bicep.md"
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Assessment Notes
+      description: "Notes from Phase 0 assessment or other context (populated after assessment)"

@@ -1,0 +1,307 @@
+# Architecture Reference
+
+This document provides a detailed reference of the Azure Resume IaC architecture, resource inventory, and Bicep module structure.
+
+## High-Level Architecture
+
+```
+                    ┌──────────────────────────────────────────────────┐
+                    │              Cloudflare (Free Plan)              │
+                    │  DNS zone: ryanmcvey.me                          │
+                    │  CNAME: resume → storage static site endpoint    │
+                    │  Proxy: enabled (orange cloud) for TLS + CDN    │
+                    │  asverify CNAME: DNS-only for domain validation  │
+                    └──────────────┬───────────────────────────────────┘
+                                   │
+        ┌──────────────────────────▼───────────────────────────┐
+        │              Frontend Resource Group                  │
+        │         cus1-resume-fe-prod-v1-rg                    │
+        │                                                       │
+        │  ┌─────────────────┐                                │
+        │  │  Storage Acct   │                                │
+        │  │  Static Website │                                │
+        │  │  (cus1resume     │                                │
+        │  │   prodv1sa)      │                                │
+        │  └─────────────────┘                                │
+        │                                                       │
+        │  ┌─────────────────┐                                 │
+        │  │  App Insights   │  (frontend monitoring)          │
+        │  └─────────────────┘                                 │
+        └──────────────────────────────────────────────────────┘
+                                   │
+                    fetch() call from frontend main.js
+                                   │
+        ┌──────────────────────────▼───────────────────────────┐
+        │              Backend Resource Group                    │
+        │         cus1-resume-be-prod-v1-rg                    │
+        │                                                       │
+        │  ┌─────────────────┐  ┌───────────────┐             │
+        │  │  Function App   │  │  App Service  │             │
+        │  │  (cus1-resumectr│  │  Plan (Y1     │             │
+        │  │   -prod-v1-fa)  │  │  serverless)  │             │
+        │  └────────┬────────┘  └───────────────┘             │
+        │           │                                           │
+        │  ┌────────▼────────┐  ┌───────────────┐             │
+        │  │   Cosmos DB     │  │  Key Vault    │             │
+        │  │  (serverless)   │  │  (connection  │             │
+        │  │  SQL API        │  │   strings)    │             │
+        │  └─────────────────┘  └───────────────┘             │
+        │                                                       │
+        │  ┌─────────────────┐  ┌───────────────┐             │
+        │  │  Storage Acct   │  │  App Insights │             │
+        │  │  (function app) │  │  (backend APM)│             │
+        │  └─────────────────┘  └───────────────┘             │
+        └──────────────────────────────────────────────────────┘
+
+        ┌──────────────────────────────────────────────────────┐
+        │              DNS Resource Group                       │
+        │         glbl-ryanmcveyme-v1-rg                       │
+        │  (Pre-existing, managed separately)                  │
+        │  Azure DNS zones (used by Azure CDN variant only)    │
+        └──────────────────────────────────────────────────────┘
+```
+
+## Resource Naming Convention
+
+All resources follow a consistent naming pattern:
+
+```
+{locationCode}-{appName}-{environment}-{version}-{resourceType}
+```
+
+| Component | Description | Examples |
+|---|---|---|
+| `locationCode` | Short code used in resource names (note: `cus1` deploys to `eastus` per workflow `stackLocation`) | `cus1` (active Cloudflare workflows), `zus1` (disabled Azure CDN variant) |
+| `appName` | Application identifier | `resume` (frontend), `resumectr` (backend) |
+| `environment` | Deployment tier | `prod`, `dev` |
+| `version` | Stack version | `v1` |
+| `resourceType` | Azure resource suffix | `rg`, `fa`, `kv`, `sa`, `cmsdb`, `ai`, `asp` |
+
+**Storage account names** omit hyphens (Azure requirement): `{locationCode}{appName}{environment}{version}sa`
+
+## Production Resource Inventory (v1)
+
+### Resource Groups
+
+| Resource Group | Purpose |
+|---|---|
+| `cus1-resume-be-prod-v1-rg` | Backend: Cosmos DB, Function App, Key Vault, Storage, App Insights |
+| `cus1-resume-fe-prod-v1-rg` | Frontend: Storage Account (static site), App Insights |
+| `glbl-ryanmcveyme-v1-rg` | DNS zones (pre-existing, shared) |
+
+### Backend Resources
+
+| Resource | Name | Type | SKU/Tier |
+|---|---|---|---|
+| Cosmos DB Account | `cus1-resume-prod-v1-cmsdb` | `Microsoft.DocumentDB/databaseAccounts` | Serverless |
+| Cosmos DB Database | `azure-resume-click-count` | SQL Database | — |
+| Cosmos DB Container | `Counter` | SQL Container | Partition key: `/id` |
+| Function App | `cus1-resumectr-prod-v1-fa` | `Microsoft.Web/sites` | Consumption (Y1) |
+| App Service Plan | `cus1-resumectr-prod-v1-asp` | `Microsoft.Web/serverfarms` | Y1 (Dynamic) |
+| Key Vault | `cus1-resume-prod-v1-kv` | `Microsoft.KeyVault/vaults` | Standard |
+| Storage Account | `cus1resumectrprodv1sa` | `Microsoft.Storage/storageAccounts` | StorageV2 |
+| App Insights | `cus1-resumectr-prod-v1-ai` | `Microsoft.Insights/components` | Web |
+
+### Frontend Resources
+
+| Resource | Name | Type | Custom Domain |
+|---|---|---|---|
+| Storage Acct | `cus1resumeprodv1sa` | Static Website | `resume.ryanmcvey.me` |
+| App Insights | `cus1-resume-prod-v1-ai` | `Microsoft.Insights/components` | — |
+
+### DNS Configuration (Cloudflare)
+
+| Zone | Record Type | Name | Content | Proxy |
+|---|---|---|---|---|
+| `ryanmcvey.me` | CNAME | `resume` | `cus1resumeprodv1sa.z13.web.core.windows.net` | Proxied (orange) |
+| `ryanmcvey.me` | CNAME | `asverify.resume` | `asverify.cus1resumeprodv1sa...` | DNS only |
+
+## Development Resource Inventory (v1)
+
+The development environment uses the same naming convention and Bicep templates as production, differentiated by the `stackEnvironment` suffix (`dev` instead of `prod`) and a versioned custom domain prefix (`resumedevv1` instead of `resume`).
+
+| Variable | Production | Development |
+|---|---|---|
+| `stackVersion` | `v1` | `v1` |
+| `stackEnvironment` | `prod` | `dev` |
+| `stackLocation` | `eastus` | `eastus` |
+| `stackLocationCode` | `cus1` | `cus1` |
+| `AppName` | `resume` | `resume` |
+| `AppBackendName` | `resumectr` | `resumectr` |
+| `customDomainPrefix` | `resume` | `resumedevv1` |
+| Branch trigger | `main` | `develop` |
+| DNS subdomain | `resume.ryanmcvey.me` | `resumedevv1.ryanmcvey.me` |
+
+### Resource Groups
+
+| Resource Group | Purpose |
+|---|---|
+| `cus1-resume-be-dev-v1-rg` | Backend: Cosmos DB, Function App, Key Vault, Storage, App Insights |
+| `cus1-resume-fe-dev-v1-rg` | Frontend: Storage Account (static site), App Insights |
+| `glbl-ryanmcveyme-v1-rg` | DNS zones (pre-existing, shared with production) |
+
+### Backend Resources
+
+| Resource | Name | Type | SKU/Tier |
+|---|---|---|---|
+| Cosmos DB Account | `cus1-resume-dev-v1-cmsdb` | `Microsoft.DocumentDB/databaseAccounts` | Serverless |
+| Cosmos DB Database | `azure-resume-click-count` | SQL Database | — |
+| Cosmos DB Container | `Counter` | SQL Container | Partition key: `/id` |
+| Function App | `cus1-resumectr-dev-v1-fa` | `Microsoft.Web/sites` | Consumption (Y1) |
+| App Service Plan | `cus1-resumectr-dev-v1-asp` | `Microsoft.Web/serverfarms` | Y1 (Dynamic) |
+| Key Vault | `cus1-resume-dev-v1-kv` | `Microsoft.KeyVault/vaults` | Standard |
+| Storage Account | `cus1resumectrdevv1sa` | `Microsoft.Storage/storageAccounts` | StorageV2 |
+| App Insights | `cus1-resumectr-dev-v1-ai` | `Microsoft.Insights/components` | Web |
+
+### Frontend Resources
+
+| Resource | Name | Type | Custom Domain |
+|---|---|---|---|
+| Storage Acct | `cus1resumedevv1sa` | Static Website | `resumedevv1.ryanmcvey.me` |
+| App Insights | `cus1-resume-dev-v1-ai` | `Microsoft.Insights/components` | — |
+
+### DNS Configuration (Cloudflare)
+
+| Zone | Record Type | Name | Content | Proxy |
+|---|---|---|---|---|
+| `ryanmcvey.me` | CNAME | `resumedevv1` | `cus1resumedevv1sa.z13.web.core.windows.net` | Proxied (orange) |
+| `ryanmcvey.me` | CNAME | `asverify.resumedevv1` | `asverify.cus1resumedevv1sa.z13.web.core.windows.net` | DNS only |
+
+### Key URLs
+
+| URL | Purpose |
+|---|---|
+| `https://resumedevv1.ryanmcvey.me` | Dev frontend (via Cloudflare proxy + TLS) |
+| `https://cus1resumedevv1sa.z13.web.core.windows.net` | Dev static site (direct Azure Storage endpoint) |
+| `https://cus1-resumectr-dev-v1-fa.azurewebsites.net/api/GetResumeCounter` | Dev Function App API endpoint |
+
+### Key Vault Secrets
+
+| Secret Name | Content |
+|---|---|
+| `AzureResumeConnectionStringPrimary` | Cosmos DB primary connection string (from `cus1-resume-dev-v1-cmsdb`) |
+| `AzureResumeConnectionStringSecondary` | Cosmos DB secondary connection string (from `cus1-resume-dev-v1-cmsdb`) |
+
+### CI/CD Configuration
+
+| Setting | Value |
+|---|---|
+| Workflow | `dev-full-stack-cloudflare.yml` |
+| Branch | `develop` |
+| GitHub Environment | `development` |
+| CORS Origin | `https://resumedevv1.ryanmcvey.me` |
+| Function Runtime | `dotnet-isolated` (.NET 8, Functions v4) |
+| Change Detection | `dorny/paths-filter` on `.iac/**`, `backend/**`, `frontend/**` |
+| Job Flow | `changes` → `deployDevelopmentIac` → `buildDeployDevelopmentBackend` → `buildDeployDevelopmentFrontend` |
+
+> **See also:** [Dev Environment Architecture Diagram](dev-environment-diagram.md) for a visual representation of the development stack.
+
+## Bicep Module Reference
+
+### Main Templates
+
+#### `backend.bicep` (Subscription Scope)
+
+Orchestrates all backend resources:
+- Creates the backend resource group
+- Deploys Cosmos DB via `modules/cosmos/cosmos.bicep`
+- Deploys Function App stack via `modules/functionapp/functionapp.bicep`
+- Passes Cosmos DB outputs (connection strings) to the function app module
+
+**Key Parameters:**
+- Resource group name, Cosmos DB configuration
+- Function App naming (storage, App Insights, ASP, function app, Key Vault)
+- CORS URIs (ryanmcvey.me custom domain + CDN endpoint)
+- Tagging (Git Action run metadata, environment, cost center)
+
+#### `frontend.bicep` (Subscription Scope)
+
+Orchestrates frontend resources:
+- Creates the frontend resource group
+- Deploys storage account via `modules/storageaccount/sa_staticsite.bicep`
+- Deploys App Insights via `modules/apm/appinsights.bicep`
+
+> **Note:** Static website hosting is enabled post-deployment by the GitHub Actions workflow using `az storage blob service-properties update`, not by Bicep.
+
+#### `frontendCdn.bicep` (Subscription Scope)
+
+Used only by the Azure CDN workflow variant (currently disabled):
+- Deploys Azure Front Door Standard/Premium profile
+- Configures custom domain with managed TLS certificate
+- Creates Azure DNS records for domain validation
+
+### Modules
+
+| Module | Path | Purpose |
+|---|---|---|
+| `appinsights.bicep` | `modules/apm/` | Creates Application Insights component |
+| `cdn.bicep` | `modules/cdn/` | Azure Front Door profile, endpoint, origin group, custom domain, route |
+| `cdnClassic.bicep` | `modules/cdn/` | Classic CDN profile (not currently used) |
+| `cosmos.bicep` | `modules/cosmos/` | Cosmos DB account (serverless), SQL database, container |
+| `azuredns.bicep` | `modules/dns/` | Azure DNS CNAME and TXT records (for Azure CDN variant) |
+| `functionapp.bicep` | `modules/functionapp/` | Function App, ASP, Storage, App Insights, Key Vault with secrets |
+| `kv.bicep` | `modules/keyvault/` | Standalone Key Vault creation (not currently used in main flow) |
+| `createKeyVaultSecret.bicep` | `modules/keyvault/` | Helper to create a single Key Vault secret |
+| `sa_staticsite.bicep` | `modules/storageaccount/` | Storage account for static website hosting |
+
+## Function App Details
+
+### Runtime Configuration
+
+| Setting | Value |
+|---|---|
+| Runtime | .NET Core 3.1 (netcoreapp3.1) |
+| Functions Version | v3 (`FUNCTIONS_EXTENSION_VERSION: ~3`) |
+| Worker Runtime | `dotnet` |
+| Hosting Plan | Consumption (Y1, serverless) |
+| Auth Level | Function (requires function key) |
+
+### App Settings (via Bicep/Key Vault)
+
+| Setting | Source | Purpose |
+|---|---|---|
+| `AzureResumeConnectionStringPrimary` | Key Vault reference | Cosmos DB primary connection string |
+| `AzureResumeConnectionStringSecondary` | Key Vault reference | Cosmos DB secondary connection string |
+| `APPLICATIONINSIGHTS_CONNECTION_STRING` | App Insights output | APM connection (full format with IngestionEndpoint and LiveEndpoint) |
+| `AzureWebJobsStorage` | Storage account | Function runtime storage |
+| `WEBSITE_CONTENTAZUREFILECONNECTIONSTRING` | Storage account | Content share |
+| `FUNCTIONS_WORKER_RUNTIME` | `dotnet` | Runtime identifier |
+| `FUNCTIONS_EXTENSION_VERSION` | `~3` | Functions host version |
+
+### Cosmos DB Schema
+
+```json
+{
+  "id": "1",
+  "count": 0
+}
+```
+
+- **Database:** `azure-resume-click-count`
+- **Container:** `Counter`
+- **Partition Key:** `/id`
+- **Consistency:** Eventual
+- **Capacity Mode:** Serverless
+
+## Frontend Details
+
+### Static Site Content
+
+The frontend is a single-page resume website served from Azure Storage static website hosting. Key files:
+
+| File | Purpose |
+|---|---|
+| `index.html` | Main resume page with sections: Header, About, Resume, Counter |
+| `main.js` | Visitor counter fetch logic + text rotation animation |
+| `js/azure_app_insights.js` | Application Insights SDK initialization |
+| `css/` | Core styles, Font Awesome 4.x, Fontello icons |
+| `js/` | jQuery 1.10.2, FitText, FlexSlider, Magnific Popup, Modernizr, Waypoints |
+
+### Hardcoded Configuration Values
+
+These values in the frontend source must be updated manually after each new stack deployment:
+
+| File | Value | Current Content |
+|---|---|---|
+| `main.js` | `functionApiUrl` | `https://cus1-resumectr-prod-v1-fa.azurewebsites.net/api/GetResumeCounter?code=...` |
+| `js/azure_app_insights.js` | Connection string | `InstrumentationKey=9bdff2b7-...` |

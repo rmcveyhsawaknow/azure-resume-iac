@@ -849,24 +849,6 @@ ul.agentgitops-list li em {
 #presentation .header-col { padding-top: 9px; }
 #presentation .main-col { padding-right: 10%; }
 
-/* Audio player within presentation */
-.presentation-audio {
-   display: flex;
-   align-items: center;
-   gap: 12px;
-   margin: 18px 0;
-}
-.presentation-audio i {
-   font-size: 20px;
-   color: #C5A028;
-   flex-shrink: 0;
-}
-.presentation-audio audio {
-   flex: 1;
-   height: 36px;
-   min-width: 0;
-}
-
 /* Slides viewer (PDF iframe) */
 .slides-viewer {
    margin: 24px 0;
@@ -1008,13 +990,22 @@ ul.expertise-list li {
    padding-bottom: 24px;
    border-bottom: 1px solid #E8E8E8;
 }
+.infographic-heading {
+   font: 22px/30px 'opensans-bold', sans-serif;
+   color: #313131;
+   margin-bottom: 6px;
+}
+.infographic-desc {
+   color: #636363;
+   margin-bottom: 12px;
+}
 .infographic-container {
    margin-top: 12px;
    text-align: center;
 }
 .infographic-img {
    width: 100%;
-   max-width: 100%;
+   max-width: 1200px;
    height: auto;
    border-radius: 4px;
    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);

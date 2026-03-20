@@ -65,7 +65,7 @@ Personal resume website deployed as a static site on Azure PaaS services, fronte
 │       ├── cosmos/cosmos.bicep
 │       ├── dns/azuredns.bicep
 │       ├── functionapp/functionapp.bicep
-│       ├── keyvault/kv.bicep, createKeyVaultSecret.bicep
+│       ├── keyvault/createKeyVaultSecret.bicep
 │       └── storageaccount/sa_staticsite.bicep
 ├── backend/                     # Azure Function (visitor counter)
 │   ├── api/                     # Function App source (.NET 8, isolated worker)

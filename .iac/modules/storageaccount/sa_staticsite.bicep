@@ -23,7 +23,7 @@ param staticSiteStorageAccountName string
 @description('The storage account sku name.')
 param storageSku string = 'Standard_LRS'
 
-resource frontendStaticSite 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource frontendStaticSite 'Microsoft.Storage/storageAccounts@2024-01-01' = {
   name: staticSiteStorageAccountName
   location: resourceGroupLocation
   sku: {

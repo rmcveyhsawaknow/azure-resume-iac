@@ -14,8 +14,8 @@
 **Phase 4 — Prod Deployment** covered the following workstreams:
 
 - **17** issues assigned to milestone
-- **10** issues closed, **7** remaining open (this retrospective + 4 deferred gap-analysis findings)
-- **4** issues originated from gap analysis (all deferred to Phase 5)
+- **10** issues closed, **7** remaining open (this retrospective + deferred gap-analysis duplicates #164/#165)
+- **4** issues originated from gap analysis (2 resolved: #163, #166; 2 duplicates deferred: #164, #165)
 
 ### Scope
 
@@ -30,6 +30,9 @@ Phase 4 deployed the validated stack to the production environment and verified 
 7. **DNS & CDN Verification** — Confirmed `ryanmcvey.me` domain resolves correctly, Cloudflare proxied CNAME records active with SSL/TLS (#60, #61, #119, #120)
 8. **End-to-End Validation** — Full production sign-off: site loads, counter API works, CORS configured, no console errors (#62, #121)
 9. **Diagnostic Improvements** — Added diagnostic logging for Clarity project ID secret injection in deployment workflows (PR #221)
+10. **Bicep API Modernization** — Updated all Key Vault resources from `@2019-09-01` to `@2024-11-01`, Storage Accounts from `@2021-04-01` to `@2024-01-01`, and Web sites/config from `@2021-03-01` to `@2023-12-01` (#163)
+11. **Unused Module Cleanup** — Removed unused standalone `kv.bicep` module (Key Vault defined inline in `functionapp.bicep`), updated all documentation references (#166)
+12. **Stack Version Bump** — Bumped both dev and prod workflows from `v11` to `v12` for fresh deployments with modernized infrastructure components
 
 ### Tech Debt Identified
 
@@ -37,10 +40,10 @@ Phase 4 deployed the validated stack to the production environment and verified 
 
 ### Deferred Items
 
-The following gap-analysis findings were assigned to Phase 4 but are low priority (P4) and deferred to Phase 5:
+The following gap-analysis duplicate issues remain open (duplicates of #163 and #166 which were resolved):
 
-- #163 / #164 — Modernize Bicep API versions (Key Vault `@2019-09-01` and others)
-- #165 / #166 — Clean up unused Key Vault Bicep module (`kv.bicep`)
+- #164 — Modernize Bicep API versions (duplicate of #163)
+- #165 — Clean up unused Key Vault Bicep module (duplicate of #166)
 
 ---
 
@@ -49,16 +52,18 @@ The following gap-analysis findings were assigned to Phase 4 but are low priorit
 | Metric | Value |
 |---|---|
 | Issues planned (milestone) | 17 |
-| Issues closed | 10 |
-| Issues remaining | 7 |
+| Issues closed | 12 |
+| Issues remaining | 5 |
 | Core tasks (4.1–4.9) completed | 9/9 (100%) |
-| Completion rate (overall) | 59% |
+| Gap analysis findings resolved | 2 (#163, #166) |
+| Completion rate (overall) | 71% |
 | PRs merged | 3 |
 | Commits | 9 |
 | Gap analysis findings | 0 new |
-| Issues from gap analysis (deferred) | 4 |
+| Issues from gap analysis (resolved) | 2 |
+| Issues from gap analysis (deferred dupes) | 2 |
 
-> **Note:** The overall completion rate reflects 4 deferred P4-Low gap-analysis duplicates and this retrospective issue. All core deployment and validation tasks (4.1–4.9) completed at 100%.
+> **Note:** The overall completion rate reflects 2 deferred gap-analysis duplicates (#164, #165) and this retrospective issue. All core deployment and validation tasks (4.1–4.9) completed at 100%. Gap-analysis items #163 and #166 were resolved during Phase 4.
 
 ---
 
@@ -141,32 +146,39 @@ The following gap-analysis findings were assigned to Phase 4 but are low priorit
 
 ## Gap Analysis Summary
 
-**4 issues in Phase 4 originated from the Phase 0 gap analysis findings — all deferred to Phase 5.**
+**4 issues in Phase 4 originated from the Phase 0 gap analysis findings — 2 resolved, 2 deferred (duplicates).**
 
 | Issue | Finding | Status |
 |---|---|---|
-| #163 | Modernize Bicep API versions (Key Vault @2019-09-01) | ⏳ Deferred (P4 Low) |
-| #164 | Modernize Bicep API versions (duplicate) | ⏳ Deferred (P4 Low) |
-| #165 | Clean up unused Key Vault Bicep module | ⏳ Deferred (P4 Low) |
-| #166 | Clean up unused Key Vault Bicep module (duplicate) | ⏳ Deferred (P4 Low) |
+| #163 | Modernize Bicep API versions (Key Vault @2019-09-01 → @2024-11-01, Storage @2021-04-01 → @2024-01-01) | ✅ Closed |
+| #164 | Modernize Bicep API versions (duplicate of #163) | ⏳ Deferred |
+| #165 | Clean up unused Key Vault Bicep module (duplicate of #166) | ⏳ Deferred |
+| #166 | Remove unused `kv.bicep` module, update documentation references | ✅ Closed |
 
-These are low-priority cleanup items that do not affect production functionality and are deferred to Phase 5 (Cleanup & Docs).
+### API Version Changes (#163)
+
+| Resource | Before | After |
+|---|---|---|
+| `Microsoft.KeyVault/vaults` | `@2019-09-01` | `@2024-11-01` |
+| `Microsoft.KeyVault/vaults/secrets` | `@2019-09-01` | `@2024-11-01` |
+| `Microsoft.Storage/storageAccounts` | `@2021-04-01` | `@2024-01-01` |
+| `Microsoft.Web/sites/config` | `@2021-03-01` | `@2023-12-01` |
+| `Microsoft.Insights/components` | `@2020-02-02` | `@2020-02-02` (latest stable) |
 
 ---
 
-## Production Stack
+## Stack Configuration
 
-Phase 4 deployed production stack v1 using the blue/green deployment pipeline:
+Phase 4 initially deployed production stack v1, then bumped both dev and prod to v12 for fresh deployments with modernized Bicep API versions:
 
-| Config | Value |
-|---|---|
-| Stack version | v1 |
-| Environment | prod |
-| DNS zone | ryanmcvey.me |
-| Custom domain prefix | resume |
-| Public URL | resume.ryanmcvey.me |
-| Workflow | `.github/workflows/prod-full-stack-cloudflare.yml` |
-| Trigger | Merge `develop` → `main` (PR #223) |
+| Config | Dev | Prod |
+|---|---|---|
+| Stack version | v12 | v12 |
+| Environment | dev | prod |
+| DNS zone | ryanmcvey.me | ryanmcvey.me |
+| Custom domain prefix | resumedev | resume |
+| Public URL | resumedev.ryanmcvey.me | resume.ryanmcvey.me |
+| Workflow | `dev-full-stack-cloudflare.yml` | `prod-full-stack-cloudflare.yml` |
 
 ### Validation Results
 
@@ -186,8 +198,10 @@ Phase 4 deployed production stack v1 using the blue/green deployment pipeline:
 ## Next Phase Readiness
 
 - [x] All core phase tasks (4.1–4.9) closed
-- [x] Deferred items documented with rationale (gap-analysis P4 Low → Phase 5)
+- [x] Gap-analysis items #163 and #166 resolved (API modernization, unused module cleanup)
+- [x] Deferred duplicates documented (#164, #165)
 - [x] Tech debt documented (PR #224 → Phase 5 backlog item 5.16)
+- [x] Stack versions bumped to v12 for fresh deployments
 - [x] Retrospective committed to `docs/retrospectives/`
 - [ ] Retrospective posted as comment on retrospective issue (#151)
 - [ ] Phase 4 milestone closed

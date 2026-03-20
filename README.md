@@ -68,19 +68,20 @@ Personal resume website deployed as a static site on Azure PaaS services, fronte
 │       ├── keyvault/kv.bicep, createKeyVaultSecret.bicep
 │       └── storageaccount/sa_staticsite.bicep
 ├── backend/                     # Azure Function (visitor counter)
-│   ├── api/                     # Function App source (.NET Core 3.1)
+│   ├── api/                     # Function App source (.NET 8, isolated worker)
 │   │   ├── GetResumeCounter.cs  # HTTP trigger function
 │   │   ├── Counter.cs           # Counter model
 │   │   ├── CosmosConstants.cs   # DB/container/document ID constants
-│   │   ├── api.csproj           # Project file (netcoreapp3.1, Functions v3)
+│   │   ├── api.csproj           # Project file (net8.0, Functions v4 isolated)
 │   │   └── host.json            # Function host configuration
 │   └── tests/                   # xUnit tests
 │       ├── TestCounter.cs       # Counter increment test
 │       └── ...                  # Test helpers
 ├── frontend/                    # Static resume website
 │   ├── index.html               # Single-page resume
-│   ├── main.js                  # Counter fetch + text rotation animation
-│   ├── js/azure_app_insights.js # Application Insights SDK
+│   ├── main.js                  # Main SPA logic (counter fetch, text rotation; uses config.js)
+│   ├── config.js                # Injected at deploy time with API endpoint and telemetry config
+│   ├── js/azure_app_insights.js # Application Insights SDK bootstrap (reads settings from config.js)
 │   ├── css/                     # Stylesheets and font libraries
 │   ├── js/                      # jQuery, plugins, and utilities
 │   ├── images/                  # Profile photo, cert badges, overlays

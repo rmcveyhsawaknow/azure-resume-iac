@@ -360,12 +360,19 @@ jobs:
           echo "::warning::Failed to retrieve App Insights connection string — frontend telemetry will be disabled"
         fi
 
+        CLARITY_ID='${{ secrets.CLARITY_PROJECT_ID }}'
+        if [ -n "${CLARITY_ID}" ]; then
+          echo "Clarity project ID is configured — EUM will be enabled"
+        else
+          echo "::warning::CLARITY_PROJECT_ID secret is not set (check repo or environment secrets) — Clarity EUM will be disabled"
+        fi
+
         cat > frontend/config.js << CFGEOF
         var defined_FUNCTION_API_BASE = 'https://${{env.stackLocationCode}}-${{env.AppBackendName}}-${{env.stackEnvironment}}-${{env.stackVersion}}-fa.azurewebsites.net/api/GetResumeCounter';
         var defined_APPINSIGHTS_CONNECTION_STRING = '${AI_CONN_STR}';
-        var defined_CLARITY_PROJECT_ID = '${{ secrets.CLARITY_PROJECT_ID }}';
+        var defined_CLARITY_PROJECT_ID = '${CLARITY_ID}';
         CFGEOF
-        echo "Generated frontend/config.js (contents not logged to avoid exposing secrets)"
+        echo "Generated frontend/config.js (avoid logging contents to prevent secret exposure)"
 
     - name: Upload to blob storage
       uses: azure/CLI@v2

@@ -68,7 +68,7 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 #### Job 3: `buildDeployProductionBackend`
 - **Runner:** `windows-latest`
 - **Depends on:** `changes`, `deployProductionIac`
-- **Condition:** `always() && (deployProductionIac succeeded or skipped) && (backendApp changed || workflow_dispatch)`
+- **Condition:** `always() && (deployProductionIac succeeded or skipped) && (backendApp changed || iac changed || workflow_dispatch)`
 - **Steps:**
   1. Azure Login
   2. Setup .NET 8
@@ -79,7 +79,7 @@ changes → deployProductionIac → buildDeployProductionBackend → buildDeploy
 #### Job 4: `buildDeployProductionFrontend`
 - **Runner:** `ubuntu-latest`
 - **Depends on:** `changes`, `buildDeployProductionBackend`
-- **Condition:** `always() && (buildDeployProductionBackend succeeded or skipped) && (frontendSite changed || workflow_dispatch)`
+- **Condition:** `always() && (buildDeployProductionBackend succeeded or skipped) && (frontendSite changed || backendApp changed || iac changed || workflow_dispatch)`
 - **Steps:**
   1. Azure Login
   2. Generate `config.js` with environment-specific API URL

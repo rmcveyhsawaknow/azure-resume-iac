@@ -290,7 +290,7 @@ jobs:
 
   buildDeployProductionBackend:
     needs: [changes, deployProductionIac]
-    if: ${{ always() && (needs.deployProductionIac.result == 'success' || needs.deployProductionIac.result == 'skipped') && (needs.changes.outputs.backendApp == 'true' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ always() && (needs.deployProductionIac.result == 'success' || needs.deployProductionIac.result == 'skipped') && (needs.changes.outputs.backendApp == 'true' || needs.changes.outputs.iac == 'true' || github.event_name == 'workflow_dispatch') }}
     name: Build and Deploy Backend App to Production - net8_isolated
     env: 
       AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'    # set this to the path to your web app project, defaults to the repository root
@@ -333,7 +333,7 @@ jobs:
 
   buildDeployProductionFrontend:
     needs: [changes, buildDeployProductionBackend]
-    if: ${{ always() && (needs.buildDeployProductionBackend.result == 'success' || needs.buildDeployProductionBackend.result == 'skipped') && (needs.changes.outputs.frontendSite == 'true' || github.event_name == 'workflow_dispatch') }}
+    if: ${{ always() && (needs.buildDeployProductionBackend.result == 'success' || needs.buildDeployProductionBackend.result == 'skipped') && (needs.changes.outputs.frontendSite == 'true' || needs.changes.outputs.backendApp == 'true' || needs.changes.outputs.iac == 'true' || github.event_name == 'workflow_dispatch') }}
     name: Deploy Frontend Static App to Production
     environment:
       name: production

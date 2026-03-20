@@ -121,7 +121,9 @@
 	   width: 48px;
 		height: 48px;
 		text-align: left;
-		background-color: #216e3b;
+		background-color: #BF0A30;
+		border-radius: 50%;
+		overflow: hidden;
 		position: relative;
       border: none;
       float: right;
@@ -131,20 +133,25 @@
       color: transparent;
 
       position: relative;
-      top: 0px;
+      top: 12px;
       right: 30px;
    }
 
-	#nav-wrap > a:before,
-   #nav-wrap > a:after {
+	#nav-wrap > a:before {
+	   content: '';
 	   position: absolute;
-		border: 2px solid #fff;
-		top: 35%;
-		left: 25%;
-		right: 25%;
-		content: '';
+	   top: 28%;
+	   left: 20%;
+	   right: 20%;
+	   height: 3px;
+	   background: #C5A028;
+	   box-shadow:
+	      0 8px 0 #00205B,
+	      0 16px 0 #C5A028;
 	}
-   #nav-wrap > a:after { top: 60%; }
+   #nav-wrap > a:after {
+      display: none;
+   }
 
    /* toggle buttons */
 	#nav-wrap:not( :target ) > a:first-of-type,
@@ -225,7 +232,10 @@
 
    /* About Section
    -------------------------------------------------------------------- */
-   #about .profile-pic { display: none; }
+   #about .profile-pic {
+      display: block;
+      margin: 0 auto 24px auto;
+   }
    #about .download .button {
       width: 100%;
       text-align: center;

@@ -240,7 +240,6 @@ Used only by the Azure CDN workflow variant (currently disabled):
 | `cosmos.bicep` | `modules/cosmos/` | Cosmos DB account (serverless), SQL database, container |
 | `azuredns.bicep` | `modules/dns/` | Azure DNS CNAME and TXT records (for Azure CDN variant) |
 | `functionapp.bicep` | `modules/functionapp/` | Function App, ASP, Storage, App Insights, Key Vault with secrets |
-| `kv.bicep` | `modules/keyvault/` | Standalone Key Vault creation (not currently used in main flow) |
 | `createKeyVaultSecret.bicep` | `modules/keyvault/` | Helper to create a single Key Vault secret |
 | `sa_staticsite.bicep` | `modules/storageaccount/` | Storage account for static website hosting |
 

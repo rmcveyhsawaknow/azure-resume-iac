@@ -94,9 +94,9 @@ This document catalogs known issues, broken functionality, and technical debt in
 
 **Current State:** ~~The `if` conditions using path-filter outputs are commented out in all workflows.~~
 
-**Status: PARTIALLY RESOLVED** — The `if` conditions have been uncommented in both `dev-full-stack-cloudflare.yml` and `prod-full-stack-cloudflare.yml` (branch `copilot/investigate-cors-error-and-fix`). Each conditional uses `always()` to run even when upstream jobs are skipped, checks upstream job result, and falls back to full deploy on `workflow_dispatch`. The disabled Azure CDN workflows still have commented-out conditionals.
+**Status: RESOLVED** — The `if` conditions have been uncommented in both `dev-full-stack-cloudflare.yml` and `prod-full-stack-cloudflare.yml`. Each conditional uses `always()` to run even when upstream jobs are skipped, checks upstream job result, and falls back to full deploy on `workflow_dispatch`. Both workflows now also trigger backend and frontend deploy jobs when IaC changes are detected (`iac == 'true'`), ensuring new stack versions get a complete deployment (IaC + backend + frontend). The disabled Azure CDN workflows still have commented-out conditionals.
 
-**Remediation:** Merge the branch to `develop`/`main` and verify the conditionals work correctly in a real workflow run.
+**Remediation:** None — conditionals are verified and aligned between dev and prod workflows.
 
 ### 4. Manual Post-Deployment Steps
 

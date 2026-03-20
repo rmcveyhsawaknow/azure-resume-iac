@@ -268,11 +268,11 @@
 
    /* Presentation Section (mobile) */
    #presentation .main-col { padding-right: 30px; }
-   .slides-viewer iframe { height: 300px; }
-   .presentation-downloads {
+   #presentation .slides-viewer iframe { height: 300px; }
+   #presentation .presentation-downloads {
       flex-direction: column;
    }
-   .presentation-downloads .button {
+   #presentation .presentation-downloads .button {
       width: 100%;
       text-align: center;
    }
@@ -310,7 +310,6 @@
       text-align: center;
    }
    #presentation h1 { letter-spacing: 3px; }
-   #presentation .main-col { padding-right: 30px; }
 
    /* Projects Section
    --------------------------------------------------------------------- */

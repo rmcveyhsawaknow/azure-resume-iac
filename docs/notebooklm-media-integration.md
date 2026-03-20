@@ -56,7 +56,10 @@ The media files are binary assets that must be added to `frontend/media/` before
    cp /path/to/assets/McVey-Ryan_Professional_Presentation.pdf frontend/media/
    ```
 
-2. For production deployment, these files are uploaded to the Azure Storage Account `$web` container alongside all other frontend assets. The existing CI/CD workflow (`az storage blob upload-batch`) handles this automatically.
+2. For production deployment, these files must be present in `frontend/media/` at build time. The CI/CD workflow uses `az storage blob upload-batch` to upload the entire `frontend/` directory to the Azure Storage Account `$web` container. Since the binary media files are **not committed to Git** (only `.gitkeep` is tracked), you must either:
+   - **Option A (recommended):** Commit the media files via Git or Git LFS so they are included in the CI checkout.
+   - **Option B:** Add a workflow step that retrieves the assets (e.g., from a separate storage location or release artifact) before the upload step.
+   - **Option C:** Upload media files directly to the `$web` container via Azure CLI or Azure Portal, bypassing CI/CD.
 
 ## Local Development & Testing
 

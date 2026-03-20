@@ -61,7 +61,7 @@ header .banner {
 header .banner-text { width: 100%; }
 header .banner-text h1 {
    font: 90px/1.1em 'opensans-bold', sans-serif;
-   color: #fff;
+   color: #C5A028;
    letter-spacing: -2px;
    margin: 0 auto 18px auto;
    text-shadow: 0px 1px 3px rgba(0, 0, 0, .8);
@@ -85,6 +85,11 @@ header .banner-text p {
    font-size: 14px;
    text-shadow: 0px 1px 2px rgba(0, 0, 0, .5);
    margin-bottom: 0;
+}
+#counter {
+   color: #BF0A30;
+   font-weight: bold;
+   font-size: 1.2em;
 }
 header .banner-text hr {
    width: 60%;
@@ -262,6 +267,25 @@ ul#nav li.current a { color: #BF0A30; }
    margin-right: 15px;
    font-size: 20px;
 }
+#about .philosophy-quote {
+   border-left: 4px solid #C5A028;
+   background: rgba(197, 160, 40, 0.08);
+   padding: 18px 24px;
+   margin: 12px 0 18px 0;
+   border-radius: 0 4px 4px 0;
+}
+#about .philosophy-quote p {
+   color: #A8A8A8;
+   font-style: italic;
+   margin-bottom: 12px;
+}
+#about .philosophy-quote ul {
+   margin-bottom: 0;
+}
+#about .philosophy-quote ul li {
+   color: #CBCBCB;
+   font-style: italic;
+}
 
 
 /* ------------------------------------------------------------------ */
@@ -274,6 +298,16 @@ ul#nav li.current a { color: #BF0A30; }
    padding-bottom: 72px;
    overflow: hidden;
 }
+
+#section-certifications {
+   background: #4a5a50;
+   padding: 24px;
+   border-radius: 4px;
+}
+#section-certifications a, #section-certifications a:visited { color: #C5A028; }
+#section-certifications a:hover, #section-certifications a:focus { color: #fff; }
+#section-certifications h3 { color: #EBEEEE; }
+#section-certifications p, #section-certifications li { color: #d0d0d0; }
 
 #resume a, #resume a:visited  { color: #C5A028; }
 #resume a:hover, #resume a:focus { color: #313131; }

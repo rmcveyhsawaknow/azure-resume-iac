@@ -121,7 +121,7 @@
 /*----------------------------------------------------*/
 /*	Flexslider
 /*----------------------------------------------------*/
-   $('.flexslider').flexslider({
+   $('.flexslider').not('.presentation-slider').flexslider({
       namespace: "flex-",
       controlsContainer: ".flex-container",
       animation: 'slide',
@@ -131,6 +131,32 @@
       slideshowSpeed: 7000,
       animationSpeed: 600,
       randomize: false,
+   });
+
+/*----------------------------------------------------*/
+/*	Presentation Slide Carousel
+/*----------------------------------------------------*/
+   $('.presentation-slider').flexslider({
+      namespace: "flex-",
+      animation: 'slide',
+      controlNav: false,
+      directionNav: true,
+      slideshow: false,
+      animationLoop: false,
+      smoothHeight: false,
+      animationSpeed: 400,
+      touch: true,
+      prevText: "Previous",
+      nextText: "Next",
+      start: function(slider) {
+         var counter = slider.closest('.slides-viewer').find('.slide-counter');
+         slider.data('counter', counter);
+         counter.find('.total-slides').text(slider.count);
+         counter.find('.current-slide').text(slider.currentSlide + 1);
+      },
+      after: function(slider) {
+         slider.data('counter').find('.current-slide').text(slider.currentSlide + 1);
+      }
    });
 
 /*----------------------------------------------------*/

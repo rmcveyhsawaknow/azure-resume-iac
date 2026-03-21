@@ -42,3 +42,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.log
+
+# CoverTab order package generated outputs (operator-specific, not tracked)
+products/covertab/output/*
+!products/covertab/output/.gitkeep

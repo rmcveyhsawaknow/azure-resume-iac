@@ -58,6 +58,10 @@
    #about .contact-details { width: 50%; }
    #about .download { width: 50%; }
 
+   /* Presentation Section
+   ------------------------------------------------------------------- */
+   #presentation .main-col { padding-right: 5%; }
+
    /* Resume Section
    ------------------------------------------------------------------- */
    #resume h1 { font: 16px/24px 'opensans-bold', sans-serif; }
@@ -243,6 +247,36 @@
    }
    #about .main-col { padding-right: 30px; }
 
+   /* Audio Overview (mobile center) */
+   #about .audio-overview audio {
+      max-width: 100%;
+   }
+
+   /* Audio Narrative (mobile stack) */
+   #about .audio-narrative-player {
+      flex-direction: column;
+      align-items: flex-start;
+   }
+   #about .audio-narrative-player audio {
+      width: 100%;
+   }
+
+   /* Infographic (mobile) */
+   .infographic-container {
+      padding: 0 12px;
+   }
+
+   /* Presentation Section (mobile) */
+   #presentation .main-col { padding-right: 30px; }
+   #presentation .slides-viewer iframe { height: 300px; }
+   #presentation .presentation-downloads {
+      flex-direction: column;
+   }
+   #presentation .presentation-downloads .button {
+      width: 100%;
+      text-align: center;
+   }
+
 
    /* Resume Section
    --------------------------------------------------------------------- */
@@ -267,6 +301,15 @@
    }
    #agentgitops h1 { letter-spacing: 3px; }
    #agentgitops .main-col { padding-right: 30px; }
+
+   /* Presentation Section
+   --------------------------------------------------------------------- */
+   #presentation .header-col {
+      padding-top: 0;
+      margin-bottom: 48px;
+      text-align: center;
+   }
+   #presentation h1 { letter-spacing: 3px; }
 
    /* Projects Section
    --------------------------------------------------------------------- */

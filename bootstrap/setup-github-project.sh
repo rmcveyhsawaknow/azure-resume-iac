@@ -5,7 +5,7 @@
 #
 # Usage:
 #   gh auth login --scopes "project,repo,read:org"  # one-time auth with project scope
-#   ./scripts/setup-github-project.sh [owner]
+#   ./bootstrap/setup-github-project.sh [owner]
 #
 # Or run outside Codespace where your gh CLI has full scopes.
 

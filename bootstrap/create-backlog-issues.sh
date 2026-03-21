@@ -4,12 +4,12 @@
 # Reads YAML frontmatter from each file to extract labels and metadata.
 #
 # Usage:
-#   ./scripts/create-backlog-issues.sh [--dry-run] [owner/repo] [file ...]
+#   ./bootstrap/create-backlog-issues.sh [--dry-run] [owner/repo] [file ...]
 #
-# When no files are given, processes ALL .md files in backlog-issues/.
+# When no files are given, processes ALL .md files in artifacts/backlog-issues/.
 # To create issues for specific files only (avoids duplicates):
-#   ./scripts/create-backlog-issues.sh scripts/backlog-issues/{1.12,3.10,3.11}.md
-#   ./scripts/create-backlog-issues.sh --dry-run scripts/backlog-issues/3.*.md
+#   ./bootstrap/create-backlog-issues.sh artifacts/backlog-issues/{1.12,3.10,3.11}.md
+#   ./bootstrap/create-backlog-issues.sh --dry-run artifacts/backlog-issues/3.*.md
 #
 # Prerequisites:
 #   - gh CLI authenticated (gh auth login)
@@ -22,7 +22,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ISSUES_DIR="${SCRIPT_DIR}/backlog-issues"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+ISSUES_DIR="${REPO_ROOT}/artifacts/backlog-issues"
 DRY_RUN=false
 REPO=""
 FILES=()
@@ -94,7 +95,7 @@ PROJECT_NUMBER=9
 PROJECT_OWNER="$(echo "$REPO" | cut -d/ -f1)"
 
 # Path to JSON config holding project field and option IDs.
-# See scripts/project-fields.json for the expected structure and refresh instructions.
+# See bootstrap/project-fields.json for the expected structure and refresh instructions.
 PROJECT_FIELDS_CONFIG="${SCRIPT_DIR}/project-fields.json"
 
 # Project V2 field IDs (populated from PROJECT_FIELDS_CONFIG)

@@ -34,7 +34,7 @@ gh auth login --scopes "project,repo,read:org"
 
 ```bash
 # Create project, add custom fields, add all open issues
-./scripts/setup-github-project.sh [owner]
+./bootstrap/setup-github-project.sh [owner]
 ```
 
 **What the script does:**
@@ -55,7 +55,7 @@ gh auth login --scopes "project,repo,read:org"
 
 ## Custom Fields
 
-These fields are created by `scripts/setup-github-project.sh` and are **required** for all views to function correctly.
+These fields are created by `bootstrap/setup-github-project.sh` and are **required** for all views to function correctly.
 
 | Field | Type | Options | Purpose |
 |---|---|---|---|
@@ -71,7 +71,7 @@ These fields are created by `scripts/setup-github-project.sh` and are **required
 
 ### Field ID Configuration
 
-After creating the project, capture field and option IDs so that `scripts/create-backlog-issues.sh` can set project fields on new issues. The script expects `scripts/project-fields.json` in this format:
+After creating the project, capture field and option IDs so that `bootstrap/create-backlog-issues.sh` can set project fields on new issues. The script expects `bootstrap/project-fields.json` in this format:
 
 ```json
 {
@@ -110,9 +110,9 @@ After creating the project, capture field and option IDs so that `scripts/create
    "
    ```
 
-3. Map the printed IDs into `scripts/project-fields.json` using the schema above. The `options` object maps short keys (`0`, `P1`, `S`, `Yes`, etc.) to the GitHub-generated option IDs.
+3. Map the printed IDs into `bootstrap/project-fields.json` using the schema above. The `options` object maps short keys (`0`, `P1`, `S`, `Yes`, etc.) to the GitHub-generated option IDs.
 
-See `scripts/project-fields.json` for a working example.
+See `bootstrap/project-fields.json` for a working example.
 
 ---
 
@@ -127,7 +127,7 @@ Each phase maps 1:1 to a GitHub Milestone. Milestones provide:
 
 ```bash
 # Create milestones (idempotent)
-./scripts/setup-github-milestones.sh [owner/repo]
+./bootstrap/setup-github-milestones.sh [owner/repo]
 ```
 
 ### Setting Milestone Due Dates
@@ -440,7 +440,7 @@ flowchart LR
 
 - [AgentGitOps Instructions](agentgitops-instructions.md) — Full workflow guide
 - [Label Taxonomy](agentgitops-instructions.md#label-taxonomy) — Complete label reference
-- `scripts/setup-github-project.sh` — Automated project creation
-- `scripts/setup-github-labels.sh` — Label creation/update
-- `scripts/setup-github-milestones.sh` — Milestone creation
-- `scripts/project-fields.json` — Project V2 field/option ID configuration
+- `bootstrap/setup-github-project.sh` — Automated project creation
+- `bootstrap/setup-github-labels.sh` — Label creation/update
+- `bootstrap/setup-github-milestones.sh` — Milestone creation
+- `bootstrap/project-fields.json` — Project V2 field/option ID configuration

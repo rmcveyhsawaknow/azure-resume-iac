@@ -2,7 +2,7 @@
 
 > **Purpose:** Document the repeatable, agent-assisted workflow used to plan, populate, and manage this project's backlog — from assessment through issue burn-down. Intended as a reference for the `agentgitops.ryanmcvey.me` demonstration site.
 >
-> **Reusable Bootstrap:** For a portable, project-agnostic guide to this workflow, see [`bootstrap/agentgitops-instructions.md`](../bootstrap/agentgitops-instructions.md). This document covers the project-specific implementation details.
+> **Reusable Bootstrap:** For a portable, project-agnostic guide to this workflow, see [`agentgitops-instructions.md`](agentgitops-instructions.md). This document covers the project-specific implementation details.
 
 ## Overview
 
@@ -84,7 +84,7 @@ The agent uses assessment output + copilot instructions to plan a phased backlog
 
 **Artifacts:**
 - `docs/BACKLOG_PLANNING.md` — 6-phase plan with task breakdown
-- `scripts/backlog-issues/*.md` — 59 individual issue files with YAML frontmatter
+- `artifacts/backlog-issues/*.md` — 59 individual issue files with YAML frontmatter
 - `.github/ISSUE_TEMPLATE/backlog-task.yml` — issue template for consistency
 
 **Issue file format:**
@@ -116,7 +116,7 @@ depends_on: ["1.1"]
 - [ ] ...
 ```
 
-> **Issue types:** Issues are classified as either `planned` (from the original project scope) or `gap-analysis-finding` (discovered during assessment of live infrastructure) via the `issue_type` field in each backlog issue file. This `issue_type` value is informational only — the `scripts/create-backlog-issues.sh` tooling relies solely on the explicit `labels:` list. To have automation and project views treat an issue as a gap-analysis finding, you **must** also include the `gap-analysis-finding` label in `labels:`. See [`bootstrap/agentgitops-instructions.md`](../bootstrap/agentgitops-instructions.md#issue-types--planned-vs-gap-analysis) for full details.
+> **Issue types:** Issues are classified as either `planned` (from the original project scope) or `gap-analysis-finding` (discovered during assessment of live infrastructure) via the `issue_type` field in each backlog issue file. This `issue_type` value is informational only — the `bootstrap/create-backlog-issues.sh` tooling relies solely on the explicit `labels:` list. To have automation and project views treat an issue as a gap-analysis finding, you **must** also include the `gap-analysis-finding` label in `labels:`. See [`agentgitops-instructions.md`](agentgitops-instructions.md#issue-types--planned-vs-gap-analysis) for full details.
 
 ### Step 4: Issue Population Session
 
@@ -127,7 +127,7 @@ This is the execution session. The human opens a Codespace on the `develop` bran
 #### 4a: Create Labels
 
 ```bash
-./scripts/setup-github-labels.sh rmcveyhsawaknow/azure-resume-iac
+./bootstrap/setup-github-labels.sh rmcveyhsawaknow/azure-resume-iac
 ```
 
 Creates 27 labels across 6 categories:
@@ -142,10 +142,10 @@ Creates 27 labels across 6 categories:
 
 ```bash
 # Dry run first to verify parsing
-./scripts/create-backlog-issues.sh --dry-run rmcveyhsawaknow/azure-resume-iac
+./bootstrap/create-backlog-issues.sh --dry-run rmcveyhsawaknow/azure-resume-iac
 
 # Create all issues
-./scripts/create-backlog-issues.sh rmcveyhsawaknow/azure-resume-iac
+./bootstrap/create-backlog-issues.sh rmcveyhsawaknow/azure-resume-iac
 ```
 
 Creates 59 GitHub issues with:
@@ -168,7 +168,7 @@ The Codespace `GITHUB_TOKEN` does not include the `project` scope. Project setup
 gh auth login --scopes "project,repo,read:org"
 
 # Run project setup
-./scripts/setup-github-project.sh rmcveyhsawaknow
+./bootstrap/setup-github-project.sh rmcveyhsawaknow
 ```
 
 This script:
@@ -208,9 +208,9 @@ After initial assessment (Session 4), a gap analysis cycle may identify addition
 
 1. **Run assessment commands** — Execute `docs/ASSESSMENT_COMMANDS.md` commands against live infrastructure
 2. **Generate artifacts** — Resource inventory, actual-vs-expected comparison, gaps & recommendations
-3. **Create new issue files** — Write `.md` files in `scripts/backlog-issues/` with `gap-analysis-finding` label
+3. **Create new issue files** — Write `.md` files in `artifacts/backlog-issues/` with `gap-analysis-finding` label
 4. **Update BACKLOG_PLANNING.md** — Add new tasks to the appropriate phase tables
-5. **Run issue creation for new files only** — `./scripts/create-backlog-issues.sh scripts/backlog-issues/{new_files}`
+5. **Run issue creation for new files only** — `./bootstrap/create-backlog-issues.sh artifacts/backlog-issues/{new_files}`
 
 This cycle can repeat at any phase boundary when new gaps are discovered.
 
@@ -222,7 +222,7 @@ Each phase concludes with a retrospective that captures metrics, KPIs, and lesso
 
 ```bash
 # Create milestones for all phases
-./scripts/setup-github-milestones.sh
+./bootstrap/setup-github-milestones.sh
 
 # Assign issues to milestones (via GitHub UI or gh CLI)
 ```
@@ -231,7 +231,7 @@ Each phase concludes with a retrospective that captures metrics, KPIs, and lesso
 
 ```bash
 # Generate retrospective report
-./scripts/generate-phase-retrospective.sh <phase_number>
+./bootstrap/generate-phase-retrospective.sh <phase_number>
 
 # The script:
 # 1. Collects issue/PR/commit stats from the milestone date range
@@ -320,11 +320,11 @@ The `.devcontainer/devcontainer.json` ensures consistent tooling:
 
 | Script | Purpose | Auth Required |
 |---|---|---|
-| `scripts/setup-github-labels.sh` | Create/update all labels | `GITHUB_TOKEN` (Codespace) |
-| `scripts/create-backlog-issues.sh` | Create issues from `.md` files | `GITHUB_TOKEN` (Codespace) |
-| `scripts/setup-github-project.sh` | Create project, fields, add issues | `project` scope token |
-| `scripts/setup-github-milestones.sh` | Create milestones for each phase | `GITHUB_TOKEN` (Codespace) |
-| `scripts/generate-phase-retrospective.sh` | Generate phase retrospective report | `GITHUB_TOKEN` (Codespace) |
+| `bootstrap/setup-github-labels.sh` | Create/update all labels | `GITHUB_TOKEN` (Codespace) |
+| `bootstrap/create-backlog-issues.sh` | Create issues from `.md` files | `GITHUB_TOKEN` (Codespace) |
+| `bootstrap/setup-github-project.sh` | Create project, fields, add issues | `project` scope token |
+| `bootstrap/setup-github-milestones.sh` | Create milestones for each phase | `GITHUB_TOKEN` (Codespace) |
+| `bootstrap/generate-phase-retrospective.sh` | Generate phase retrospective report | `GITHUB_TOKEN` (Codespace) |
 | `scripts/setup-codespace-auth.sh` | Authenticate Azure, GitHub, Cloudflare | Codespace Secrets |
 
 ## Adapting This Workflow for Other Repos
@@ -337,12 +337,12 @@ This entire workflow is repository-agnostic. The fastest path is to use the boot
 
 For manual setup, see the detailed steps below:
 
-1. **Fork or copy** the `scripts/` directory and `.github/copilot-instructions.md`
+1. **Fork or copy** the `bootstrap/` folder and `.github/copilot-instructions.md`
 2. **Update** `.github/copilot-instructions.md` with your project's context
 3. **Run assessment** — agent session to produce architecture docs
 4. **Run backlog research** — agent session to produce phase plan + issue files
-5. **Customize labels** in `scripts/setup-github-labels.sh` for your taxonomy
-6. **Generate issue files** in `scripts/backlog-issues/` with YAML frontmatter
+5. **Customize labels** in `bootstrap/setup-github-labels.sh` for your taxonomy
+6. **Generate issue files** in `artifacts/backlog-issues/` with YAML frontmatter
 7. **Run scripts** in sequence: labels → milestones → issues → project → views
 8. **Set up retrospectives** — create milestone dates, run `generate-phase-retrospective.sh` at each phase end
 

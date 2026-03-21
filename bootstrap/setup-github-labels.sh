@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # setup-github-labels.sh
 # Creates GitHub labels required for backlog issue management and project views.
-# Usage: ./scripts/setup-github-labels.sh [owner/repo]
+# Usage: ./bootstrap/setup-github-labels.sh [owner/repo]
 # Requires: gh CLI authenticated
 
 set -euo pipefail

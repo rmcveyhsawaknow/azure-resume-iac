@@ -3,7 +3,7 @@
 This document provides a phased planning framework for the resume site content and infrastructure update project. It is designed to support backlog CSV creation and GitHub issue template development.
 
 > **Related docs:**
-> - [Agent-Driven Backlog Workflow](backlog_workflow.md) — Detailed session-by-session workflow
+> - [Agent-Driven Backlog Workflow](../bootstrap/backlog_workflow.md) — Detailed session-by-session workflow
 > - [AgentGitOps Bootstrap](../bootstrap/agentgitops-instructions.md) — Reusable guide for any project
 > - [Retrospectives](retrospectives/README.md) — Phase completion reports
 

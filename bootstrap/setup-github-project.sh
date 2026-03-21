@@ -17,6 +17,14 @@ OWNER="${1:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/
 REPO_NAME="$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/][^/]+/([^/.]+)(\.git)?$#\1#' || echo "your-repo")"
 REPO="${OWNER}/${REPO_NAME}"
 
+# Warn if auto-detection fell back to defaults
+if [[ "$OWNER" == "your-owner" || "$REPO_NAME" == "your-repo" ]]; then
+  echo "⚠️  Could not auto-detect owner/repo from git remote."
+  echo "  Usage: $0 <owner>"
+  echo "  Or set OWNER and REPO_NAME variables in this script."
+  exit 1
+fi
+
 # CUSTOMIZE: Set your project title.
 PROJECT_TITLE="${REPO_NAME} — Backlog"
 

@@ -302,6 +302,10 @@ Step 6 — Refresh project field IDs:
   # After setup-github-project.sh creates the project, update project-fields.json:
   gh project field-list <PROJECT_NUMBER> --owner <OWNER> --format json
   # Map the field and option IDs into bootstrap/project-fields.json
+  # Example: find the "Phase" field ID and its option IDs:
+  #   gh project field-list 1 --owner myuser --format json \
+  #     | python3 -c "import json,sys; [print(f['id'], f['name'], [o['id']+' '+o['name'] for o in f.get('options',[])]) for f in json.load(sys.stdin)['fields']]"
+  # Then update project-fields.json phaseFieldId, priorityFieldId, etc. with the IDs
 
 Step 7 — Configure project views:
   # Follow bootstrap/project-views-guide.md for the 10 recommended views:

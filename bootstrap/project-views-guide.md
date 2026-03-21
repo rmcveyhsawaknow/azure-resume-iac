@@ -40,7 +40,9 @@ gh auth login --scopes "project,repo,read:org"
 **What the script does:**
 1. Creates a GitHub Project (V2) titled with your project name
 2. Adds custom single-select fields: Phase, Priority, Size, Copilot Suitable
-3. Adds all open issues to the project
+3. Adds custom date fields: Start Date, End Date (for Roadmap timeline)
+4. Adds custom number field: Story Points (for velocity tracking)
+5. Adds all open issues to the project
 
 ### Manual Setup (if script is unavailable)
 
@@ -59,24 +61,58 @@ These fields are created by `scripts/setup-github-project.sh` and are **required
 |---|---|---|---|
 | **Phase** | Single Select | Phase 0 – Phase N (one per milestone) | Roadmap grouping, phase filtering |
 | **Priority** | Single Select | P1 – Critical, P2 – High, P3 – Medium, P4 – Low | Triage and sort |
-| **Size** | Single Select | S (1 SP), M (3 SP), L (8 SP), XL (13 SP) | Capacity planning, velocity |
+| **Size** | Single Select | S (half-day), M (1–2 days), L (3–5 days), XL (1 week+) | Capacity planning, velocity |
 | **Copilot Suitable** | Single Select | Yes, Partial, No | AI assignment queue |
 | **Start Date** | Date | — | Roadmap timeline (set on phase initiation issues) |
 | **End Date** | Date | — | Roadmap timeline (set on phase initiation issues) |
+| **Story Points** | Number | — | Velocity tracking (auto-derived from Size: S=1, M=3, L=8, XL=13) |
 
 > **Required in every view:** Assignees, Copilot Suitable, Phase, Priority, Size, Status.
 
 ### Field ID Configuration
 
-After creating the project, capture field IDs for the issue creation script:
+After creating the project, capture field and option IDs so that `scripts/create-backlog-issues.sh` can set project fields on new issues. The script expects `scripts/project-fields.json` in this format:
 
-```bash
-# List project fields and their IDs
-gh project field-list <PROJECT_NUMBER> --owner <OWNER> --format json \
-  | python3 -c "import json,sys; [print(f['id'], f['name']) for f in json.load(sys.stdin)['fields']]"
+```json
+{
+  "projectFields": {
+    "phaseFieldId":    "PVTSSF_...",
+    "priorityFieldId": "PVTSSF_...",
+    "sizeFieldId":     "PVTSSF_...",
+    "copilotFieldId":  "PVTSSF_..."
+  },
+  "options": {
+    "phase": { "0": "<option-id>", "1": "<option-id>", ... },
+    "priority": { "P1": "<option-id>", "P2": "<option-id>", "P3": "<option-id>", "P4": "<option-id>" },
+    "size": { "S": "<option-id>", "M": "<option-id>", "L": "<option-id>", "XL": "<option-id>" },
+    "copilot": { "Yes": "<option-id>", "Partial": "<option-id>", "No": "<option-id>" }
+  }
+}
 ```
 
-Save the output to `scripts/project-fields.json`. See the existing file for the expected format.
+**To generate `project-fields.json`:**
+
+1. List all project fields (get field IDs and single-select option IDs):
+   ```bash
+   gh project field-list <PROJECT_NUMBER> --owner <OWNER> --format json > /tmp/fields.json
+   ```
+
+2. Extract field IDs:
+   ```bash
+   python3 -c "
+   import json, sys
+   data = json.load(open('/tmp/fields.json'))
+   for f in data['fields']:
+       print(f'{f[\"id\"]:40s} {f[\"name\"]}')
+       if 'options' in f:
+           for opt in f['options']:
+               print(f'  {opt[\"id\"]:38s} {opt[\"name\"]}')
+   "
+   ```
+
+3. Map the printed IDs into `scripts/project-fields.json` using the schema above. The `options` object maps short keys (`0`, `P1`, `S`, `Yes`, etc.) to the GitHub-generated option IDs.
+
+See `scripts/project-fields.json` for a working example.
 
 ---
 

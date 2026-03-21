@@ -98,8 +98,12 @@ echo "   ───────────────────────�
 
 if command -v gh &>/dev/null; then
   if gh auth status &>/dev/null; then
-    AUTH_USER=$(gh auth status 2>&1 | grep -oP 'Logged in to github\.com account \K\S+' || \
-                gh auth status 2>&1 | grep -oP 'account \K\S+' || echo "unknown")
+    AUTH_USER=$(
+      gh api user --jq .login 2>/dev/null || \
+      gh auth status 2>&1 | awk '/Logged in to github\.com account/ {print $NF; exit}' || \
+      gh auth status 2>&1 | awk '/account/ {print $NF; exit}' || \
+      echo "unknown"
+    )
     pass "gh CLI authenticated as ${AUTH_USER}"
 
     # Check scopes

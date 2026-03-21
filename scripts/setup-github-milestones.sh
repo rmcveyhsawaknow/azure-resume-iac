@@ -42,6 +42,12 @@ for entry in "${MILESTONES[@]}"; do
   IFS='|' read -r title description due_var <<< "$entry"
   due_date="${!due_var:-}"
 
+  # Validate due_date format if provided
+  if [[ -n "$due_date" ]] && ! [[ "$due_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    echo "  ⚠️  Invalid date format for $due_var='$due_date' (expected YYYY-MM-DD) — skipping due date"
+    due_date=""
+  fi
+
   if echo "$EXISTING" | grep -qxF "$title"; then
     echo "  ✓ Already exists: $title"
     # Update due date if provided and milestone exists

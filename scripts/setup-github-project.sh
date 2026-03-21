@@ -109,10 +109,18 @@ for num in $ISSUE_NUMBERS; do
   sleep 0.5
 done
 
+# Determine if owner is a user or org for the correct project URL
+OWNER_TYPE=$(gh api "users/${OWNER}" --jq '.type' 2>/dev/null || echo "User")
+if [[ "$OWNER_TYPE" == "Organization" ]]; then
+  PROJECT_URL="https://github.com/orgs/${OWNER}/projects/${PROJECT_NUMBER}"
+else
+  PROJECT_URL="https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER}"
+fi
+
 echo ""
 echo "========================================"
 echo "  Done! Project #${PROJECT_NUMBER} is set up."
-echo "  URL: https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER}"
+echo "  URL: ${PROJECT_URL}"
 echo ""
 echo "  Fields created: Phase, Priority, Size, Copilot Suitable,"
 echo "                   Start Date, End Date, Story Points"

@@ -301,6 +301,14 @@
       border-radius: 3px;
       text-decoration: none;
    }
+   #presentation .slides-mobile-fallback .slides-view-btn:hover,
+   #presentation .slides-mobile-fallback .slides-view-btn:focus,
+   #presentation .slides-mobile-fallback .slides-view-btn:focus-visible {
+      background: #D8B73A;
+      color: #2B2B2B;
+      outline: 2px solid #FFFFFF;
+      outline-offset: 2px;
+   }
    #presentation .slides-mobile-fallback .slides-view-btn i { margin-right: 8px; }
    /* Hide the "open in new tab" desktop link on mobile */
    #presentation .slides-viewer-link { display: none; }

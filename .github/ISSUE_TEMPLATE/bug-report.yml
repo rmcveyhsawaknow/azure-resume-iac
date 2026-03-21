@@ -1,0 +1,118 @@
+name: Bug Report
+description: "Report a defect discovered during development, testing, or production — any role"
+title: "[Bug] {bug_title}"
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Report a defect found during development, testing, or production monitoring.
+
+        > **Role:** Any (Technologist, PM, Business Driver)
+        > **When:** Any time a defect is discovered
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Discovered in Phase
+      description: "Which phase was this bug discovered in?"
+      options:
+        - "Phase 0 - Assessment"
+        - "Phase 1 - Fix Function App"
+        - "Phase 2 - Content Update"
+        - "Phase 3 - Dev Deployment"
+        - "Phase 4 - Prod Deployment"
+        - "Phase 5 - Cleanup & Docs"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "P1 – Critical (system down / data loss)"
+        - "P2 – High (major feature broken)"
+        - "P3 – Medium (workaround available)"
+        - "P4 – Low (cosmetic / minor)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: "Where was the bug observed?"
+      options:
+        - "Local development"
+        - "Development (resumedev.ryanmcvey.me)"
+        - "Production (resume.ryanmcvey.me)"
+        - "CI/CD pipeline"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: "Clear description of what is wrong"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: "Step-by-step instructions to reproduce the bug"
+      placeholder: |
+        1. Navigate to ...
+        2. Click on ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: "What should happen"
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: "What actually happens"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: copilot_suitable
+    attributes:
+      label: Copilot Suitable
+      description: "Can this bug fix be completed or assisted by GitHub Copilot?"
+      options:
+        - "Yes"
+        - "Partial"
+        - "No"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Estimated Fix Size
+      description: "T-shirt size estimate for the fix"
+      options:
+        - "S (half-day) — 1 SP"
+        - "M (1–2 days) — 3 SP"
+        - "L (3–5 days) — 8 SP"
+        - "XL (1 week+) — 13 SP"
+
+  - type: textarea
+    id: logs_screenshots
+    attributes:
+      label: Logs / Screenshots / Error Messages
+      description: "Paste relevant error output, screenshots, or log excerpts"

@@ -1,0 +1,102 @@
+name: Feature Request
+description: "Propose a new feature or enhancement — typically from Business Driver or PM for future phase planning"
+title: "[Feature] {feature_title}"
+labels: ["type: feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        Propose a new feature or enhancement for future phase planning.
+        Feature requests feed into the backlog research cycle and may be
+        scheduled into upcoming phases.
+
+        > **Role:** Business/Functional Driver, PM, or Technologist
+        > **When:** During phase planning, retrospectives, or ad-hoc discovery
+
+  - type: dropdown
+    id: target_phase
+    attributes:
+      label: Target Phase (if known)
+      description: "Which phase should this feature be considered for?"
+      options:
+        - "Unscheduled — Future backlog"
+        - "Phase 0 - Assessment"
+        - "Phase 1 - Fix Function App"
+        - "Phase 2 - Content Update"
+        - "Phase 3 - Dev Deployment"
+        - "Phase 4 - Prod Deployment"
+        - "Phase 5 - Cleanup & Docs"
+        - "Phase 6+ — Future"
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: "What should be built or changed?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_value
+    attributes:
+      label: Business Value
+      description: "Why is this feature needed? What business problem does it solve?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: "What must be true for this feature to be considered complete?"
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested Priority
+      options:
+        - "P1 – Critical"
+        - "P2 – High"
+        - "P3 – Medium"
+        - "P4 – Low"
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Estimated Size
+      description: "T-shirt size estimate"
+      options:
+        - "S (half-day) — 1 SP"
+        - "M (1–2 days) — 3 SP"
+        - "L (3–5 days) — 8 SP"
+        - "XL (1 week+) — 13 SP"
+        - "Unknown — needs research"
+
+  - type: dropdown
+    id: copilot_suitable
+    attributes:
+      label: Copilot Suitable
+      description: "Can Copilot implement this feature?"
+      options:
+        - "Yes"
+        - "Partial"
+        - "No"
+        - "Unknown — needs assessment"
+
+  - type: textarea
+    id: technical_notes
+    attributes:
+      label: Technical Notes
+      description: "Any technical considerations, constraints, or implementation hints"
+
+  - type: textarea
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: "Links to related issues, PRs, or documentation"

@@ -2,6 +2,13 @@
 
 This document provides a phased planning framework for the resume site content and infrastructure update project. It is designed to support backlog CSV creation and GitHub issue template development.
 
+> **Related docs:**
+> - [Agent-Driven Backlog Workflow](backlog_workflow.md) — Detailed session-by-session workflow
+> - [AgentGitOps Bootstrap](../bootstrap/agentgitops-instructions.md) — Reusable guide for any project
+> - [Retrospectives](retrospectives/README.md) — Phase completion reports
+
+> **Issue types:** Tasks in this plan are either **planned** (part of the original project scope) or **gap-analysis-finding** (discovered during assessment). Gap-analysis tasks are noted in the task tables with "(gap-analysis)" after the description and carry the `gap-analysis-finding` label when created as GitHub issues.
+
 ## Project Overview
 
 **Goal:** Update the Azure resume site with content from the [GitHub profile README](https://github.com/rmcveyhsawaknow), fix the broken visitor counter, modernize the technology stack, and deploy through a validated dev → prod pipeline.
@@ -82,7 +89,7 @@ This document provides a phased planning framework for the resume site content a
 | 1.9 | Update function key in main.js | Retrieve current function key and update `frontend/main.js` | 1.3 |
 | 1.10 | Test function locally | Run Function App locally with `func start` and verify counter | 1.5 |
 | 1.11 | Update workflow dotnet version | Change `DOTNET_VERSION` from `3.1` to `8.0` in workflow files | 1.3 |
-| 1.12 | Set FtpsState to Disabled on Function App | Function App allows FTP/FTPS — set to `Disabled` in Bicep (gap-analysis F12) | 1.3 |
+| 1.12 | Set FtpsState to Disabled on Function App | Function App allows FTP/FTPS — set to `Disabled` in Bicep *(gap-analysis)* | 1.3 |
 | 1.13 | Phase 1 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
@@ -135,13 +142,13 @@ This document provides a phased planning framework for the resume site content a
 | 3.7 | Verify frontend | Access dev URL and confirm content, styling, counter | 3.5 |
 | 3.8 | Seed Cosmos DB | Create initial counter document if needed | 3.5 |
 | 3.9 | End-to-end validation | Full test of all features on dev environment | 3.6, 3.7 |
-| 3.10 | Add production environment protection rules | Configure required reviewers and branch policy on `production` environment (gap-analysis F6) | — |
-| 3.11 | Fix development environment branch policy | Add `develop` branch policy to `development` environment (gap-analysis F18) | — |
-| 3.12 | Update storage account min TLS to 1.2 | Set `minimumTlsVersion: TLS1_2` on all storage accounts (gap-analysis F11) | 3.1 |
-| 3.13 | Migrate backend App Insights to workspace-based | Convert Classic App Insights to workspace-based mode (gap-analysis F13) | 3.1 |
-| 3.14 | Enable Key Vault soft delete | Set `enableSoftDelete: true` on Key Vault (gap-analysis F14) | 3.1 |
-| 3.15 | Update backend App Insights connection string format | Add `IngestionEndpoint` and `LiveEndpoint` to connection string (gap-analysis F27) | 3.13 |
-| 3.16 | Update CLOUDFLARE_TOKEN and CLOUDFLARE_ZONE secrets | Update stale GitHub secrets with current Cloudflare API token (gap-analysis F9) | — |
+| 3.10 | Add production environment protection rules | Configure required reviewers and branch policy on `production` environment *(gap-analysis)* | — |
+| 3.11 | Fix development environment branch policy | Add `develop` branch policy to `development` environment *(gap-analysis)* | — |
+| 3.12 | Update storage account min TLS to 1.2 | Set `minimumTlsVersion: TLS1_2` on all storage accounts *(gap-analysis)* | 3.1 |
+| 3.13 | Migrate backend App Insights to workspace-based | Convert Classic App Insights to workspace-based mode *(gap-analysis)* | 3.1 |
+| 3.14 | Enable Key Vault soft delete | Set `enableSoftDelete: true` on Key Vault *(gap-analysis)* | 3.1 |
+| 3.15 | Update backend App Insights connection string format | Add `IngestionEndpoint` and `LiveEndpoint` to connection string *(gap-analysis)* | 3.13 |
+| 3.16 | Update CLOUDFLARE_TOKEN and CLOUDFLARE_ZONE secrets | Update stale GitHub secrets with current Cloudflare API token *(gap-analysis)* | — |
 | 3.17 | Phase 3 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
@@ -178,13 +185,13 @@ This document provides a phased planning framework for the resume site content a
 | 5.5 | Update docs/ | Refresh architecture, workflow, and assessment docs | Phase 4 |
 | 5.6 | Close backlog items | Mark all completed issues as done | 5.4, 5.5 |
 | 5.7 | Final cost review | Verify Azure cost impact of new vs. old stack | 5.2 |
-| 5.8 | Delete stale GitHub secrets | Remove unused `CLOUDFLARE_ZONE2` and `CLOUDFLARE_ZONE3` secrets (gap-analysis F22) | — |
-| 5.9 | Clean up disabled Azure CDN workflows | Delete or archive disabled `azure-static-web-apps-*.yml` workflow files (gap-analysis F25) | — |
-| 5.10 | Remove copilot GitHub environment | Delete unused `copilot` environment from repo settings (gap-analysis F26) | — |
-| 5.11 | Clean up excess CORS origins | Remove stale Azure CDN CORS origins from Function App Bicep (gap-analysis F24) | — |
-| 5.12 | Set Key Vault secret expiration dates | Add expiration dates to all Key Vault secrets (gap-analysis F15) | — |
-| 5.13 | Migrate Key Vault to RBAC authorization | Switch from Vault access policy to Azure RBAC model (gap-analysis F16) | — |
-| 5.14 | Address frontend iKey hardcoding | Remove hardcoded App Insights instrumentation key from JS (gap-analysis F20) | — |
+| 5.8 | Delete stale GitHub secrets | Remove unused `CLOUDFLARE_ZONE2` and `CLOUDFLARE_ZONE3` secrets *(gap-analysis)* | — |
+| 5.9 | Clean up disabled Azure CDN workflows | Delete or archive disabled `azure-static-web-apps-*.yml` workflow files *(gap-analysis)* | — |
+| 5.10 | Remove copilot GitHub environment | Delete unused `copilot` environment from repo settings *(gap-analysis)* | — |
+| 5.11 | Clean up excess CORS origins | Remove stale Azure CDN CORS origins from Function App Bicep *(gap-analysis)* | — |
+| 5.12 | Set Key Vault secret expiration dates | Add expiration dates to all Key Vault secrets *(gap-analysis)* | — |
+| 5.13 | Migrate Key Vault to RBAC authorization | Switch from Vault access policy to Azure RBAC model *(gap-analysis)* | — |
+| 5.14 | Address frontend iKey hardcoding | Remove hardcoded App Insights instrumentation key from JS *(gap-analysis)* | — |
 | 5.15 | Phase 5 Retrospective | Run retrospective generator, commit report, close milestone | — |
 
 ---
@@ -194,9 +201,9 @@ This document provides a phased planning framework for the resume site content a
 Use this structure for the backlog CSV file:
 
 ```csv
-task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,copilot_suitable,labels
-0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,P1 – Critical,todo,,No,assessment;credentials
-0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,P2 – High,todo,,Yes,assessment;azure
+task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,copilot_suitable,issue_type,labels
+0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,P1 – Critical,todo,,No,planned,assessment;credentials
+0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,P2 – High,todo,,Yes,planned,assessment;azure
 ...
 ```
 
@@ -214,7 +221,8 @@ task_id,phase,phase_name,task_title,description,depends_on,priority,status,assig
 | `status` | `todo`, `in_progress`, `done`, `blocked` |
 | `assignee` | GitHub username |
 | `copilot_suitable` | `Yes`, `Partial`, `No` — indicates if task is suitable for GitHub Copilot agent |
-| `labels` | Semicolon-separated labels for GitHub issues |
+| `issue_type` | `planned` (original scope) or `gap-analysis-finding` (discovered during assessment); **informational only** — current automation does not read this field |
+| `labels` | Semicolon-separated labels for GitHub issues; automation derives behavior from these labels (for example, include `gap-analysis-finding` here when `issue_type` is `gap-analysis-finding`) |
 
 ## Issue Template Structure
 

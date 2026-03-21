@@ -24,14 +24,15 @@
 
 ## Workflow Overview
 
-AgentGitOps operates in **five sessions** followed by repeating **phase boundary retrospectives**. Each session has a defined purpose, role (Human, Agent, or both), and set of output artifacts.
+AgentGitOps operates in **six sessions** (0–5) followed by repeating **phase boundary retrospectives**. Each session has a defined purpose, role (Human, Agent, or both), and set of output artifacts.
 
 | Session | Name | Role | Purpose | Key Artifacts | Issue Types Created |
 |---|---|---|---|---|---|
+| 0 | Goal-Focused Backlog Planning | PM / Business Driver | Define project goals, phases, and produce initial backlog plan + CSV | `BACKLOG_PLANNING.md`, `artifacts/backlog.csv` | — |
 | 1 | Copilot Instructions | Human / Agent | Add `.github/copilot-instructions.md` to provide agent context | `copilot-instructions.md` | — |
-| 2 | Assessment | Agent | Read source, IaC, workflows → produce architecture docs | `ARCHITECTURE.md`, `KNOWN_ISSUES.md`, `ASSESSMENT_COMMANDS.md` | — |
-| 3 | Backlog Research | Agent | Generate phased backlog plan + individual issue files | `BACKLOG_PLANNING.md`, `scripts/backlog-issues/*.md` | Technical Task, Phase Initiation, Phase Retrospective |
-| 4 | Issue Population | Human + Agent | Run scripts to create labels, milestones, issues, project | GitHub Issues, Labels, Milestones, Project | All types populated into GitHub |
+| 2 | Backlog Research | Agent | Read codebase + Session 0 CSV → generate issue files | `artifacts/backlog-issues/*.md` | Technical Task, Phase Initiation, Phase Retrospective |
+| 3 | Issue Population | Human + Agent | Run scripts to create labels, milestones, issues, project | GitHub Issues, Labels, Milestones, Project | All types populated into GitHub |
+| 4 | Assessment Execution | Human + Agent | Execute Phase 0 assessment tasks from the backlog | Assessment artifacts, gap findings | Bug, Feature Request (as discovered) |
 | 5+ | Backlog Burn-Down | Human + Agent | Work issues via feature branches + Copilot agents | Code changes, PRs, deployments | Bug, Feature Request (as discovered) |
 | — | Phase Retrospective | PM | Generate metrics report, close milestone, plan next phase | `docs/retrospectives/phase-N-retrospective.md` | Phase Retrospective (assessed) |
 
@@ -43,33 +44,38 @@ The following diagram shows the full AgentGitOps lifecycle, including roles, art
 
 ```mermaid
 flowchart TD
+    subgraph "Session 0 — Goal-Focused Backlog Planning"
+        S0A[/"👤 PM/Business Driver: Define project goals & phases"/]
+        S0B["👤 PM: Produce BACKLOG_PLANNING.md<br/>(phased task breakdown)"]
+        S0C["👤 PM: Produce artifacts/backlog.csv<br/>(initial multiphase CSV)"]
+        S0A --> S0B --> S0C
+    end
+
     subgraph "Session 1 — Bootstrap"
         S1[/"👤 Human: Add copilot-instructions.md"/]
     end
 
-    subgraph "Session 2 — Assessment"
-        S2A["🤖 Agent: Read source code, IaC, workflows"]
-        S2B["🤖 Agent: Produce ARCHITECTURE.md"]
-        S2C["🤖 Agent: Produce KNOWN_ISSUES.md"]
-        S2D["🤖 Agent: Produce ASSESSMENT_COMMANDS.md"]
-        S2A --> S2B --> S2C --> S2D
+    subgraph "Session 2 — Backlog Research"
+        S2A["🤖 Agent: Read codebase, IaC, workflows + Session 0 CSV"]
+        S2B["🤖 Agent: Produce ARCHITECTURE.md, KNOWN_ISSUES.md"]
+        S2C["🤖 Agent: Generate issue .md files<br/>📋 Technical Tasks (planned + gap-analysis)<br/>📋 Phase Initiation issues (1 per phase)<br/>📋 Phase Retrospective issues (1 per phase)"]
+        S2A --> S2B --> S2C
     end
 
-    subgraph "Session 3 — Backlog Research"
-        S3A["🤖 Agent: Read assessment docs"]
-        S3B["🤖 Agent: Generate BACKLOG_PLANNING.md"]
-        S3C["🤖 Agent: Generate issue .md files<br/>📋 Technical Tasks (planned + gap-analysis)<br/>📋 Phase Initiation issues (1 per phase)<br/>📋 Phase Retrospective issues (1 per phase)"]
-        S3A --> S3B --> S3C
+    subgraph "Session 3 — Issue Population"
+        S3A["👤 Human: Run check-prerequisites.sh"]
+        S3B["👤+🤖: Run setup-github-labels.sh<br/>Creates: type:, role:, phase, priority, size labels"]
+        S3C["👤+🤖: Run setup-github-milestones.sh<br/>Sets: due dates for Roadmap view"]
+        S3D["👤+🤖: Run create-backlog-issues.sh<br/>Creates: all issue types with labels"]
+        S3E["👤 Human: Run setup-github-project.sh"]
+        S3F["👤 Human: Configure project views<br/>(see project-views-guide.md)"]
+        S3A --> S3B --> S3C --> S3D --> S3E --> S3F
     end
 
-    subgraph "Session 4 — Issue Population"
-        S4A["👤 Human: Run check-prerequisites.sh"]
-        S4B["👤+🤖: Run setup-github-labels.sh<br/>Creates: type:, role:, phase, priority, size labels"]
-        S4C["👤+🤖: Run setup-github-milestones.sh<br/>Sets: due dates for Roadmap view"]
-        S4D["👤+🤖: Run create-backlog-issues.sh<br/>Creates: all issue types with labels"]
-        S4E["👤 Human: Run setup-github-project.sh"]
-        S4F["👤 Human: Configure project views<br/>(see project-views-guide.md)"]
-        S4A --> S4B --> S4C --> S4D --> S4E --> S4F
+    subgraph "Session 4 — Assessment Execution"
+        S4A["👤+🤖: Execute Phase 0 assessment tasks"]
+        S4B["🤖 Agent: Produce assessment artifacts<br/>(architecture docs, gap analysis)"]
+        S4A --> S4B
     end
 
     subgraph "Session 5+ — Backlog Burn-Down (per phase)"
@@ -102,10 +108,11 @@ flowchart TD
         R5 -- "Yes" --> R6
     end
 
+    S0C --> S1
     S1 --> S2A
-    S2D --> S3A
-    S3C --> S4A
-    S4F --> S5INIT
+    S2C --> S3A
+    S3F --> S4A
+    S4B --> S5INIT
     S5G --> R1
     R6 --> S5INIT
     R5 -- "No → project complete" --> DONE["✅ Project Complete"]
@@ -122,13 +129,14 @@ sequenceDiagram
     participant GH as 📋 GitHub
 
     BD->>PM: Define business objectives
+    PM->>GH: Session 0 — Produce BACKLOG_PLANNING.md + backlog.csv
     PM->>AI: Session 1 — Provide copilot-instructions.md
-    AI->>GH: Session 2 — Commit assessment docs
-    AI->>GH: Session 3 — Commit backlog plan + issue files
-    PM->>GH: Session 4 — Run scripts → Labels, milestones, issues
-    PM->>GH: Session 4 — Create project + configure views
+    AI->>GH: Session 2 — Read codebase + CSV → Commit issue .md files
+    PM->>GH: Session 3 — Run scripts → Labels, milestones, issues
+    PM->>GH: Session 3 — Create project + configure views
+    T->>GH: Session 4 — Execute Phase 0 assessment tasks
 
-    loop Per Phase
+    loop Per Phase (Session 5+)
         PM->>GH: Create Phase Initiation issue (objectives, dates, capacity)
         GH->>AI: Issue assigned (Copilot: Yes) → type: technical-task
         AI->>GH: Create feature branch + PR
@@ -205,7 +213,7 @@ This script checks all tools, authentication, and permissions. It outputs either
 - **✅ Good to Go** — All checks passed, ready to proceed
 - **❌ Missing Permissions** — Lists what's missing with remediation steps
 
-> **Note:** The `project` scope is not available in Codespace `GITHUB_TOKEN`. For project setup (Session 4, Step 5), either run locally with `gh auth login --scopes "project,repo,read:org"` or use a Personal Access Token.
+> **Note:** The `project` scope is not available in Codespace `GITHUB_TOKEN`. For project setup (Session 3, Step 5), either run locally with `gh auth login --scopes "project,repo,read:org"` or use a Personal Access Token.
 
 ---
 
@@ -232,7 +240,32 @@ AgentGitOps defines four standard roles. In small teams, one person may fill mul
 
 ---
 
-### Phase 1 of 5: Bootstrap — Insert Copilot Instructions
+### Session 0: Goal-Focused Backlog Planning
+
+**Session type:** Manual  
+**Role:** PM / Business Driver  
+**Time:** 1–4 hours
+
+This is the **first step** for any project. Before any agent sessions, the PM and Business Driver collaborate to define project goals and structure the initial backlog. This creates the foundation that all subsequent sessions build on.
+
+**Steps:**
+
+1. Define the project goal, scope, and success criteria
+2. Identify phases (typically 3–6 phases, 0-indexed)
+3. Brainstorm tasks per phase at a high level
+4. Create `docs/BACKLOG_PLANNING.md` with the phased task breakdown
+5. Export `artifacts/backlog.csv` — the initial planning CSV (see template in `bootstrap/backlog-template.csv`)
+
+**Prompt pattern (for agent assistance):**
+> "Help me create a phased backlog plan for [project description]. The project has these goals: [goals]. Create a BACKLOG_PLANNING.md with 4–6 phases, and generate the initial backlog.csv using this CSV structure: task_id, phase, phase_name, task_title, description, depends_on, priority, status, assignee, copilot_suitable, issue_type, labels."
+
+**Artifact checklist:**
+- [ ] `docs/BACKLOG_PLANNING.md` — Phased plan with task tables, phase objectives, CSV structure
+- [ ] `artifacts/backlog.csv` — Initial multiphase backlog CSV (used by Sessions 2 and 3)
+
+---
+
+### Session 1: Bootstrap — Insert Copilot Instructions
 
 **Session type:** Manual or Agent  
 **Role:** Human  
@@ -249,39 +282,22 @@ AgentGitOps defines four standard roles. In small teams, one person may fill mul
 
 ---
 
-### Phase 2 of 5: Assessment Session
-
-**Session type:** Agent (Copilot Chat in VS Code / Copilot Coding Agent)  
-**Role:** Agent  
-**Time:** 1–2 hours
-
-**Prompt pattern:**
-> "Assess this repository. Read all source files, IaC, workflows, and configuration. Produce architecture docs, assessment CLI commands, and a known-issues list."
-
-The agent reads all source files, IaC templates, workflows, and configuration to produce:
-
-**Artifact checklist:**
-- [ ] `docs/ARCHITECTURE.md` — System architecture and component inventory
-- [ ] `docs/ASSESSMENT_COMMANDS.md` — CLI commands to verify deployed state
-- [ ] `docs/KNOWN_ISSUES.md` — Identified gaps, tech debt, and security concerns
-- [ ] `docs/CICD_WORKFLOWS.md` — CI/CD pipeline documentation (optional)
-
----
-
-### Phase 3 of 5: Backlog Research Session
+### Session 2: Backlog Research
 
 **Session type:** Agent (Copilot Chat in VS Code / Copilot Coding Agent)  
 **Role:** Agent  
 **Time:** 2–4 hours
 
 **Prompt pattern:**
-> "Using the assessment docs and copilot instructions, create a phased backlog plan and generate individual issue .md files with YAML frontmatter for each task. Mark each issue as either **planned** (from the original project scope) or **gap-analysis-finding** (discovered during assessment). For each phase, also create a Phase Initiation issue (business objectives, dates, capacity) and a Phase Retrospective issue."
+> "Using the Session 0 backlog CSV (`artifacts/backlog.csv`), copilot instructions, and the project codebase, generate individual issue .md files with YAML frontmatter for each task in `artifacts/backlog-issues/`. Mark each issue as either **planned** (from the original project scope) or **gap-analysis-finding** (discovered during assessment). For each phase, also create a Phase Initiation issue (business objectives, dates, capacity) and a Phase Retrospective issue. Also produce architecture and assessment docs."
 
-The agent uses assessment output + copilot instructions to produce:
+The agent uses the Session 0 CSV + codebase to produce:
 
 **Artifact checklist:**
-- [ ] `docs/BACKLOG_PLANNING.md` — Phased plan with task breakdown tables
-- [ ] `scripts/backlog-issues/*.md` — Individual issue files with YAML frontmatter
+- [ ] `artifacts/backlog-issues/*.md` — Individual issue files with YAML frontmatter
+- [ ] `docs/ARCHITECTURE.md` — System architecture and component inventory
+- [ ] `docs/ASSESSMENT_COMMANDS.md` — CLI commands to verify deployed state
+- [ ] `docs/KNOWN_ISSUES.md` — Identified gaps, tech debt, and security concerns
 - [ ] `.github/ISSUE_TEMPLATE/backlog-task.yml` — Technical task template
 - [ ] `.github/ISSUE_TEMPLATE/phase-initiation.yml` — Phase initiation template
 - [ ] `.github/ISSUE_TEMPLATE/phase-retrospective.yml` — Retrospective template
@@ -329,7 +345,7 @@ depends_on: ["1.1"]
 
 ---
 
-### Phase 4 of 5: Issue Population Session
+### Session 3: Issue Population
 
 **Session type:** Human + Agent in Codespace  
 **Role:** Human (with agent assistance)  
@@ -344,7 +360,7 @@ depends_on: ["1.1"]
 #### Step 2: Create Labels
 
 ```bash
-./scripts/setup-github-labels.sh [owner/repo]
+./bootstrap/setup-github-labels.sh [owner/repo]
 ```
 
 Creates labels across 9 categories: Phase, Priority, Size, Copilot Suitability, Domain Area, Source, Status, Issue Type, and Role (see [Label Taxonomy](#label-taxonomy) below).
@@ -352,7 +368,7 @@ Creates labels across 9 categories: Phase, Priority, Size, Copilot Suitability, 
 #### Step 3: Create Milestones
 
 ```bash
-./scripts/setup-github-milestones.sh [owner/repo]
+./bootstrap/setup-github-milestones.sh [owner/repo]
 ```
 
 Creates one milestone per phase for date tracking and retrospective metrics.
@@ -366,10 +382,10 @@ Creates one milestone per phase for date tracking and retrospective metrics.
 
 ```bash
 # Preview what will be created
-./scripts/create-backlog-issues.sh --dry-run [owner/repo]
+./bootstrap/create-backlog-issues.sh --dry-run [owner/repo]
 
 # Create all issues
-./scripts/create-backlog-issues.sh [owner/repo]
+./bootstrap/create-backlog-issues.sh [owner/repo]
 ```
 
 Creates GitHub issues with structured titles, full markdown bodies, and auto-applied labels. This includes Technical Tasks, Phase Initiation issues, and Phase Retrospective issues.
@@ -380,7 +396,7 @@ Creates GitHub issues with structured titles, full markdown bodies, and auto-app
 
 ```bash
 gh auth login --scopes "project,repo,read:org"
-./scripts/setup-github-project.sh [owner]
+./bootstrap/setup-github-project.sh [owner]
 ```
 
 Creates a GitHub Project (V2) with custom fields (Phase, Priority, Size, Copilot Suitable) and adds all issues.
@@ -405,7 +421,7 @@ GitHub Projects V2 views cannot be fully configured via API. Follow the **[Proje
 
 ---
 
-### Phase 5 of 5: Backlog Burn-Down
+### Session 5+: Backlog Burn-Down
 
 **Session type:** Human + Agent  
 **Role:** Mixed (based on Copilot suitability label)  
@@ -461,7 +477,7 @@ At the end of each phase, the PM:
 
 1. **Runs the retrospective script:**
 ```bash
-./scripts/generate-phase-retrospective.sh <phase_number>
+./bootstrap/generate-phase-retrospective.sh <phase_number>
 
 # The script automatically:
 # 1. Collects issue/PR/commit stats from the milestone
@@ -693,7 +709,7 @@ The gap analysis cycle can repeat at any phase boundary:
 4. **Update `BACKLOG_PLANNING.md`** — add new tasks to the appropriate phase tables
 5. **Run issue creation for new files only:**
    ```bash
-   ./scripts/create-backlog-issues.sh scripts/backlog-issues/{new_files}.md
+   ./bootstrap/create-backlog-issues.sh artifacts/backlog-issues/{new_files}.md
    ```
 
 ---
@@ -819,12 +835,12 @@ Created by **Business Driver, PM, or Technologist** for future phase planning. K
 
 | Script | Purpose | Auth Required | When to Run |
 |---|---|---|---|
-| `bootstrap/check-prerequisites.sh` | Verify tools, auth, and permissions | None (checks auth) | Before Session 4 |
-| `scripts/setup-github-labels.sh` | Create/update all labels (idempotent) | `GITHUB_TOKEN` | Session 4, Step 2 |
-| `scripts/setup-github-milestones.sh` | Create milestones for each phase | `GITHUB_TOKEN` | Session 4, Step 3 |
-| `scripts/create-backlog-issues.sh` | Create issues from `.md` files | `GITHUB_TOKEN` | Session 4, Step 4 |
-| `scripts/setup-github-project.sh` | Create project + fields + add issues | `project` scope | Session 4, Step 5 |
-| `scripts/generate-phase-retrospective.sh` | Generate phase retrospective report | `GITHUB_TOKEN` | Each phase boundary |
+| `bootstrap/check-prerequisites.sh` | Verify tools, auth, and permissions | None (checks auth) | Before Session 3 |
+| `bootstrap/setup-github-labels.sh` | Create/update all labels (idempotent) | `GITHUB_TOKEN` | Session 3, Step 2 |
+| `bootstrap/setup-github-milestones.sh` | Create milestones for each phase | `GITHUB_TOKEN` | Session 3, Step 3 |
+| `bootstrap/create-backlog-issues.sh` | Create issues from `.md` files | `GITHUB_TOKEN` | Session 3, Step 4 |
+| `bootstrap/setup-github-project.sh` | Create project + fields + add issues | `project` scope | Session 3, Step 5 |
+| `bootstrap/generate-phase-retrospective.sh` | Generate phase retrospective report | `GITHUB_TOKEN` | Each phase boundary |
 | `scripts/setup-codespace-auth.sh` | Authenticate Azure + GitHub + Cloudflare | Codespace Secrets | Each Codespace session |
 | `scripts/cleanup-stack.sh` | Inventory/purge old stack resources | Azure CLI + Cloudflare | Phase 5 (cleanup) |
 
@@ -837,9 +853,18 @@ AgentGitOps produces artifacts in specific locations. This separation keeps reus
 ```
 your-repo/
 ├── bootstrap/                          # ← Reusable AgentGitOps package
-│   ├── agentgitops-instructions.md     #    This file — the main guide
+│   ├── README.md                       #    Directory overview — start here
+│   ├── agentgitops-instructions.md     #    This file — full workflow guide
+│   ├── backlog_workflow.md             #    Project-specific workflow reference
 │   ├── project-views-guide.md          #    Project setup & views guide
-│   └── check-prerequisites.sh          #    Permissions verification script
+│   ├── check-prerequisites.sh          #    Permissions verification script
+│   ├── setup-github-labels.sh          #    Create/update all labels
+│   ├── setup-github-milestones.sh      #    Create milestones per phase
+│   ├── create-backlog-issues.sh        #    Create issues from .md files
+│   ├── setup-github-project.sh         #    Create project + add issues
+│   ├── generate-phase-retrospective.sh #    Generate phase retrospective report
+│   ├── project-fields.json             #    GitHub Project V2 field/option IDs
+│   └── backlog-template.csv           #    Session 0 CSV template
 │
 ├── .github/
 │   ├── copilot-instructions.md         # Project-specific agent context
@@ -854,7 +879,6 @@ your-repo/
 │   ├── ARCHITECTURE.md                 #    System architecture reference
 │   ├── ASSESSMENT_COMMANDS.md          #    CLI commands for state verification
 │   ├── BACKLOG_PLANNING.md             #    Phased plan with task tables
-│   ├── backlog_workflow.md             #    Detailed workflow reference
 │   ├── CICD_WORKFLOWS.md              #    CI/CD pipeline documentation
 │   ├── KNOWN_ISSUES.md                #    Technical debt and known issues
 │   ├── LOCAL_TESTING.md               #    Local development guide
@@ -862,19 +886,17 @@ your-repo/
 │       ├── phase-0-retrospective.md
 │       └── ...
 │
-├── scripts/
-│   ├── backlog-issues/                 # ← Issue .md files with YAML frontmatter
-│   │   ├── 0.1.md ... 0.14.md         #    Phase 0 tasks
-│   │   ├── 1.1.md ... 1.13.md         #    Phase 1 tasks
-│   │   └── ...                         #    (one file per issue)
-│   ├── setup-github-labels.sh
-│   ├── setup-github-milestones.sh
-│   ├── create-backlog-issues.sh
-│   ├── setup-github-project.sh
-│   ├── generate-phase-retrospective.sh
-│   └── project-fields.json            #    GitHub Project V2 field/option IDs
+├── scripts/                            # ← Project-specific operational scripts
+│   ├── setup-codespace-auth.sh         #    Auth setup for Codespace sessions
+│   ├── cleanup-stack.sh                #    Blue/green stack cleanup
+│   └── ...                             #    Other project-specific scripts
 │
-└── artifacts/                          # ← Project-specific assessment data
+└── artifacts/                          # ← Project-specific output artifacts
+    ├── backlog.csv                      #    Initial Session 0 planning CSV
+    ├── backlog-issues/                 #    Issue .md files with YAML frontmatter
+    │   ├── 0.1.md ... 0.14.md         #    Phase 0 tasks
+    │   ├── 1.1.md ... 1.13.md         #    Phase 1 tasks
+    │   └── ...                         #    (one file per issue)
     ├── session-prompts/                #    Session prompt archives
     ├── assessments/                    #    Assessment findings and diagnostics
     └── inventory-*.json                #    Azure/Cloudflare resource inventories
@@ -884,12 +906,14 @@ your-repo/
 
 | Artifact Type | Location | Reason |
 |---|---|---|
-| Reusable workflow instructions | `bootstrap/` | Portable — copy to any project |
+| Reusable workflow instructions + scripts | `bootstrap/` | Portable — copy to any project |
 | Project views guide | `bootstrap/project-views-guide.md` | Role-based view setup reference |
+| Session 0 CSV template | `bootstrap/backlog-template.csv` | Reusable starting point |
 | Issue templates (5 types) | `.github/ISSUE_TEMPLATE/` | GitHub-native issue creation forms |
 | Core project docs | `docs/` | Living documentation, updated each phase |
 | Phase retrospective reports | `docs/retrospectives/` | Persistent git record of metrics |
-| Backlog issue definitions | `scripts/backlog-issues/` | Input for issue creation script |
+| Initial planning backlog CSV | `artifacts/backlog.csv` | Session 0 output, used by Sessions 2–3 |
+| Backlog issue definitions | `artifacts/backlog-issues/` | Input for issue creation script |
 | Session prompts (archived) | `artifacts/session-prompts/` | Historical record, not active docs |
 | Assessment findings | `artifacts/assessments/` | Phase-specific diagnostics, not active docs |
 | Resource inventory JSON | `artifacts/` | Blue/green stack snapshots for traceability |
@@ -902,28 +926,28 @@ To use AgentGitOps in a new repository:
 
 ### Quick Start
 
-1. **Copy the `bootstrap/` folder** into your repository
-2. **Copy the `scripts/` directory** (or the specific scripts you need)
-3. **Copy the `.github/ISSUE_TEMPLATE/` templates** (all 5 templates)
-4. **Run `./bootstrap/check-prerequisites.sh`** to verify your setup
-5. **Follow the Phase Guide** above, starting with Phase 1 (Copilot Instructions)
+1. **Copy the `bootstrap/` folder** into your repository — it contains all scripts, templates, and guides
+2. **Copy the `.github/ISSUE_TEMPLATE/` templates** (all 5 templates)
+3. **Run `./bootstrap/check-prerequisites.sh`** to verify your setup
+4. **Follow the Phase Guide** above, starting with Session 0 (Goal-Focused Backlog Planning)
 
 ### Customization Points
 
 | What to Customize | Where | How |
 |---|---|---|
-| Phase names and count | `scripts/setup-github-labels.sh`, `scripts/setup-github-milestones.sh` | Edit phase arrays |
-| Label taxonomy | `scripts/setup-github-labels.sh` | Add/remove/rename labels |
+| Phase names and count | `bootstrap/setup-github-labels.sh`, `bootstrap/setup-github-milestones.sh` | Edit phase arrays |
+| Label taxonomy | `bootstrap/setup-github-labels.sh` | Add/remove/rename labels |
 | Issue template fields | `.github/ISSUE_TEMPLATE/*.yml` | Edit YAML form fields |
 | Story point mapping | `bootstrap/agentgitops-instructions.md`, templates | Update SP values |
-| Project name | `scripts/setup-github-project.sh` | Change `PROJECT_TITLE` |
-| Project field IDs | `scripts/project-fields.json` | Re-generate after project creation |
+| Project name | `bootstrap/setup-github-project.sh` | Change `PROJECT_TITLE` |
+| Project field IDs | `bootstrap/project-fields.json` | Re-generate after project creation |
 | Project views | `bootstrap/project-views-guide.md` | Customize views for your team |
 | Copilot instructions | `.github/copilot-instructions.md` | Rewrite for your project's stack |
 | Organization roles | `bootstrap/agentgitops-instructions.md` | Adjust roles for your team size |
 
 ### Key Design Decisions
 
+- **Session 0 CSV** in `artifacts/backlog.csv` provides the canonical planning foundation for all agent sessions
 - **YAML frontmatter** in issue `.md` files enables scripted label extraction without a separate CSV/JSON mapping
 - **Phased structure** provides natural ordering and dependency tracking
 - **Copilot suitability labels** allow filtering for agent-automatable tasks

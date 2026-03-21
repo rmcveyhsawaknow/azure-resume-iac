@@ -197,23 +197,24 @@ When assessing if a task is Copilot-suitable:
 
 ## Agent Workflow for Backlog Build-Out
 
-This repository follows the AgentGitOps repeatable workflow pattern (see `bootstrap/agentgitops-instructions.md`):
+This repository follows the AgentGitOps repeatable workflow pattern (see `bootstrap/agentgitops-instructions.md` and `bootstrap/README.md`):
 
-1. **Bootstrap** — Add copilot instructions to repo branch (this file)
-2. **Assessment session** — Agent assesses source code, architecture, and current state
-3. **Backlog research session** — Agent generates issue `.md` files with YAML frontmatter (Technical Tasks, Phase Initiation, Phase Retrospective per phase)
-4. **Issue population** — Run scripts to create labels, milestones, issues, project
-5. **Backlog burn-down** — Per-phase cycle: Initiation → Technical Tasks → Retrospective
+1. **Session 0: Goal-Focused Backlog Planning** — PM defines goals, produces `docs/BACKLOG_PLANNING.md` + `artifacts/backlog.csv`
+2. **Session 1: Bootstrap** — Add copilot instructions to repo branch (this file)
+3. **Session 2: Backlog Research** — Agent reads codebase + Session 0 CSV → generates `artifacts/backlog-issues/*.md` + assessment docs
+4. **Session 3: Issue Population** — Run scripts to create labels, milestones, issues, project
+5. **Session 4: Assessment Execution** — Execute Phase 0 assessment tasks from backlog
+6. **Session 5+: Backlog Burn-Down** — Per-phase cycle: Initiation → Technical Tasks → Retrospective
 
 **Key scripts:**
 
 | Script | Purpose |
 |---|---|
-| `scripts/setup-github-labels.sh` | Create/update all labels (9 categories, idempotent) |
-| `scripts/setup-github-milestones.sh` | Create milestones with due dates for Roadmap |
-| `scripts/create-backlog-issues.sh` | Create issues from `.md` files with auto-labels |
-| `scripts/setup-github-project.sh` | Create project + custom fields + add issues |
-| `scripts/generate-phase-retrospective.sh` | Generate phase retrospective report |
+| `bootstrap/setup-github-labels.sh` | Create/update all labels (9 categories, idempotent) |
+| `bootstrap/setup-github-milestones.sh` | Create milestones with due dates for Roadmap |
+| `bootstrap/create-backlog-issues.sh` | Create issues from `.md` files with auto-labels |
+| `bootstrap/setup-github-project.sh` | Create project + custom fields + add issues |
+| `bootstrap/generate-phase-retrospective.sh` | Generate phase retrospective report |
 
 ## Phase Retrospective & AgentGitOps
 
@@ -223,7 +224,7 @@ At the conclusion of each phase, the PM generates a retrospective to capture pla
 
 1. **Phase Initiation** — PM creates `type: phase-initiation` issue with objectives, dates, planned SP capacity
 2. **Burn-Down** — Technical Tasks, Bugs, Feature Requests worked by Technologists and AI Copilot
-3. **Retrospective** — PM runs `scripts/generate-phase-retrospective.sh <N>`, assesses initiation success criteria
+3. **Retrospective** — PM runs `bootstrap/generate-phase-retrospective.sh <N>`, assesses initiation success criteria
 4. **Milestone closed** — Report committed to `docs/retrospectives/phase-{N}-retrospective.md`
 5. **Next phase** — PM creates new Phase Initiation issue; cycle repeats
 

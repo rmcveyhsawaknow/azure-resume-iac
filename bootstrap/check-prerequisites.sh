@@ -180,13 +180,14 @@ echo ""
 echo -e "${BOLD}4. Required Scripts${NC}"
 echo "   ─────────────────────────────────────────"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BOOTSTRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${BOOTSTRAP_DIR}/.." && pwd)"
 
 check_script() {
   local path="$1"
   local desc="$2"
-  if [[ -f "${SCRIPT_DIR}/${path}" ]]; then
-    if [[ -x "${SCRIPT_DIR}/${path}" ]]; then
+  if [[ -f "${REPO_ROOT}/${path}" ]]; then
+    if [[ -x "${REPO_ROOT}/${path}" ]]; then
       pass "${desc} — found and executable"
     else
       warn "${desc} — found but not executable. Run: chmod +x ${path}"
@@ -196,11 +197,11 @@ check_script() {
   fi
 }
 
-check_script "scripts/setup-github-labels.sh" "setup-github-labels.sh"
-check_script "scripts/setup-github-milestones.sh" "setup-github-milestones.sh"
-check_script "scripts/create-backlog-issues.sh" "create-backlog-issues.sh"
-check_script "scripts/setup-github-project.sh" "setup-github-project.sh"
-check_script "scripts/generate-phase-retrospective.sh" "generate-phase-retrospective.sh"
+check_script "bootstrap/setup-github-labels.sh" "setup-github-labels.sh"
+check_script "bootstrap/setup-github-milestones.sh" "setup-github-milestones.sh"
+check_script "bootstrap/create-backlog-issues.sh" "create-backlog-issues.sh"
+check_script "bootstrap/setup-github-project.sh" "setup-github-project.sh"
+check_script "bootstrap/generate-phase-retrospective.sh" "generate-phase-retrospective.sh"
 
 echo ""
 

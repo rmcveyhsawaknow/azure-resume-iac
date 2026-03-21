@@ -150,12 +150,12 @@
       nextText: "Next",
       start: function(slider) {
          var counter = slider.closest('.slides-viewer').find('.slide-counter');
+         slider.data('counter', counter);
          counter.find('.total-slides').text(slider.count);
          counter.find('.current-slide').text(slider.currentSlide + 1);
       },
       after: function(slider) {
-         var counter = slider.closest('.slides-viewer').find('.slide-counter');
-         counter.find('.current-slide').text(slider.currentSlide + 1);
+         slider.data('counter').find('.current-slide').text(slider.currentSlide + 1);
       }
    });
 

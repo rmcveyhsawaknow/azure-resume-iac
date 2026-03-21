@@ -944,15 +944,6 @@ ul.agentgitops-list li em {
    background: rgba(0, 0, 0, 0.5);
 }
 
-/* Control nav (dots) — positioned inside the slide counter bar */
-#presentation .flex-control-nav {
-   position: static;
-   text-align: center;
-   margin: 0;
-   padding: 0;
-   display: none;
-}
-
 /* Slide counter */
 #presentation .slide-counter {
    text-align: center;

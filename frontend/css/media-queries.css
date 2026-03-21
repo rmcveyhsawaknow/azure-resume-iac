@@ -268,7 +268,42 @@
 
    /* Presentation Section (mobile) */
    #presentation .main-col { padding-right: 30px; }
-   #presentation .slides-viewer iframe { height: 300px; }
+   /* Hide iframe on mobile — PDFs in iframes are not reliably viewable on mobile browsers */
+   #presentation .slides-viewer iframe { display: none; }
+   /* Show mobile fallback card instead */
+   #presentation .slides-mobile-fallback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 24px;
+      gap: 16px;
+      color: #A8A8A8;
+   }
+   #presentation .slides-mobile-fallback i {
+      font-size: 48px;
+      color: #C5A028;
+   }
+   #presentation .slides-mobile-fallback p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 22px;
+   }
+   #presentation .slides-mobile-fallback .slides-view-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #C5A028;
+      color: #2B2B2B;
+      font: 13px/18px 'opensans-bold', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-radius: 3px;
+      text-decoration: none;
+   }
+   #presentation .slides-mobile-fallback .slides-view-btn i { margin-right: 8px; }
+   /* Hide the "open in new tab" desktop link on mobile */
+   #presentation .slides-viewer-link { display: none; }
    #presentation .presentation-downloads {
       flex-direction: column;
    }

@@ -637,7 +637,18 @@
             <!-- Slides viewer (PDF embed) -->
             <div class="slides-viewer">
                <iframe src="media/McVey-Ryan_Professional_Presentation.pdf" title="Professional Presentation Slides" loading="lazy"></iframe>
+               <!-- Mobile fallback: PDF iframes are not reliably viewable on mobile browsers -->
+               <div class="slides-mobile-fallback" aria-hidden="true">
+                  <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                  <p>For the best viewing experience on mobile, open the presentation directly in your browser.</p>
+                  <a href="media/McVey-Ryan_Professional_Presentation.pdf" target="_blank" rel="noopener noreferrer" class="slides-view-btn">
+                     <i class="fa fa-external-link" aria-hidden="true"></i> View Presentation
+                  </a>
+               </div>
             </div>
+            <a href="media/McVey-Ryan_Professional_Presentation.pdf" target="_blank" rel="noopener noreferrer" class="slides-viewer-link" aria-label="Open presentation in new tab">
+               <i class="fa fa-external-link" aria-hidden="true"></i> Open in new tab
+            </a>
 
             <!-- Download links -->
             <div class="presentation-downloads">

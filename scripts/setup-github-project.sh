@@ -76,6 +76,24 @@ gh project field-create "$PROJECT_NUMBER" --owner "$OWNER" \
   --single-select-options "Yes,Partial,No" \
   2>/dev/null || echo "  (field may already exist)"
 
+# Start Date field (date) — required for Roadmap view
+echo "  Adding 'Start Date' date field..."
+gh project field-create "$PROJECT_NUMBER" --owner "$OWNER" \
+  --name "Start Date" --data-type "DATE" \
+  2>/dev/null || echo "  (field may already exist)"
+
+# End Date field (date) — required for Roadmap view
+echo "  Adding 'End Date' date field..."
+gh project field-create "$PROJECT_NUMBER" --owner "$OWNER" \
+  --name "End Date" --data-type "DATE" \
+  2>/dev/null || echo "  (field may already exist)"
+
+# Story Points field (number) — for velocity tracking
+echo "  Adding 'Story Points' number field..."
+gh project field-create "$PROJECT_NUMBER" --owner "$OWNER" \
+  --name "Story Points" --data-type "NUMBER" \
+  2>/dev/null || echo "  (field may already exist)"
+
 echo ""
 
 # --- Step 3: Add all open issues to the project ---
@@ -91,17 +109,35 @@ for num in $ISSUE_NUMBERS; do
   sleep 0.5
 done
 
+# Determine if owner is a user or org for the correct project URL
+OWNER_TYPE=$(gh api "users/${OWNER}" --jq '.type' 2>/dev/null || echo "User")
+if [[ "$OWNER_TYPE" == "Organization" ]]; then
+  PROJECT_URL="https://github.com/orgs/${OWNER}/projects/${PROJECT_NUMBER}"
+else
+  PROJECT_URL="https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER}"
+fi
+
 echo ""
 echo "========================================"
 echo "  Done! Project #${PROJECT_NUMBER} is set up."
-echo "  URL: https://github.com/users/${OWNER}/projects/${PROJECT_NUMBER}"
+echo "  URL: ${PROJECT_URL}"
+echo ""
+echo "  Fields created: Phase, Priority, Size, Copilot Suitable,"
+echo "                   Start Date, End Date, Story Points"
 echo ""
 echo "  Manual steps remaining (Step 6):"
-echo "  1. Open the project URL above"
-echo "  2. Create views:"
-echo "     - Board view (group by Status label)"
-echo "     - Roadmap by Phase (group by Phase field)"
-echo "     - Copilot Queue (filter: Copilot Suitable = Yes)"
-echo "     - Priority view (sort by Priority field)"
-echo "  3. Set default view to Board"
+echo "  Follow the Project Views Guide: bootstrap/project-views-guide.md"
+echo ""
+echo "  Minimum views to create:"
+echo "     1. Board (group by Status)"
+echo "     2. Roadmap (date: Start Date/End Date, group by Phase)"
+echo "     3. Current Sprint (filter: current phase, Status ≠ Done)"
+echo "     4. Copilot Queue (filter: Copilot Suitable = Yes)"
+echo "     5. Priority Triage (sort by Priority)"
+echo ""
+echo "  Required fields in every view:"
+echo "     Title, Assignees, Status, Copilot Suitable, Phase, Priority, Size"
+echo ""
+echo "  For full 10-view setup by team size, see:"
+echo "     bootstrap/project-views-guide.md"
 echo "========================================"

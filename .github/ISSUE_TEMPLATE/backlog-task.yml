@@ -1,13 +1,17 @@
-name: Backlog Task
-description: Task from the Azure resume site update backlog
+name: Technical Task
+description: "Technical implementation task — created by Agent (backlog research) or Technologist"
 title: "[Phase {phase}] {task_title}"
-labels: ["backlog"]
+labels: ["backlog", "type: technical-task"]
 body:
   - type: markdown
     attributes:
       value: |
-        ## Backlog Task Details
-        Fill in the details for this backlog item. Fields marked with * are required.
+        ## Technical Task
+        A technical implementation work item from the project backlog.
+        Created during backlog research (Session 3) or by the Technologist role.
+
+        > **Role:** AI Copilot Agent (backlog research) or Technologist
+        > **Story Point Reference:** S=1 SP, M=3 SP, L=8 SP, XL=13 SP (1 SP = 2.5 hours)
 
   - type: input
     id: task_id
@@ -64,12 +68,12 @@ body:
     id: size
     attributes:
       label: Estimated Size
-      description: "T-shirt size estimate for effort"
+      description: "T-shirt size estimate for effort (story point equivalent)"
       options:
-        - "S (half-day)"
-        - "M (1–2 days)"
-        - "L (3–5 days)"
-        - "XL (1 week+)"
+        - "S (half-day) — 1 SP"
+        - "M (1–2 days) — 3 SP"
+        - "L (3–5 days) — 8 SP"
+        - "XL (1 week+) — 13 SP"
     validations:
       required: true
 

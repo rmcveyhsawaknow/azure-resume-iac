@@ -1,6 +1,8 @@
 # Agent-Driven Backlog Workflow
 
 > **Purpose:** Document the repeatable, agent-assisted workflow used to plan, populate, and manage this project's backlog — from assessment through issue burn-down. Intended as a reference for the `agentgitops.ryanmcvey.me` demonstration site.
+>
+> **Reusable Bootstrap:** For a portable, project-agnostic guide to this workflow, see [`bootstrap/agentgitops-instructions.md`](../bootstrap/agentgitops-instructions.md). This document covers the project-specific implementation details.
 
 ## Overview
 
@@ -92,6 +94,7 @@ task_id: "1.2"
 phase: 1
 phase_name: "Fix Function App"
 title: "Upgrade .NET runtime (.NET Core 3.1 → .NET 8)"
+issue_type: "planned"           # "planned" (original scope) or "gap-analysis-finding" (discovered)
 priority: "P1 – Critical"
 size: "M (1–2 days)"
 copilot_suitable: "Yes"
@@ -112,6 +115,8 @@ depends_on: ["1.1"]
 ## Acceptance Criteria
 - [ ] ...
 ```
+
+> **Issue types:** Issues are classified as either `planned` (from the original project scope) or `gap-analysis-finding` (discovered during assessment of live infrastructure) via the `issue_type` field in each backlog issue file. This `issue_type` value is informational only — the `scripts/create-backlog-issues.sh` tooling relies solely on the explicit `labels:` list. To have automation and project views treat an issue as a gap-analysis finding, you **must** also include the `gap-analysis-finding` label in `labels:`. See [`bootstrap/agentgitops-instructions.md`](../bootstrap/agentgitops-instructions.md#issue-types--planned-vs-gap-analysis) for full details.
 
 ### Step 4: Issue Population Session
 
@@ -324,7 +329,13 @@ The `.devcontainer/devcontainer.json` ensures consistent tooling:
 
 ## Adapting This Workflow for Other Repos
 
-This entire workflow is repository-agnostic. To reuse it:
+This entire workflow is repository-agnostic. The fastest path is to use the bootstrap package:
+
+1. **Copy the `bootstrap/` folder** into your repository — it contains the complete guide and prerequisite checker
+2. **Run `./bootstrap/check-prerequisites.sh`** to verify your environment
+3. **Follow the Phase Guide** in `bootstrap/agentgitops-instructions.md`
+
+For manual setup, see the detailed steps below:
 
 1. **Fork or copy** the `scripts/` directory and `.github/copilot-instructions.md`
 2. **Update** `.github/copilot-instructions.md` with your project's context

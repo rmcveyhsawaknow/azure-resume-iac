@@ -634,21 +634,24 @@
                </audio>
             </div>
 
-            <!-- Slides viewer (PDF embed) -->
+            <!-- Slide carousel (image-based viewer) -->
             <div class="slides-viewer">
-               <iframe src="media/McVey-Ryan_Professional_Presentation.pdf" title="Professional Presentation Slides" loading="lazy"></iframe>
-               <!-- Mobile fallback: PDF iframes are not reliably viewable on mobile browsers -->
-               <div class="slides-mobile-fallback">
-                  <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
-                  <p>For the best viewing experience on mobile, open the presentation directly in your browser.</p>
-                  <a href="media/McVey-Ryan_Professional_Presentation.pdf" target="_blank" rel="noopener noreferrer" class="slides-view-btn">
-                     <i class="fa fa-external-link" aria-hidden="true"></i> View Presentation
-                  </a>
+               <div class="presentation-slider flexslider">
+                  <ul class="slides">
+                     <li><img src="media/slides/slide-01.jpg" alt="Slide 1 — Title: Ryan McVey, Cloud &amp; AI Solutions Architect" /></li>
+                     <li><img src="media/slides/slide-02.jpg" alt="Slide 2 — Professional Overview" loading="lazy" /></li>
+                     <li><img src="media/slides/slide-03.jpg" alt="Slide 3 — Technical Expertise" loading="lazy" /></li>
+                     <li><img src="media/slides/slide-04.jpg" alt="Slide 4 — Career Highlights" loading="lazy" /></li>
+                     <li><img src="media/slides/slide-05.jpg" alt="Slide 5 — Key Accomplishments" loading="lazy" /></li>
+                     <li><img src="media/slides/slide-06.jpg" alt="Slide 6 — Solutions Architecture" loading="lazy" /></li>
+                     <li><img src="media/slides/slide-07.jpg" alt="Slide 7 — Cloud &amp; AI Strategy" loading="lazy" /></li>
+                     <li><img src="media/slides/slide-08.jpg" alt="Slide 8 — Summary &amp; Contact" loading="lazy" /></li>
+                  </ul>
+               </div>
+               <div class="slide-counter">
+                  <span class="current-slide">1</span> / <span class="total-slides"></span>
                </div>
             </div>
-            <a href="media/McVey-Ryan_Professional_Presentation.pdf" target="_blank" rel="noopener noreferrer" class="slides-viewer-link" aria-label="Open presentation in new tab">
-               <i class="fa fa-external-link" aria-hidden="true"></i> Open in new tab
-            </a>
 
             <!-- Download links -->
             <div class="presentation-downloads">

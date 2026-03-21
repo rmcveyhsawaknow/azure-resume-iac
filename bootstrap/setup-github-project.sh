@@ -11,9 +11,14 @@
 
 set -euo pipefail
 
-OWNER="${1:-rmcveyhsawaknow}"
-REPO="${OWNER}/azure-resume-iac"
-PROJECT_TITLE="Azure Resume IaC — Backlog"
+# CUSTOMIZE: Set your GitHub owner (username or org) and repo name.
+# These defaults are auto-detected from git remote; override with CLI args.
+OWNER="${1:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+)/.*#\1#' || echo "your-owner")}"
+REPO_NAME="$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/][^/]+/([^/.]+)(\.git)?$#\1#' || echo "your-repo")"
+REPO="${OWNER}/${REPO_NAME}"
+
+# CUSTOMIZE: Set your project title.
+PROJECT_TITLE="${REPO_NAME} — Backlog"
 
 echo "========================================"
 echo "  GitHub Project Setup"

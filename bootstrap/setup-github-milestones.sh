@@ -25,9 +25,11 @@ REPO="${1:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]
 echo "Setting up milestones for: $REPO"
 echo ""
 
-# Milestone definitions: title|description|env_var_for_due_date
+# CUSTOMIZE: Milestone definitions: title|description|env_var_for_due_date
+# Update the phase names and descriptions below to match your project's phases.
+# The env var name (3rd field) lets you set due dates via environment variables.
 MILESTONES=(
-  "Phase 0 - Assessment|Harvest current Azure and Cloudflare state, verify credentials, document actuals, gap analysis|PHASE_0_DUE"
+  "Phase 0 - Assessment|Assess current state, verify credentials, document actuals, gap analysis|PHASE_0_DUE"
   "Phase 1 - Fix Function App|Restore visitor counter: runtime upgrade, connectivity, data verification|PHASE_1_DUE"
   "Phase 2 - Content Update|Update resume site HTML/CSS/JS with GitHub profile content|PHASE_2_DUE"
   "Phase 3 - Dev Deployment|Deploy updated stack to development environment, validate end-to-end|PHASE_3_DUE"

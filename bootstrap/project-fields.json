@@ -1,37 +1,38 @@
 {
-  "_comment": "Project V2 field and option IDs for the Azure Resume IaC Backlog (project #9).",
-  "_refresh": "To refresh IDs: gh project field-list 9 --owner <owner> --format json | python3 -c \"import json,sys; [print(f['id'], f['name']) for f in json.load(sys.stdin)['fields']]\"",
+  "_comment": "CUSTOMIZE: Project V2 field and option IDs. These are project-specific and must be refreshed after running setup-github-project.sh.",
+  "_refresh": "To refresh IDs: gh project field-list <PROJECT_NUMBER> --owner <OWNER> --format json | python3 -c \"import json,sys; [print(f['id'], f['name']) for f in json.load(sys.stdin)['fields']]\"",
+  "_setup": "1. Run bootstrap/setup-github-project.sh to create the project. 2. Use the _refresh command above to get your field IDs. 3. Use: gh project field-list <N> --owner <owner> --format json to get option IDs for each single-select field.",
   "projectFields": {
-    "phaseFieldId":    "PVTSSF_lAHOBibeL84BRVsxzg_MiUc",
-    "priorityFieldId": "PVTSSF_lAHOBibeL84BRVsxzg_MiUk",
-    "sizeFieldId":     "PVTSSF_lAHOBibeL84BRVsxzg_MiVQ",
-    "copilotFieldId":  "PVTSSF_lAHOBibeL84BRVsxzg_MiWA"
+    "phaseFieldId":    "REPLACE_WITH_YOUR_PHASE_FIELD_ID",
+    "priorityFieldId": "REPLACE_WITH_YOUR_PRIORITY_FIELD_ID",
+    "sizeFieldId":     "REPLACE_WITH_YOUR_SIZE_FIELD_ID",
+    "copilotFieldId":  "REPLACE_WITH_YOUR_COPILOT_FIELD_ID"
   },
   "options": {
     "phase": {
-      "0": "70ee0bd5",
-      "1": "a61899bf",
-      "2": "e6b3e93e",
-      "3": "1f731d90",
-      "4": "1777406b",
-      "5": "b96aa0a0"
+      "0": "REPLACE_WITH_OPTION_ID",
+      "1": "REPLACE_WITH_OPTION_ID",
+      "2": "REPLACE_WITH_OPTION_ID",
+      "3": "REPLACE_WITH_OPTION_ID",
+      "4": "REPLACE_WITH_OPTION_ID",
+      "5": "REPLACE_WITH_OPTION_ID"
     },
     "priority": {
-      "P1": "81541891",
-      "P2": "725e03f8",
-      "P3": "8c90ab5a",
-      "P4": "814739e3"
+      "P1": "REPLACE_WITH_OPTION_ID",
+      "P2": "REPLACE_WITH_OPTION_ID",
+      "P3": "REPLACE_WITH_OPTION_ID",
+      "P4": "REPLACE_WITH_OPTION_ID"
     },
     "size": {
-      "S":  "3d6ca061",
-      "M":  "da26800f",
-      "L":  "b2824b4a",
-      "XL": "a911bc6a"
+      "S":  "REPLACE_WITH_OPTION_ID",
+      "M":  "REPLACE_WITH_OPTION_ID",
+      "L":  "REPLACE_WITH_OPTION_ID",
+      "XL": "REPLACE_WITH_OPTION_ID"
     },
     "copilot": {
-      "Yes":     "6689ec40",
-      "Partial": "34aaaef1",
-      "No":      "c2894628"
+      "Yes":     "REPLACE_WITH_OPTION_ID",
+      "Partial": "REPLACE_WITH_OPTION_ID",
+      "No":      "REPLACE_WITH_OPTION_ID"
     }
   }
 }

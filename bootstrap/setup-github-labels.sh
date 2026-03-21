@@ -27,6 +27,8 @@ create_label() {
 
 echo ""
 echo "=== Phase Labels ==="
+# CUSTOMIZE: Update these phase labels to match your project's phase names.
+# Phase names must match the milestone names in setup-github-milestones.sh.
 create_label "Phase 0 - Assessment"       "0E8A16" "Phase 0: Assessment and credential verification"
 create_label "Phase 1 - Fix Function App"  "0E8A16" "Phase 1: Restore visitor counter functionality"
 create_label "Phase 2 - Content Update"    "0E8A16" "Phase 2: Update resume site content"

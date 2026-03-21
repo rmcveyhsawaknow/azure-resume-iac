@@ -877,10 +877,34 @@ ul.agentgitops-list li em {
 }
 #presentation .slides-viewer iframe {
    width: 100%;
-   height: 500px;
+   aspect-ratio: 16 / 9;
+   min-height: 360px;
    border: none;
    display: block;
 }
+
+/* Mobile fallback — hidden on desktop, shown on mobile via media query */
+#presentation .slides-mobile-fallback {
+   display: none;
+}
+
+/* "Open in new tab" link shown below the iframe on desktop */
+#presentation .slides-viewer-link {
+   display: block;
+   margin-top: 8px;
+   font-size: 13px;
+   color: #C5A028;
+   text-decoration: none;
+   text-align: right;
+}
+#presentation .slides-viewer-link:hover { color: #fff; }
+#presentation .slides-viewer-link:focus,
+#presentation .slides-viewer-link:focus-visible {
+   outline: 2px solid #C5A028;
+   outline-offset: 2px;
+   text-decoration: underline;
+}
+#presentation .slides-viewer-link i { margin-right: 5px; }
 
 /* Download buttons */
 #presentation .presentation-downloads {

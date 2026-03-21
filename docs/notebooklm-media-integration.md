@@ -38,9 +38,10 @@ frontend/
 
 - **HTML5 `<audio>`** — Native browser audio player with `controls` and `preload="metadata"` for the audio overview and narrative story. No JavaScript audio libraries required.
 - **HTML5 `<picture>` with `<source media="...">`** — Responsive infographic that switches between landscape (desktop) and portrait (mobile) at the 768px breakpoint.
-- **PDF `<iframe>` embed** — Browser-native PDF rendering for the slides viewer. No third-party PDF.js or viewer library needed.
+- **PDF `<iframe>` embed** — Browser-native PDF rendering for the slides viewer (desktop only). On mobile, an inline fallback card replaces the iframe with a "View Presentation" link that opens the PDF in a new browser tab. This pattern avoids the unreliable rendering of PDF iframes on iOS Safari and mobile Chrome. No third-party PDF.js or viewer library needed.
+- **CSS `aspect-ratio: 16/9`** — The slides viewer iframe uses a fluid aspect-ratio instead of a fixed pixel height, so it scales proportionally with the viewport width on any screen size (desktop, tablet, wide monitor).
 - **CSS Flexbox** — Layout for audio players and download buttons.
-- **Font Awesome icons** — `fa-headphones`, `fa-microphone`, `fa-download` (already loaded in the project).
+- **Font Awesome icons** — `fa-headphones`, `fa-microphone`, `fa-download`, `fa-file-pdf-o`, `fa-external-link` (already loaded in the project).
 
 ## Setup — Adding Media Files
 
@@ -93,13 +94,15 @@ Open `http://localhost:8080` in the browser.
 
 4. **Presentation Section** (after Projects)
    - Navigation bar includes "Presentation" link
-   - PDF viewer iframe renders the slides
+   - PDF viewer iframe renders the slides (desktop/tablet ≥768px)
+   - **Desktop**: iframe fills a 16:9 aspect-ratio container; "Open in new tab" text link appears below it
+   - **Mobile (<768px)**: iframe is hidden; a fallback card is shown with a gold "View Presentation" button that opens the PDF in a new browser tab
    - Audio player for accompaniment works
    - "Download PDF" and "Download PPTX" buttons download files
    - Buttons are styled consistently with the site theme
 
 5. **Responsive Behavior**
-   - At ≤767px: audio players stack vertically, download buttons go full-width
+   - At ≤767px: audio players stack vertically, download buttons go full-width, PDF iframe replaced by mobile fallback card
    - At ≤900px: presentation section header adjusts
 
 ### Testing with Chrome DevTools

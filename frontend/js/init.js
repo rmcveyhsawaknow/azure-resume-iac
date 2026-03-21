@@ -134,6 +134,32 @@
    });
 
 /*----------------------------------------------------*/
+/*	Presentation Slide Carousel
+/*----------------------------------------------------*/
+   $('.presentation-slider').flexslider({
+      namespace: "flex-",
+      animation: 'slide',
+      controlNav: false,
+      directionNav: true,
+      slideshow: false,
+      animationLoop: false,
+      smoothHeight: false,
+      animationSpeed: 400,
+      touch: true,
+      prevText: "Previous",
+      nextText: "Next",
+      start: function(slider) {
+         var counter = slider.closest('.slides-viewer').find('.slide-counter');
+         counter.find('.total-slides').text(slider.count);
+         counter.find('.current-slide').text(slider.currentSlide + 1);
+      },
+      after: function(slider) {
+         var counter = slider.closest('.slides-viewer').find('.slide-counter');
+         counter.find('.current-slide').text(slider.currentSlide + 1);
+      }
+   });
+
+/*----------------------------------------------------*/
 /*	contact form
 ------------------------------------------------------*/
 

@@ -13,7 +13,8 @@ The resume site now includes multimedia content generated using [Google Notebook
 | Infographic (Landscape) | `McVey-Ryan_Professional_Infographic-landscape.png` | Resume section, after Education (desktop) |
 | Infographic (Portrait) | `McVey-Ryan_Professional_Infographic-portrait.png` | Resume section, after Education (mobile) |
 | Presentation (PPTX) | `McVey-Ryan_Professional_Presentation.pptx` | Presentation section, download link |
-| Presentation (PDF) | `McVey-Ryan_Professional_Presentation.pdf` | Presentation section, embedded viewer + download |
+| Presentation (PDF) | `McVey-Ryan_Professional_Presentation.pdf` | Presentation section, download link |
+| Presentation Slides | `slides/slide-01.jpg` … `slide-08.jpg` | Presentation section, image carousel |
 
 ## File Structure
 
@@ -26,7 +27,9 @@ frontend/
 │   ├── McVey-Ryan_Professional_Infographic-landscape.png
 │   ├── McVey-Ryan_Professional_Infographic-portrait.png
 │   ├── McVey-Ryan_Professional_Presentation.pptx
-│   └── McVey-Ryan_Professional_Presentation.pdf
+│   ├── McVey-Ryan_Professional_Presentation.pdf
+│   └── slides/
+│       ├── slide-01.jpg … slide-08.jpg   (individual slide images)
 ├── index.html          (updated — audio players, infographic, presentation section)
 ├── css/
 │   ├── layout.css      (updated — new section styles)
@@ -38,10 +41,9 @@ frontend/
 
 - **HTML5 `<audio>`** — Native browser audio player with `controls` and `preload="metadata"` for the audio overview and narrative story. No JavaScript audio libraries required.
 - **HTML5 `<picture>` with `<source media="...">`** — Responsive infographic that switches between landscape (desktop) and portrait (mobile) at the 768px breakpoint.
-- **PDF `<iframe>` embed** — Browser-native PDF rendering for the slides viewer (desktop only). On mobile, an inline fallback card replaces the iframe with a "View Presentation" link that opens the PDF in a new browser tab. This pattern avoids the unreliable rendering of PDF iframes on iOS Safari and mobile Chrome. No third-party PDF.js or viewer library needed.
-- **CSS `aspect-ratio: 16/9`** — The slides viewer iframe uses a fluid aspect-ratio instead of a fixed pixel height, so it scales proportionally with the viewport width on any screen size (desktop, tablet, wide monitor).
+- **jQuery FlexSlider image carousel** — Presentation slides are displayed as an image carousel using the existing `jquery.flexslider.js` plugin (already loaded in the project). Users navigate slides with left/right arrows or touch swipe on mobile. A slide counter ("1 / 8") is shown below the carousel. No auto-play; user-driven navigation only. This replaces the previous PDF `<iframe>` embed which did not scale properly on mobile browsers.
 - **CSS Flexbox** — Layout for audio players and download buttons.
-- **Font Awesome icons** — `fa-headphones`, `fa-microphone`, `fa-download`, `fa-file-pdf-o`, `fa-external-link` (already loaded in the project).
+- **Font Awesome icons** — `fa-headphones`, `fa-microphone`, `fa-download`, `fa-chevron-left`, `fa-chevron-right` (already loaded in the project).
 
 ## Setup — Adding Media Files
 
@@ -94,15 +96,16 @@ Open `http://localhost:8080` in the browser.
 
 4. **Presentation Section** (after Projects)
    - Navigation bar includes "Presentation" link
-   - PDF viewer iframe renders the slides (desktop/tablet ≥768px)
-   - **Desktop**: iframe fills a 16:9 aspect-ratio container; "Open in new tab" text link appears below it
-   - **Mobile (<768px)**: iframe is hidden; a fallback card is shown with a gold "View Presentation" button that opens the PDF in a new browser tab
+   - Image carousel displays slides with left/right arrow navigation
+   - Slide counter shows current position (e.g., "1 / 8")
+   - Touch swipe navigation works on mobile devices
+   - No auto-play; slides advance only on user interaction
    - Audio player for accompaniment works
    - "Download PDF" and "Download PPTX" buttons download files
    - Buttons are styled consistently with the site theme
 
 5. **Responsive Behavior**
-   - At ≤767px: audio players stack vertically, download buttons go full-width, PDF iframe replaced by mobile fallback card
+   - At ≤767px: audio players stack vertically, download buttons go full-width, carousel arrows resize for mobile
    - At ≤900px: presentation section header adjusts
 
 ### Testing with Chrome DevTools

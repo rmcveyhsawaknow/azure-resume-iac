@@ -180,8 +180,8 @@ echo ""
 echo -e "${BOLD}4. Required Scripts${NC}"
 echo "   ─────────────────────────────────────────"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+BOOTSTRAP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${BOOTSTRAP_DIR}/.." && pwd)"
 
 check_script() {
   local path="$1"

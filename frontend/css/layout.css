@@ -898,6 +898,12 @@ ul.agentgitops-list li em {
    text-align: right;
 }
 #presentation .slides-viewer-link:hover { color: #fff; }
+#presentation .slides-viewer-link:focus,
+#presentation .slides-viewer-link:focus-visible {
+   outline: 2px solid #C5A028;
+   outline-offset: 2px;
+   text-decoration: underline;
+}
 #presentation .slides-viewer-link i { margin-right: 5px; }
 
 /* Download buttons */

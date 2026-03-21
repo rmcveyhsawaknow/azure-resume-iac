@@ -43,7 +43,7 @@ frontend/
 - **HTML5 `<picture>` with `<source media="...">`** — Responsive infographic that switches between landscape (desktop) and portrait (mobile) at the 768px breakpoint.
 - **jQuery FlexSlider image carousel** — Presentation slides are displayed as an image carousel using the existing `jquery.flexslider.js` plugin (already loaded in the project). Users navigate slides with left/right arrows or touch swipe on mobile. A slide counter ("1 / 8") is shown below the carousel. No auto-play; user-driven navigation only. This replaces the previous PDF `<iframe>` embed which did not scale properly on mobile browsers.
 - **CSS Flexbox** — Layout for audio players and download buttons.
-- **Font Awesome icons** — `fa-headphones`, `fa-microphone`, `fa-download`, `fa-chevron-left`, `fa-chevron-right` (already loaded in the project).
+- **Font Awesome icons** — `fa-headphones`, `fa-microphone`, `fa-download` are used directly in the HTML. The carousel's left/right arrows are rendered via CSS pseudo-elements that use the Font Awesome chevron unicode glyphs (no `<i class="fa fa-chevron-...">` elements in the markup).
 
 ## Setup — Adding Media Files
 

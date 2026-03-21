@@ -121,7 +121,7 @@
 /*----------------------------------------------------*/
 /*	Flexslider
 /*----------------------------------------------------*/
-   $('.flexslider').flexslider({
+   $('.flexslider').not('.presentation-slider').flexslider({
       namespace: "flex-",
       controlsContainer: ".flex-container",
       animation: 'slide',

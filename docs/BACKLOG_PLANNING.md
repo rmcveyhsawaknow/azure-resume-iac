@@ -221,8 +221,8 @@ task_id,phase,phase_name,task_title,description,depends_on,priority,status,assig
 | `status` | `todo`, `in_progress`, `done`, `blocked` |
 | `assignee` | GitHub username |
 | `copilot_suitable` | `Yes`, `Partial`, `No` — indicates if task is suitable for GitHub Copilot agent |
-| `issue_type` | `planned` (original scope) or `gap-analysis-finding` (discovered during assessment) |
-| `labels` | Semicolon-separated labels for GitHub issues |
+| `issue_type` | `planned` (original scope) or `gap-analysis-finding` (discovered during assessment); **informational only** — current automation does not read this field |
+| `labels` | Semicolon-separated labels for GitHub issues; automation derives behavior from these labels (for example, include `gap-analysis-finding` here when `issue_type` is `gap-analysis-finding`) |
 
 ## Issue Template Structure
 

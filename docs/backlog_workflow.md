@@ -116,7 +116,7 @@ depends_on: ["1.1"]
 - [ ] ...
 ```
 
-> **Issue types:** Issues are classified as either `planned` (from the original project scope) or `gap-analysis-finding` (discovered during assessment of live infrastructure). Gap-analysis issues also carry the `gap-analysis-finding` label. See [`bootstrap/agentgitops-instructions.md`](../bootstrap/agentgitops-instructions.md#issue-types--planned-vs-gap-analysis) for full details.
+> **Issue types:** Issues are classified as either `planned` (from the original project scope) or `gap-analysis-finding` (discovered during assessment of live infrastructure) via the `issue_type` field in each backlog issue file. This `issue_type` value is informational only — the `scripts/create-backlog-issues.sh` tooling relies solely on the explicit `labels:` list. To have automation and project views treat an issue as a gap-analysis finding, you **must** also include the `gap-analysis-finding` label in `labels:`. See [`bootstrap/agentgitops-instructions.md`](../bootstrap/agentgitops-instructions.md#issue-types--planned-vs-gap-analysis) for full details.
 
 ### Step 4: Issue Population Session
 

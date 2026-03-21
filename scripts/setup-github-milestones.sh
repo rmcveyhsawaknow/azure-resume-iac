@@ -96,4 +96,4 @@ echo "To assign issues to milestones:"
 echo '  gh issue edit <number> --milestone "Phase 0 - Assessment"'
 echo ""
 echo "To list milestones:"
-echo "  gh api repos/${REPO}/milestones --jq '.[] | \"\(.number) \(.title) [\(.state)] due:\(.due_on // \"none\")\"'"
+echo '  gh api repos/${REPO}/milestones --jq '\''.[] | "\(.number) \(.title) [\(.state)] due:\(.due_on // "none")"'\'''

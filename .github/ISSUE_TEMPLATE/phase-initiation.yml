@@ -1,0 +1,145 @@
+name: Phase Initiation
+description: "Business / Functional phase objective — created by PM or Business Driver at the start of each phase"
+title: "[Phase {phase}] Phase Initiation — {objective_title}"
+labels: ["type: phase-initiation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Phase Initiation
+        This issue defines the **business and functional objectives** for a project phase.
+        It is created by the **Project Manager** or **Business/Functional Driver** at the
+        start of each phase and is assessed during the phase retrospective.
+
+        > **Role:** Project Manager / Business Driver
+        > **When:** Start of each phase, before technical work begins
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: "Which project phase does this initiation cover?"
+      options:
+        - "Phase 0 - Assessment"
+        - "Phase 1 - Fix Function App"
+        - "Phase 2 - Content Update"
+        - "Phase 3 - Dev Deployment"
+        - "Phase 4 - Prod Deployment"
+        - "Phase 5 - Cleanup & Docs"
+    validations:
+      required: true
+
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone
+      description: "GitHub Milestone name (must match exactly)"
+      placeholder: "Phase 1 - Fix Function App"
+    validations:
+      required: true
+
+  - type: input
+    id: planned_start
+    attributes:
+      label: Planned Start Date
+      description: "Expected start date (ISO 8601: YYYY-MM-DD)"
+      placeholder: "2025-06-01"
+    validations:
+      required: true
+
+  - type: input
+    id: planned_end
+    attributes:
+      label: Planned End Date
+      description: "Expected end date (ISO 8601: YYYY-MM-DD)"
+      placeholder: "2025-06-14"
+    validations:
+      required: true
+
+  - type: input
+    id: planned_capacity
+    attributes:
+      label: Planned Capacity (Story Points)
+      description: "Total story points planned for this phase (3 SP/dev/day × team size × working days)"
+      placeholder: "45"
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_objectives
+    attributes:
+      label: Business / Functional Objectives
+      description: "High-level goals this phase must achieve from a business perspective"
+      placeholder: |
+        1. Restore visitor counter to working state for production resume site
+        2. Modernize backend runtime to supported LTS version
+        3. Validate end-to-end data flow (frontend → API → Cosmos DB)
+    validations:
+      required: true
+
+  - type: textarea
+    id: success_criteria
+    attributes:
+      label: Phase Success Criteria
+      description: "Measurable criteria the PM will assess at retrospective"
+      placeholder: |
+        - [ ] All P1/P2 issues in this phase milestone are closed
+        - [ ] No regressions introduced (existing functionality preserved)
+        - [ ] Deployed and validated in target environment
+        - [ ] Documentation updated to reflect changes
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope_boundaries
+    attributes:
+      label: Scope Boundaries
+      description: "What is IN scope and OUT of scope for this phase"
+      placeholder: |
+        **In Scope:**
+        - Runtime upgrade and Function App restoration
+        - Cosmos DB connectivity verification
+
+        **Out of Scope:**
+        - Frontend content changes (Phase 2)
+        - Production deployment (Phase 4)
+
+  - type: textarea
+    id: risks_dependencies
+    attributes:
+      label: Risks & Dependencies
+      description: "Known risks, blockers, or external dependencies"
+      placeholder: |
+        - Risk: Azure SP credentials may be expired (mitigation: verify in Phase 0)
+        - Dependency: Phase 0 assessment must be complete
+        - Risk: Breaking changes in .NET 8 migration
+
+  - type: textarea
+    id: team_assignments
+    attributes:
+      label: Team & Role Assignments
+      description: "Who is responsible for what during this phase"
+      placeholder: |
+        | Role | Assignee | Responsibilities |
+        |---|---|---|
+        | Project Manager | @pm-user | Phase tracking, retrospective, milestone management |
+        | Technologist | @dev-user | Technical implementation, PR reviews |
+        | AI Copilot | GitHub Copilot | Copilot: Yes issues, code generation |
+        | Business Driver | @stakeholder | Acceptance testing, sign-off |
+
+  - type: textarea
+    id: retrospective_checklist
+    attributes:
+      label: Retrospective Assessment Checklist
+      description: "PM completes this checklist at phase end to assess success criteria"
+      value: |
+        _To be filled at phase retrospective:_
+        - [ ] Business objectives met
+        - [ ] Success criteria validated
+        - [ ] Story points delivered vs planned: ____ / ____
+        - [ ] Velocity (SP/day): ____
+        - [ ] AI Copilot utilization rate: ____%
+        - [ ] Gap analysis findings created: ____
+        - [ ] Deferred items documented with rationale
+        - [ ] Milestone closed
+        - [ ] Retrospective report committed

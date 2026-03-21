@@ -70,6 +70,21 @@ create_label "gap-analysis-finding" "F9D0C4" "Identified during Phase 0 gap anal
 create_label "phase-retrospective"  "FEF2C0" "Phase wrap-up retrospective — AgentGitOps"
 
 echo ""
+echo "=== Issue Type Labels ==="
+create_label "type: technical-task"    "5319E7" "Technical implementation task — Technologist or AI Copilot"
+create_label "type: phase-initiation"  "0052CC" "Phase initiation — Business/Functional objectives by PM"
+create_label "type: phase-retrospective" "FEF2C0" "Phase retrospective — PM assessment at phase boundary"
+create_label "type: bug"               "D73A4A" "Bug report — defect found during dev, test, or production"
+create_label "type: feature-request"   "A2EEEF" "Feature request — enhancement for current or future phase"
+
+echo ""
+echo "=== Role Labels ==="
+create_label "role: technologist"       "BFD4F2" "Assigned to Technologist (human developer)"
+create_label "role: ai-copilot"         "D4C5F9" "Assigned to AI Copilot agent"
+create_label "role: project-manager"    "F9D0C4" "Owned by Project Manager"
+create_label "role: business-driver"    "FEF2C0" "Owned by Business/Functional Driver"
+
+echo ""
 echo "=== Status Labels ==="
 create_label "backlog"    "EDEDED" "In the backlog, not yet started"
 create_label "ready"      "0E8A16" "Groomed and ready to start"

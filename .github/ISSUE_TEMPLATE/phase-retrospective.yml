@@ -1,7 +1,7 @@
 name: Phase Retrospective
-description: AgentGitOps phase wrap-up retrospective — planned vs actual, KPIs, gap analysis
+description: "AgentGitOps phase wrap-up retrospective — planned vs actual, KPIs, gap analysis. Created by PM."
 title: "[Phase {phase}] Retrospective"
-labels: ["phase-retrospective", "backlog"]
+labels: ["phase-retrospective", "backlog", "type: phase-retrospective"]
 body:
   - type: markdown
     attributes:
@@ -10,6 +10,10 @@ body:
         This issue tracks the wrap-up retrospective for a project phase.
         When all phase tasks are complete, a PM runs the standard Copilot prompt below
         in a clean Codespace on `develop` to auto-generate retrospective artifacts.
+
+        > **Role:** Project Manager
+        > **When:** Phase boundary — after all phase issues are closed or deferred
+        > **Story Point Reference:** 1 SP = 2.5 hours | 3 SP/dev/day capacity | 5 days/week
 
   - type: dropdown
     id: phase
@@ -79,6 +83,21 @@ body:
         | Duration (days) | — |
         | Branches | — |
         | Unique contributors | — |
+
+  - type: textarea
+    id: story_point_metrics
+    attributes:
+      label: Story Point Velocity
+      description: "Planned vs delivered story points — drives velocity KPI"
+      placeholder: |
+        | Metric | Planned | Actual |
+        |---|---|---|
+        | Total story points | — | — |
+        | SP delivered | — | — |
+        | Velocity (SP/day) | — | — |
+        | AI-delivered SP | — | — |
+        | Human-delivered SP | — | — |
+        | AI velocity ratio | — | — |
 
   - type: textarea
     id: human_copilot_kpi

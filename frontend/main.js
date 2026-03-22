@@ -1,5 +1,6 @@
 window.addEventListener('DOMContentLoaded', (event) => {
     getVisitCount();
+    populateStackInfo();
 });
 
 // Azure Function App API endpoint — injected by CI/CD via config.js
@@ -89,3 +90,16 @@ var TxtRotate = function(el, toRotate, period) {
     css.innerHTML = ".txt-rotate > .wrap { border-right: 0.08em solid #666 }";
     document.body.appendChild(css);
   };
+
+const populateStackInfo = () => {
+    const el = document.getElementById('stack-info');
+    if (!el) return;
+    const version = (typeof defined_STACK_VERSION !== 'undefined' && defined_STACK_VERSION)
+        ? defined_STACK_VERSION : '';
+    const env = (typeof defined_STACK_ENVIRONMENT !== 'undefined' && defined_STACK_ENVIRONMENT)
+        ? defined_STACK_ENVIRONMENT : '';
+    if (version) {
+        const label = env ? env + ' ' + version : version;
+        el.textContent = 'Azure Commercial Cloud \u2022 ' + label;
+    }
+};

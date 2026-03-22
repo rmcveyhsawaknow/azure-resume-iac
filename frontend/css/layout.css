@@ -1497,6 +1497,18 @@ footer .copyright  li:first-child:before {
     display: none;
 }
 
+/* stack environment info */
+footer .stack-info {
+    margin: 12px 0 0 0;
+    padding: 0;
+    font-size: 11px;
+    color: #838C95;
+    letter-spacing: 0.5px;
+}
+footer .stack-info:empty {
+    display: none;
+}
+
 /* social links */
 footer .social-links {
    margin: 18px 0 30px 0;

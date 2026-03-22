@@ -68,7 +68,7 @@ Phase 5 completed the project's final cleanup and documentation activities. This
 | Duration (days) | 2 |
 | Remote branches | 2 |
 | Unique contributors | 2 |
-| Contributors | Ryan Mcvey, copilot-swe-agent[bot] |
+| Contributors | Ryan McVey, copilot-swe-agent[bot] |
 
 ---
 

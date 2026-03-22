@@ -42,6 +42,7 @@ Step 3 ─── Paste the Session 0 prompt below · Answer the questions · Let
 ```bash
 # Copy the bootstrap/ folder and issue templates into your repository
 cp -r path/to/azure-resume-iac/bootstrap/ your-repo/bootstrap/
+mkdir -p your-repo/.github
 cp -r path/to/azure-resume-iac/.github/ISSUE_TEMPLATE/ your-repo/.github/ISSUE_TEMPLATE/
 
 # Commit to your default branch
@@ -58,7 +59,7 @@ git push
 ## Step 2: Open in GitHub Codespace
 
 1. Open your repository on GitHub
-2. Click **Code → Codespaces → Create codespace on main**
+2. Click **Code → Codespaces → Create codespace on your default branch** (for example, `main`)
 3. Once the Codespace loads, open **GitHub Copilot Chat**
 4. Change the model to **Claude Opus 4.6** (or latest Opus model available)
 5. Switch Copilot to **Plan mode** (click the mode selector next to the model dropdown)

@@ -28,10 +28,10 @@ AgentGitOps operates in **six sessions** (0–5) followed by repeating **phase b
 
 | Session | Name | Role | Purpose | Key Artifacts | Issue Types Created |
 |---|---|---|---|---|---|
-| 0 | Goal-Focused Backlog Planning | Agent-Interactive (PM drives) | Agent asks for goals/phases → populates scripts + initial backlog | `BACKLOG_PLANNING.md`, `artifacts/backlog.csv`, updated scripts | — |
-| 1 | Copilot Instructions | Agent | Read codebase → generate `.github/copilot-instructions.md` | `copilot-instructions.md` | — |
+| 0 | Goal-Focused Backlog Planning | Agent-Interactive (PM drives) | Agent asks for goals/phases → populates scripts + initial backlog | `docs/BACKLOG_PLANNING.md`, `artifacts/backlog.csv`, updated scripts | — |
+| 1 | Copilot Instructions | Agent | Read codebase → generate `.github/copilot-instructions.md` | `.github/copilot-instructions.md` | — |
 | 2 | Backlog Research | Agent | Read codebase + Session 0 CSV → generate issue files | `artifacts/backlog-issues/*.md` | Technical Task, Phase Initiation, Phase Retrospective |
-| 3 | Issue Population | Agent in Codespace | Run scripts to create labels, milestones, issues, project | GitHub Issues, Labels, Milestones, Project | All types populated into GitHub |
+| 3 | Issue Population | Human + Agent in Codespace | Run scripts to create labels, milestones, issues, project | GitHub Issues, Labels, Milestones, Project | All types populated into GitHub |
 | 4 | Assessment Execution | Human + Agent | Execute Phase 0 assessment tasks from the backlog | Assessment artifacts, gap findings | Bug, Feature Request (as discovered) |
 | 5+ | Backlog Burn-Down | Human + Agent | Work issues via feature branches + Copilot agents | Code changes, PRs, deployments | Bug, Feature Request (as discovered) |
 | — | Phase Retrospective | PM | Generate metrics report, close milestone, plan next phase | `docs/retrospectives/phase-N-retrospective.md` | Phase Retrospective (assessed) |

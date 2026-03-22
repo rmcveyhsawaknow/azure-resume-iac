@@ -1,0 +1,51 @@
+# AgentGitOps — Session 0 Backlog Planning Template
+#
+# Use this template to create your project's initial backlog CSV during Session 0.
+# Copy this file to artifacts/backlog.csv and fill in your project's tasks.
+#
+# Field Definitions:
+#   task_id          — Unique identifier: phase.sequence (e.g., 0.1, 1.3)
+#   phase            — Phase number (0-indexed integer)
+#   phase_name       — Human-readable phase name (match your milestone names)
+#   task_title       — Short, actionable task title for issue creation
+#   description      — Detailed description of the work to be done
+#   depends_on       — Semicolon-separated task IDs this task depends on (e.g., 0.1;0.2)
+#   priority         — P1 – Critical | P2 – High | P3 – Medium | P4 – Low
+#   status           — todo | in_progress | done | blocked
+#   assignee         — GitHub username (leave blank for unassigned)
+#   copilot_suitable — Yes | Partial | No
+#   issue_type       — planned | gap-analysis-finding
+#   labels           — Semicolon-separated GitHub label names
+#
+# Label Naming Conventions (must match setup-github-labels.sh):
+#   Phase:    "Phase 0 - Assessment", "Phase 1 - My Phase Name", etc.
+#   Priority: "P1 – Critical", "P2 – High", "P3 – Medium", "P4 – Low"
+#   Size:     "S (half-day)", "M (1–2 days)", "L (3–5 days)", "XL (1 week+)"
+#   Copilot:  "Copilot: Yes", "Copilot: Partial", "Copilot: No"
+#   Area:     "area: infrastructure", "area: backend", "area: frontend",
+#             "area: ci-cd", "area: dns-cdn", "area: documentation", "area: credentials"
+#   Source:   "gap-analysis-finding", "phase-retrospective"
+#   Status:   "backlog", "ready", "blocked"
+#
+# Gap Analysis Tasks:
+#   Set issue_type to "gap-analysis-finding" AND include "gap-analysis-finding" in labels.
+#   During Session 0, you may not know all gap tasks yet — add them after Session 4 (Assessment).
+#
+# Phase Structure Guidelines:
+#   Phase 0: Assessment — verify credentials, inventory resources, document actuals
+#   Phase 1-N: Implementation phases specific to your project
+#   Phase N+1: Cleanup & Documentation — remove old resources, update docs, close backlog
+#   Each phase should end with a retrospective task (issue_type: planned, label: phase-retrospective)
+#
+task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,copilot_suitable,issue_type,labels
+0.1,0,Assessment,Verify credentials,Verify all service credentials and access tokens are valid and not expired,,P1 – Critical,todo,,No,planned,Phase 0 - Assessment;P1 – Critical;S (half-day);Copilot: No;area: credentials
+0.2,0,Assessment,Inventory infrastructure,List all deployed resources and document current state,,P2 – High,todo,,Yes,planned,Phase 0 - Assessment;P2 – High;S (half-day);Copilot: Yes;area: infrastructure
+0.3,0,Assessment,Assess application services,Check runtime versions; configuration; connectivity,,P2 – High,todo,,Yes,planned,Phase 0 - Assessment;P2 – High;M (1–2 days);Copilot: Yes;area: backend
+0.4,0,Assessment,Assess CI/CD workflows,Review workflow files; check recent run history for errors,,P2 – High,todo,,Yes,planned,Phase 0 - Assessment;P2 – High;S (half-day);Copilot: Yes;area: ci-cd
+0.5,0,Assessment,Document known issues,Compile list of identified gaps; tech debt; and security concerns,0.2,P3 – Medium,todo,,Yes,planned,Phase 0 - Assessment;P3 – Medium;S (half-day);Copilot: Yes;area: documentation
+0.6,0,Assessment,Phase 0 Retrospective,Run retrospective generator; commit report; close milestone,,P3 – Medium,todo,,Partial,planned,Phase 0 - Assessment;P3 – Medium;S (half-day);Copilot: Partial;area: documentation;phase-retrospective
+1.1,1,Phase 1 Name,Task 1.1 title,Describe task 1.1 here,0.1,P1 – Critical,todo,,Yes,planned,Phase 1 - Phase 1 Name;P1 – Critical;M (1–2 days);Copilot: Yes;area: backend
+1.2,1,Phase 1 Name,Task 1.2 title,Describe task 1.2 here,1.1,P2 – High,todo,,Yes,planned,Phase 1 - Phase 1 Name;P2 – High;M (1–2 days);Copilot: Yes;area: backend
+1.3,1,Phase 1 Name,Phase 1 Retrospective,Run retrospective generator; commit report; close milestone,,P3 – Medium,todo,,Partial,planned,Phase 1 - Phase 1 Name;P3 – Medium;S (half-day);Copilot: Partial;area: documentation;phase-retrospective
+2.1,2,Phase 2 Name,Task 2.1 title,Describe task 2.1 here,1.2,P2 – High,todo,,Yes,planned,Phase 2 - Phase 2 Name;P2 – High;M (1–2 days);Copilot: Yes;area: frontend
+2.2,2,Phase 2 Name,Phase 2 Retrospective,Run retrospective generator; commit report; close milestone,,P3 – Medium,todo,,Partial,planned,Phase 2 - Phase 2 Name;P3 – Medium;S (half-day);Copilot: Partial;area: documentation;phase-retrospective

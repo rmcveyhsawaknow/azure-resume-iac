@@ -4,12 +4,12 @@
 # Reads YAML frontmatter from each file to extract labels and metadata.
 #
 # Usage:
-#   ./scripts/create-backlog-issues.sh [--dry-run] [owner/repo] [file ...]
+#   ./bootstrap/create-backlog-issues.sh [--dry-run] [owner/repo] [file ...]
 #
-# When no files are given, processes ALL .md files in backlog-issues/.
+# When no files are given, processes ALL .md files in artifacts/backlog-issues/.
 # To create issues for specific files only (avoids duplicates):
-#   ./scripts/create-backlog-issues.sh scripts/backlog-issues/{1.12,3.10,3.11}.md
-#   ./scripts/create-backlog-issues.sh --dry-run scripts/backlog-issues/3.*.md
+#   ./bootstrap/create-backlog-issues.sh artifacts/backlog-issues/{1.12,3.10,3.11}.md
+#   ./bootstrap/create-backlog-issues.sh --dry-run artifacts/backlog-issues/3.*.md
 #
 # Prerequisites:
 #   - gh CLI authenticated (gh auth login)
@@ -22,7 +22,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ISSUES_DIR="${SCRIPT_DIR}/backlog-issues"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+ISSUES_DIR="${REPO_ROOT}/artifacts/backlog-issues"
 DRY_RUN=false
 REPO=""
 FILES=()
@@ -94,7 +95,7 @@ PROJECT_NUMBER=9
 PROJECT_OWNER="$(echo "$REPO" | cut -d/ -f1)"
 
 # Path to JSON config holding project field and option IDs.
-# See scripts/project-fields.json for the expected structure and refresh instructions.
+# See bootstrap/project-fields.json for the expected structure and refresh instructions.
 PROJECT_FIELDS_CONFIG="${SCRIPT_DIR}/project-fields.json"
 
 # Project V2 field IDs (populated from PROJECT_FIELDS_CONFIG)
@@ -155,6 +156,21 @@ PYEOF
 
   if [[ -z "$PROJECT_PHASE_FIELD" || -z "$PROJECT_SIZE_FIELD" || -z "$PROJECT_COPILOT_FIELD" ]]; then
     echo "Error: Project field IDs not loaded correctly from '$PROJECT_FIELDS_CONFIG'." >&2
+    exit 1
+  fi
+
+  # Detect unfilled placeholder values (e.g. REPLACE_WITH_YOUR_PHASE_FIELD_ID)
+  local placeholder_found=false
+  for val in "$PROJECT_PHASE_FIELD" "$PROJECT_PRIORITY_FIELD" "$PROJECT_SIZE_FIELD" "$PROJECT_COPILOT_FIELD"; do
+    if [[ "$val" == REPLACE_WITH_* ]]; then
+      placeholder_found=true
+      break
+    fi
+  done
+  if [[ "$placeholder_found" == "true" ]]; then
+    echo "Error: '$PROJECT_FIELDS_CONFIG' still contains REPLACE_WITH_* placeholder values." >&2
+    echo "Please populate the file with actual Project V2 field and option IDs." >&2
+    echo "See the _refresh and _setup instructions inside the JSON file for details." >&2
     exit 1
   fi
 }

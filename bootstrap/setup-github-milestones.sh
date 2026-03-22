@@ -5,7 +5,7 @@
 # and drive the Roadmap view when due dates are set.
 #
 # Usage:
-#   ./scripts/setup-github-milestones.sh [owner/repo]
+#   ./bootstrap/setup-github-milestones.sh [owner/repo]
 #
 # Environment Variables (optional — for setting due dates on milestones):
 #   PHASE_0_DUE  — ISO 8601 date for Phase 0 due date (e.g., 2025-06-15)
@@ -25,9 +25,11 @@ REPO="${1:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]
 echo "Setting up milestones for: $REPO"
 echo ""
 
-# Milestone definitions: title|description|env_var_for_due_date
+# CUSTOMIZE: Milestone definitions: title|description|env_var_for_due_date
+# Update the phase names and descriptions below to match your project's phases.
+# The env var name (3rd field) lets you set due dates via environment variables.
 MILESTONES=(
-  "Phase 0 - Assessment|Harvest current Azure and Cloudflare state, verify credentials, document actuals, gap analysis|PHASE_0_DUE"
+  "Phase 0 - Assessment|Assess current state, verify credentials, document actuals, gap analysis|PHASE_0_DUE"
   "Phase 1 - Fix Function App|Restore visitor counter: runtime upgrade, connectivity, data verification|PHASE_1_DUE"
   "Phase 2 - Content Update|Update resume site HTML/CSS/JS with GitHub profile content|PHASE_2_DUE"
   "Phase 3 - Dev Deployment|Deploy updated stack to development environment, validate end-to-end|PHASE_3_DUE"
@@ -87,7 +89,7 @@ echo ""
 echo "=== Done! Milestones created/verified for $REPO ==="
 echo ""
 echo "To set due dates (required for Roadmap view):"
-echo '  PHASE_0_DUE=2025-06-15 PHASE_1_DUE=2025-06-30 ./scripts/setup-github-milestones.sh'
+echo '  PHASE_0_DUE=2025-06-15 PHASE_1_DUE=2025-06-30 ./bootstrap/setup-github-milestones.sh'
 echo ""
 echo "Or manually per milestone:"
 echo '  gh api -X PATCH "repos/${REPO}/milestones/{number}" -f due_on="2025-07-15T23:59:59Z"'

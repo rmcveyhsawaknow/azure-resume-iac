@@ -5,15 +5,28 @@
 #
 # Usage:
 #   gh auth login --scopes "project,repo,read:org"  # one-time auth with project scope
-#   ./scripts/setup-github-project.sh [owner]
+#   ./bootstrap/setup-github-project.sh [owner]
 #
 # Or run outside Codespace where your gh CLI has full scopes.
 
 set -euo pipefail
 
-OWNER="${1:-rmcveyhsawaknow}"
-REPO="${OWNER}/azure-resume-iac"
-PROJECT_TITLE="Azure Resume IaC — Backlog"
+# CUSTOMIZE: Set your GitHub owner (username or org) and repo name.
+# These defaults are auto-detected from git remote; override with CLI args.
+OWNER="${1:-$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/]([^/]+)/.*#\1#' || echo "your-owner")}"
+REPO_NAME="$(git remote get-url origin 2>/dev/null | sed -E 's#.*github\.com[:/][^/]+/([^/.]+)(\.git)?$#\1#' || echo "your-repo")"
+REPO="${OWNER}/${REPO_NAME}"
+
+# Warn if auto-detection fell back to defaults
+if [[ "$OWNER" == "your-owner" || "$REPO_NAME" == "your-repo" ]]; then
+  echo "⚠️  Could not auto-detect owner/repo from git remote."
+  echo "  Usage: $0 <owner>"
+  echo "  Or set OWNER and REPO_NAME variables in this script."
+  exit 1
+fi
+
+# CUSTOMIZE: Set your project title.
+PROJECT_TITLE="${REPO_NAME} — Backlog"
 
 echo "========================================"
 echo "  GitHub Project Setup"

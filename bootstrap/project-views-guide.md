@@ -112,7 +112,7 @@ After creating the project, capture field and option IDs so that `bootstrap/crea
 
 3. Map the printed IDs into `bootstrap/project-fields.json` using the schema above. The `options` object maps short keys (`0`, `P1`, `S`, `Yes`, etc.) to the GitHub-generated option IDs.
 
-See `bootstrap/project-fields.json` for a working example.
+See `bootstrap/project-fields.json` for the template structure. Replace all `REPLACE_WITH_*` placeholders with your actual project field and option IDs after running `setup-github-project.sh`.
 
 ---
 

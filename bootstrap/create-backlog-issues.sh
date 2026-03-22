@@ -158,6 +158,21 @@ PYEOF
     echo "Error: Project field IDs not loaded correctly from '$PROJECT_FIELDS_CONFIG'." >&2
     exit 1
   fi
+
+  # Detect unfilled placeholder values (e.g. REPLACE_WITH_YOUR_PHASE_FIELD_ID)
+  local placeholder_found=false
+  for val in "$PROJECT_PHASE_FIELD" "$PROJECT_PRIORITY_FIELD" "$PROJECT_SIZE_FIELD" "$PROJECT_COPILOT_FIELD"; do
+    if [[ "$val" == REPLACE_WITH_* ]]; then
+      placeholder_found=true
+      break
+    fi
+  done
+  if [[ "$placeholder_found" == "true" ]]; then
+    echo "Error: '$PROJECT_FIELDS_CONFIG' still contains REPLACE_WITH_* placeholder values." >&2
+    echo "Please populate the file with actual Project V2 field and option IDs." >&2
+    echo "See the _refresh and _setup instructions inside the JSON file for details." >&2
+    exit 1
+  fi
 }
 
 # Load project field and option IDs at startup (skipped when --no-project is set).

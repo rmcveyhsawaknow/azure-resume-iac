@@ -33,7 +33,7 @@ This repository uses **AgentGitOps**, a repeatable workflow that combines AI cod
 
 | Session | Name | Role | Output |
 |---|---|---|---|
-| 0 | Goal-Focused Backlog Planning | PM / Business Driver | `BACKLOG_PLANNING.md` + `backlog.csv` |
+| 0 | Goal-Focused Backlog Planning | PM / Business Driver | `docs/BACKLOG_PLANNING.md` + `artifacts/backlog.csv` |
 | 1 | Bootstrap — Copilot Instructions | Human | `.github/copilot-instructions.md` |
 | 2 | Backlog Research | Agent | `artifacts/backlog-issues/*.md` + docs |
 | 3 | Issue Population | Human + Agent | GitHub Issues, Labels, Milestones, Project |

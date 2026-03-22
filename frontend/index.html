@@ -474,6 +474,29 @@
                   the task level and commit level.</li>
             </ul>
 
+            <h3>The Human-Intent-First Approach</h3>
+
+            <p>AgentGitOps is not simply about placing humans in a review-and-validate loop at the end of an AI
+               workflow. The defining principle is that <strong>humans set the intent, goals, and success criteria
+               at the very start</strong> of any meaningful effort &mdash; before a single agent session begins or
+               a single line of code is written. The AI operates <em>within</em> that human-defined structure, not
+               alongside it after the fact.</p>
+
+            <p>Session 0 is the mechanism that makes this concrete: a structured conversation between the project
+               owner and an AI planning agent. The human articulates <em>what</em> they want to achieve, <em>when</em>,
+               and <em>why</em>. The agent translates that into a phased backlog, milestone plan, and issue taxonomy
+               &mdash; a shared artifact that every subsequent automated session references. The backlog becomes the
+               contract between human intent and AI execution, and every phase retrospective measures delivery against
+               the goals the human defined at the outset.</p>
+
+            <p>This makes AgentGitOps a <strong>practical and cost-effective way to experience AI-assisted delivery
+               in action for small to medium efforts</strong> &mdash; a single developer or small team can run a
+               complete structured delivery cycle with measurable Human vs. AI productivity KPIs. The same modular,
+               phase-based approach scales equally well to <strong>large-scale efforts</strong>: the structured
+               assessment and scoping process provides a rigorous foundation for estimating complexity, identifying
+               risk, and planning work that would otherwise be difficult to scope accurately before committing
+               resources.</p>
+
             <h3>Applied to This Site</h3>
 
             <p>This <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac">azure-resume-iac</a> repository uses
@@ -503,11 +526,12 @@
                <li>Greenfield project scaffolding with structured delivery phases</li>
             </ul>
 
-            <p>The process is documented in
-               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/docs/backlog_workflow.md">docs/backlog_workflow.md</a>
-               and the backlog planning guide at
-               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/docs/BACKLOG_PLANNING.md">docs/BACKLOG_PLANNING.md</a>,
-               providing a repeatable bootstrap approach for any team looking to leverage AI-assisted project delivery.</p>
+            <p>Getting started takes just three steps: copy the
+               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/tree/main/bootstrap"><code>bootstrap/</code> directory</a>
+               into your repository, open a GitHub Codespace with Copilot in Plan mode (Claude Opus 4.6), and paste in the
+               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/bootstrap/README.md">Session 0 prompt</a>.
+               The agent asks for your project goals, phases, and timeline &mdash; then populates all scripts and creates the
+               initial backlog automatically. No manual script editing required.</p>
 
          </div> <!-- end .main-col -->
 

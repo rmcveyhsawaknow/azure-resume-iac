@@ -497,6 +497,26 @@
                risk, and planning work that would otherwise be difficult to scope accurately before committing
                resources.</p>
 
+            <h3>Bootstrap for Any Repository</h3>
+
+            <p>The AgentGitOps workflow is designed to be <strong>repository-agnostic</strong>. The same backlog builder
+               pattern can be applied to any new or existing repository for:</p>
+
+            <ol class="agentgitops-list">
+               <li>Application framework upgrades (e.g., .NET Core 3.1 &rarr; .NET 8)</li>
+               <li>Cloud service provider migrations (e.g., Azure CDN &rarr; Cloudflare)</li>
+               <li>Security hardening and compliance remediation</li>
+               <li>Cost optimization and resource right-sizing</li>
+               <li>Greenfield project scaffolding with structured delivery phases</li>
+            </ol>
+
+            <p>Getting started takes just three steps: copy the
+               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/tree/main/bootstrap"><code>bootstrap/</code> directory</a>
+               into your repository, open a GitHub Codespace with Copilot in Plan mode (Claude Opus 4.6), and paste in the
+               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/bootstrap/README.md#session-0-agent-prompt">Session 0 prompt</a>.
+               The agent asks for your project goals, phases, and timeline &mdash; then populates all scripts and creates the
+               initial backlog automatically. No manual script editing required.</p>
+
             <h3>Applied to This Site</h3>
 
             <p>This <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac">azure-resume-iac</a> repository uses
@@ -512,26 +532,6 @@
                <li>GitHub Actions CI/CD with path-filtered workflows for backend, frontend, and infrastructure</li>
                <li>GitHub Projects (V2) with custom fields for Phase, Priority, Size, and Copilot Suitability</li>
             </ul>
-
-            <h3>Bootstrap for Any Repository</h3>
-
-            <p>The AgentGitOps workflow is designed to be <strong>repository-agnostic</strong>. The same backlog builder
-               pattern can be applied to any new or existing repository for:</p>
-
-            <ul class="agentgitops-list">
-               <li>Application framework upgrades (e.g., .NET Core 3.1 &rarr; .NET 8)</li>
-               <li>Cloud service provider migrations (e.g., Azure CDN &rarr; Cloudflare)</li>
-               <li>Security hardening and compliance remediation</li>
-               <li>Cost optimization and resource right-sizing</li>
-               <li>Greenfield project scaffolding with structured delivery phases</li>
-            </ul>
-
-            <p>Getting started takes just three steps: copy the
-               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/tree/main/bootstrap"><code>bootstrap/</code> directory</a>
-               into your repository, open a GitHub Codespace with Copilot in Plan mode (Claude Opus 4.6), and paste in the
-               <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac/blob/main/bootstrap/README.md">Session 0 prompt</a>.
-               The agent asks for your project goals, phases, and timeline &mdash; then populates all scripts and creates the
-               initial backlog automatically. No manual script editing required.</p>
 
          </div> <!-- end .main-col -->
 

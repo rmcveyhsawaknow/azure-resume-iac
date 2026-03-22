@@ -149,7 +149,7 @@ Phase 5 completed the project's final cleanup and documentation activities. This
 |---|---|---|
 | #145 | Migrate Key Vault to RBAC authorization model | ⏳ Deferred (tech debt) |
 
-> **Note:** PR #250 inspected the Key Vault RBAC migration status and confirmed that RBAC is not yet enabled (`enableRbacAuthorization: false` in `functionapp.bicep`). Legacy access policies remain in use. This is documented as tech debt for a future phase.
+> **Note:** PR #250 inspected the Key Vault RBAC migration status and confirmed that RBAC is not yet enabled (`enableRbacAuthorization: false` in `.iac/modules/functionapp/functionapp.bicep`). Legacy access policies remain in use. This is documented as tech debt for a future phase.
 
 ---
 

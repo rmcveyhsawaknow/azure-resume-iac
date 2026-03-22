@@ -103,7 +103,7 @@ Phase 5 completed the project's final cleanup and documentation activities. This
 | Author | Commits |
 |---|---|
 | copilot-swe-agent[bot] | 24 |
-| Ryan Mcvey | 13 |
+| Ryan McVey | 13 |
 
 ---
 

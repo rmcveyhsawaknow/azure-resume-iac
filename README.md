@@ -2,7 +2,7 @@
 
 [![Production Deploy](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/prod-full-stack-cloudflare.yml/badge.svg)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/prod-full-stack-cloudflare.yml)
 [![Dev Deploy](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/dev-full-stack-cloudflare.yml/badge.svg)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/dev-full-stack-cloudflare.yml)
-[![Backend CI](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/backend-ci.yml/badge.svg)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/backend-ci.yml)
+[![Backend CI](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/backend-ci.yml/badge.svg?branch=develop)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/backend-ci.yml)
 
 Personal resume website deployed as a static site on Azure PaaS services, fronted by Cloudflare CDN, with a visitor counter powered by Azure Functions and Cosmos DB. All infrastructure is defined as code using Azure Bicep and deployed via GitHub Actions CI/CD.
 

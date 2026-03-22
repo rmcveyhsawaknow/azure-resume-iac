@@ -13,3 +13,9 @@ var defined_APPINSIGHTS_CONNECTION_STRING = '';
 // and store the project ID as CLARITY_PROJECT_ID in your GitHub repository or environment secrets.
 // Environment secrets (e.g. on 'development' or 'production') work alongside repo-level secrets.
 var defined_CLARITY_PROJECT_ID = '';
+
+// Stack version and environment — injected by CI/CD from the workflow's stackVersion and
+// stackEnvironment env vars. Displayed in the site footer as a deployment indicator.
+// For local development, these remain empty and the footer shows a "Local Dev" fallback.
+var defined_STACK_VERSION = '';
+var defined_STACK_ENVIRONMENT = '';

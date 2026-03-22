@@ -48,12 +48,12 @@ This isn't "vibe coding." It's planned delegation with measurable outcomes.
 | Pull requests merged | 70 |
 | PRs authored by AI | 53 (76%) |
 | Commits shipped | 235 |
-| Commits co-authored by AI | 69% |
+| Commits with AI co-author trailer | 60% (140/235) |
 | Gap analysis findings | 28 identified, 10+ resolved |
 
 Phase 2 (content updates) hit **100% AI commit ratio** — every PR and commit was AI-authored with human review. Phase 3 (dev deployment) produced **25 PRs in 5 days** across IaC hardening, CI/CD modernization, and blue/green stack testing.
 
-Production went live on Day 11. All 8 validation checks passed on the first attempt.
+Production went live on Day 11. All 8 validation checks passed.
 
 **🔹 What made it work**
 
@@ -70,7 +70,7 @@ Production went live on Day 11. All 8 validation checks passed on the first atte
 The entire framework is open and portable:
 
 1. Copy the `bootstrap/` folder from my repo into yours
-2. Run `check-prerequisites.sh` to verify your setup
+2. Run `bootstrap/check-prerequisites.sh` to verify your setup
 3. Follow the Session 0 prompt — paste it into Copilot Plan mode, answer 4 question groups, and the agent generates your backlog
 
 👉 **Repo:** [github.com/rmcveyhsawaknow/azure-resume-iac](https://github.com/rmcveyhsawaknow/azure-resume-iac)

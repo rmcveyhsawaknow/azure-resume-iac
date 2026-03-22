@@ -224,8 +224,10 @@ Key technical changes:
 | 2 — Content Update | 70% | 100% | Highest AI leverage — all content PRs AI-authored |
 | 3 — Dev Deployment | 25% | 79% | Mixed — IaC hardening + manual validation |
 | 4 — Prod Deployment | 20% | 67% | Deployment verification is human-heavy |
-| 5 — Cleanup & Docs | 25% | 65% | Bootstrap framework + cleanup |
+| 5 — Cleanup & Docs | 25% | 3%¹ | Bootstrap framework + cleanup |
 | **Weighted Average** | **~29%** | **~60%** | — |
+
+> ¹ Phase 5 co-authored-by trailer ratio was 2.7% (1/37). However, `copilot-swe-agent[bot]` directly authored 24/37 (65%) of commits as primary author without adding trailers. The weighted average uses trailer-based ratios for consistency with the retrospective methodology.
 
 ---
 

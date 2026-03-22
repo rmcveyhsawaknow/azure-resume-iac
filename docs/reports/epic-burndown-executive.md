@@ -45,7 +45,7 @@ Refactor, upgrade, and redeploy a personal cloud resume website — originally b
 | **Pull requests merged** | 70 |
 | **Commits shipped** | 235 |
 | **PRs authored by AI** | 53 of 70 (76%) |
-| **Commits co-authored by AI** | 140 of 235 (60%) |
+| **Commits with AI co-author trailer** | 140 of 235 (60%) |
 | **Gap analysis findings identified** | 28 |
 | **Gap findings resolved** | 10+ across Phases 1–5 |
 | **Production validation checks passed** | 8 of 8 |
@@ -73,9 +73,9 @@ The AgentGitOps workflow treated GitHub Copilot as a **managed team member**, no
 | 2 | Content Update | 70% | 100% |
 | 3 | Dev Deployment | 25% | 79% |
 | 4 | Prod Deployment | 20% | 67% |
-| 5 | Cleanup & Docs | 25% | 65%¹ |
+| 5 | Cleanup & Docs | 25% | 3%¹ |
 
-> ¹ Phase 5 co-authored trailer ratio was 2.7%, but `copilot-swe-agent[bot]` directly authored 65% of commits. The actual AI contribution is 65%.
+> ¹ Phase 5 co-authored-by trailer ratio was 2.7% (1/37). However, `copilot-swe-agent[bot]` directly authored 24/37 (65%) of commits as primary author without trailers.
 
 **Insight:** AI was most effective for code generation, refactoring, documentation, and content tasks (Phases 1–2). Human involvement was essential for credential management, infrastructure validation, and deployment verification (Phases 3–4). This matches the suitability triaging done upfront — the workflow correctly predicted where AI would and would not add value.
 

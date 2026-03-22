@@ -116,19 +116,19 @@ Every issue was triaged for AI delegation fitness before entering a sprint:
 | 5 — Cleanup & Docs | 1 | 4 | 25% |
 | **Total** | **29** | **91** | **32%** |
 
-### Commit-Level Attribution
+### Commit-Level Attribution (Co-authored-by Trailers)
 
-| Phase | AI Co-authored | Total | AI Commit Ratio |
+| Phase | AI Co-authored¹ | Total | AI Commit Ratio |
 |---|---|---|---|
 | 0 — Assessment | 0 | 0 | — |
 | 1 — Fix Function App | 40 | 74 | 54% |
 | 2 — Content Update | 12 | 12 | 100% |
 | 3 — Dev Deployment | 81 | 103 | 79% |
 | 4 — Prod Deployment | 6 | 9 | 67% |
-| 5 — Cleanup & Docs | 24¹ | 37 | 65% |
-| **Total** | **163** | **235** | **69%** |
+| 5 — Cleanup & Docs | 1 | 37 | 3% |
+| **Total** | **140** | **235** | **60%** |
 
-> ¹ Phase 5: `copilot-swe-agent[bot]` authored 24/37 commits directly (counted as AI contribution).
+> ¹ Counted by Git `Co-authored-by` trailers, consistent with each phase retrospective's methodology. Phase 5's trailer ratio (2.7%) understates actual AI contribution — `copilot-swe-agent[bot]` directly authored 24/37 (65%) of commits as primary author without trailers.
 
 ### PR-Level Attribution
 
@@ -139,7 +139,7 @@ Every issue was triaged for AI delegation fitness before entering a sprint:
 
 ### Productivity Insight
 
-> **32% of tasks** and **69% of commits** were AI-delivered. This delta is expected — AI tasks tend to be code-intensive (generating more commits per issue), while human tasks are often verification or configuration (fewer commits per issue). The PR ratio (76% AI) confirms that AI was the primary code producer, with humans providing oversight, review, and deployment verification.
+> **32% of tasks** and **60% of commits** (by co-authored-by trailers) were AI-delivered. This delta is expected — AI tasks tend to be code-intensive (generating more commits per issue), while human tasks are often verification or configuration (fewer commits per issue). The PR ratio (76% AI) confirms that AI was the primary code producer, with humans providing oversight, review, and deployment verification.
 
 ---
 

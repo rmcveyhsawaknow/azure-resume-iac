@@ -32,7 +32,7 @@ The corresponding GitHub issue labels are `Copilot: Yes`, `Copilot: Partial`, an
 
 > The **Copilot Queue** project view (filter: `Copilot Suitable = Yes`, sorted by Phase → Priority) is the primary interface for assigning work to AI agents. Tracking which issues have the **Copilot Suitable** field set to `Yes` (and the corresponding `Copilot: Yes` label) enables the Human vs AI productivity KPI: *AI SP delivered ÷ total SP*.
 
-**Issue Status** tracks the lifecycle of every issue through the board. These values are implemented as options on the single-select **Status** field in the GitHub Project (one board column per value, configured via the Project settings or `bootstrap/setup-github-project.sh`). The full status set is:
+**Issue Status** tracks the lifecycle of every issue through the board. These values are implemented as options on the single-select **Status** field in the GitHub Project (one board column per value; `bootstrap/setup-github-project.sh` prints a manual checklist, and you must configure these Status options yourself in the Project settings after running it). The full status set is:
 
 `🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done` | `🚫 Blocked` | `📦 Deferred`
 

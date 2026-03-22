@@ -456,9 +456,9 @@ The project views drive collaboration and AI assignment. Each view is designed f
 
 **Required fields in every view:** Title, Assignees, Status, Copilot Suitable, Phase, Priority, Size.
 
-> The **Copilot Queue** view is key for AI productivity — it shows all issues labeled `Copilot: Yes` sorted by phase and priority, making it easy to assign to Copilot agents. **Copilot Suitable** is a first-class field: every issue must carry one of `Copilot: Yes`, `Copilot: Partial`, or `Copilot: No` so that the AI productivity KPI (*AI SP ÷ total SP*) can be accurately computed at each retrospective. The **Velocity Dashboard** tracks SP delivery per phase, enabling planned-vs-actual KPI reporting.
+> The **Copilot Queue** view is key for AI productivity — it shows all issues where the **Copilot Suitable** Project field is set to `Yes`, sorted by phase and priority, making it easy to assign to Copilot agents. **Copilot Suitable** is a first-class Project field with options `Yes`, `Partial`, and `No`. If you also use labels (recommended for repo-wide filtering), map them 1:1 to the field values: `Copilot Suitable = Yes` ↔ label `Copilot: Yes`, `Copilot Suitable = Partial` ↔ label `Copilot: Partial`, and `Copilot Suitable = No` ↔ label `Copilot: No`. Use the **Copilot Suitable** field (and its mapped labels, if present) as the source of truth so the AI productivity KPI (*AI SP ÷ total SP*) is computed consistently in retrospectives. The **Velocity Dashboard** tracks SP delivery per phase, enabling planned-vs-actual KPI reporting.
 
-> Issue **Status** flows through: `🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done`, with `🚫 Blocked` and `📦 Deferred` as side-states. The Board view groups by Status; use the Blocked & At Risk view (filter: `Status = 🚫 Blocked`) for daily unblocking.
+> Issue **Status** flows through the GitHub Project **Status** field: `🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done`, with `🚫 Blocked` and `📦 Deferred` as side-states. Configure these as Status field options in the Project settings. The Board view groups by Status; use the Blocked & At Risk view (filter: `Status = 🚫 Blocked`) for daily unblocking.
 
 See [`project-views-guide.md`](project-views-guide.md) for complete setup instructions.
 

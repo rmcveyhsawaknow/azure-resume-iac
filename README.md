@@ -22,15 +22,17 @@ This repository uses **AgentGitOps**, a repeatable workflow that combines AI cod
 
 **Copilot Suitability** is a first-class field in every issue and project view. It determines how much of each task can be delegated to a GitHub Copilot agent and is the primary driver of AI productivity measurement:
 
-| Value | Meaning | When to Use |
+| Field value | Meaning | When to Use |
 |---|---|---|
-| `Copilot: Yes` | Fully automatable | Code generation, refactoring, test writing, docs, scripting |
-| `Copilot: Partial` | Agent assists, human guides | Requires judgment — human reviews and directs |
-| `Copilot: No` | Human-only | Portal access, credentials, manual verification |
+| `Yes` | Fully automatable | Code generation, refactoring, test writing, docs, scripting |
+| `Partial` | Agent assists, human guides | Requires judgment — human reviews and directs |
+| `No` | Human-only | Portal access, credentials, manual verification |
 
-> The **Copilot Queue** project view (filter: `Copilot Suitable = Yes`, sorted by Phase → Priority) is the primary interface for assigning work to AI agents. Tracking which issues carry `Copilot: Yes` enables the Human vs AI productivity KPI: *AI SP delivered ÷ total SP*.
+The corresponding GitHub issue labels are `Copilot: Yes`, `Copilot: Partial`, and `Copilot: No`; these labels should always mirror the `Copilot Suitable` Project field value for each issue.
 
-**Issue Status** tracks the lifecycle of every issue through the board. The full status set is:
+> The **Copilot Queue** project view (filter: `Copilot Suitable = Yes`, sorted by Phase → Priority) is the primary interface for assigning work to AI agents. Tracking which issues have the **Copilot Suitable** field set to `Yes` (and the corresponding `Copilot: Yes` label) enables the Human vs AI productivity KPI: *AI SP delivered ÷ total SP*.
+
+**Issue Status** tracks the lifecycle of every issue through the board. These values are implemented as options on the single-select **Status** field in the GitHub Project (one board column per value, configured via the Project settings or `bootstrap/setup-github-project.sh`). The full status set is:
 
 `🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done` | `🚫 Blocked` | `📦 Deferred`
 

@@ -586,13 +586,20 @@ T-shirt sizing for sprint planning and capacity estimation. Each size maps to a 
 
 ### Category: Copilot Suitability
 
-Determines whether an issue can be assigned to the Copilot coding agent. **This is one of the most important fields in the entire workflow** — it drives the AI productivity KPI and determines which issues appear in the Copilot Queue view. Every issue must have one of these labels; omitting it means the issue won't be measured in AI velocity reporting.
+Determines whether an issue can be assigned to the Copilot coding agent. **This is one of the most important fields in the entire workflow** — it drives the AI productivity KPI and determines which issues appear in the Copilot Queue view.
 
-| Label | Color | Description | Assignment Guide |
-|---|---|---|---|
-| `Copilot: Yes` | `#6F42C1` (purple) | Fully automatable by Copilot agent | Code generation, refactoring, test writing, docs, scripting |
-| `Copilot: Partial` | `#D4C5F9` (light purple) | Agent assists, human guides | Requires judgment + code — human reviews agent output |
-| `Copilot: No` | `#E4E669` (light yellow) | Human-only work | Azure Portal, credential management, manual verification |
+This value is tracked in **two places that must stay in sync**:
+
+- **GitHub Project field** — `Copilot Suitable` (single-select: `Yes`, `Partial`, `No`). Used for project view filters (`Copilot Suitable = Yes`) and KPI calculations.
+- **GitHub issue label** — `Copilot: Yes`, `Copilot: Partial`, or `Copilot: No`. Used for repo-wide label filters and the `create-backlog-issues.sh` script.
+
+These map 1:1: `Copilot Suitable = Yes` ↔ label `Copilot: Yes`, etc. Always set both when creating or updating an issue. Omitting either means the issue may be missing from KPI or queue calculations.
+
+| Label | Project Field Value | Color | Description | Assignment Guide |
+|---|---|---|---|---|
+| `Copilot: Yes` | `Yes` | `#6F42C1` (purple) | Fully automatable by Copilot agent | Code generation, refactoring, test writing, docs, scripting |
+| `Copilot: Partial` | `Partial` | `#D4C5F9` (light purple) | Agent assists, human guides | Requires judgment + code — human reviews agent output |
+| `Copilot: No` | `No` | `#E4E669` (light yellow) | Human-only work | Azure Portal, credential management, manual verification |
 
 > **Why it matters:** The **Copilot Queue** project view (filter: `Copilot Suitable = Yes`, sort: Phase → Priority) is the primary interface for assigning work to AI agents. The Human vs AI productivity KPI — *AI SP delivered ÷ total SP* — is calculated directly from this field at each phase retrospective. Prioritizing `Copilot: Yes` issues for agent assignment maximizes throughput and demonstrates measurable AI leverage.
 
@@ -644,7 +651,11 @@ Track which organizational role owns or is assigned to an issue.
 
 ### Category: Status
 
-Board column indicators for project views. The full status lifecycle flows left-to-right through the board:
+**Status is a GitHub Project field** (single-select), not a GitHub label. The 7 options below are configured directly on the project's built-in **Status** field — one column per option on the Board view. Use `bootstrap/setup-github-project.sh` to create the project, then update the Status field options in the GitHub Project settings to match these values.
+
+> **Optional:** `bootstrap/setup-github-labels.sh` also creates matching GitHub labels (e.g., `🔲 Backlog`) for repo-wide status filtering outside the project view. However, the **project field** is the authoritative source for board views and status filters (`Status = 🔲 Backlog`).
+
+The full status lifecycle flows left-to-right through the board:
 
 ```
 🔲 Backlog → ✅ Ready → 🔄 In Progress → 👀 In Review → Done
@@ -653,7 +664,7 @@ Board column indicators for project views. The full status lifecycle flows left-
                                          📦 Deferred  (moved out of current phase)
 ```
 
-| Label | Color | Description |
+| Status Field Option | Color | Description |
 |---|---|---|
 | `🔲 Backlog` | `#EDEDED` (gray) | In the backlog, not yet started |
 | `✅ Ready` | `#0E8A16` (green) | Groomed and ready to start |

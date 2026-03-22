@@ -216,7 +216,7 @@ task_id,phase,phase_name,task_title,description,depends_on,priority,status,assig
 | `phase_name` | Human-readable phase name |
 | `task_title` | Short task title for issue creation |
 | `description` | Detailed description of the work |
-| `depends_on` | Comma-separated list of task IDs this depends on |
+| `depends_on` | Semicolon-separated list of task IDs this depends on (e.g., `0.1;0.2`) |
 | `priority` | `P1 – Critical`, `P2 – High`, `P3 – Medium`, `P4 – Low` (must match label names) |
 | `status` | `🔲 Backlog`, `✅ Ready`, `🔄 In Progress`, `👀 In Review`, `Done`, `🚫 Blocked`, `📦 Deferred` |
 | `assignee` | GitHub username |

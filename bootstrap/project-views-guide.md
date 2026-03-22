@@ -43,6 +43,7 @@ gh auth login --scopes "project,repo,read:org"
 3. Adds custom date fields: Start Date, End Date (for Roadmap timeline)
 4. Adds custom number field: Story Points (for velocity tracking)
 5. Adds all open issues to the project
+6. **Manual step after script:** Update the built-in Status field options in the Project settings to the 7-state taxonomy (see [Custom Fields](#custom-fields))
 
 ### Manual Setup (if script is unavailable)
 
@@ -59,13 +60,16 @@ These fields are created by `bootstrap/setup-github-project.sh` and are **requir
 
 | Field | Type | Options | Purpose |
 |---|---|---|---|
+| **Status** | Single Select (built-in) | 🔲 Backlog, ✅ Ready, 🔄 In Progress, 👀 In Review, Done, 🚫 Blocked, 📦 Deferred | Board columns, lifecycle tracking (configure options manually — see setup script) |
 | **Phase** | Single Select | Phase 0 – Phase N (one per milestone) | Roadmap grouping, phase filtering |
 | **Priority** | Single Select | P1 – Critical, P2 – High, P3 – Medium, P4 – Low | Triage and sort |
 | **Size** | Single Select | S (half-day), M (1–2 days), L (3–5 days), XL (1 week+) | Capacity planning, velocity |
-| **Copilot Suitable** | Single Select | Yes, Partial, No | AI assignment queue |
+| **Copilot Suitable** | Single Select | Yes, Partial, No | AI assignment queue; maps 1:1 to `Copilot: Yes/Partial/No` labels |
 | **Start Date** | Date | — | Roadmap timeline (set on phase initiation issues) |
 | **End Date** | Date | — | Roadmap timeline (set on phase initiation issues) |
 | **Story Points** | Number | — | Velocity tracking (auto-derived from Size: S=1, M=3, L=8, XL=13) |
+
+> **Status field note:** GitHub Projects V2 provides a built-in Status field. After running `setup-github-project.sh`, update the Status options in the Project settings to match the 7-state taxonomy above (delete defaults, add the 7 options in order).
 
 > **Required in every view:** Assignees, Copilot Suitable, Phase, Priority, Size, Status.
 

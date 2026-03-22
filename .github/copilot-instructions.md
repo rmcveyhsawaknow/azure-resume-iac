@@ -166,9 +166,11 @@ T-shirt sizing maps to story points for velocity measurement:
 | Issue Type | `type: technical-task`, `type: phase-initiation`, `type: phase-retrospective`, `type: bug`, `type: feature-request` | Issue classification |
 | Role | `role: technologist`, `role: ai-copilot`, `role: project-manager`, `role: business-driver` | Role ownership |
 | Source | `gap-analysis-finding`, `phase-retrospective` | Origin tracking |
-| Status | `backlog`, `ready`, `blocked` | Board view columns |
+| Status | `🔲 Backlog`, `✅ Ready`, `🔄 In Progress`, `👀 In Review`, `Done`, `🚫 Blocked`, `📦 Deferred` | Board view columns — full issue lifecycle |
 
 ### Copilot Suitability Guide
+
+**Copilot Suitability is a first-class field** — every issue must carry one of these values. It drives the Copilot Queue project view and enables the Human vs AI productivity KPI (*AI SP ÷ total SP*) computed at each phase retrospective.
 
 When assessing if a task is Copilot-suitable:
 

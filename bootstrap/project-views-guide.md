@@ -222,7 +222,7 @@ Every project should have **at minimum** these views to ensure full coverage:
 
 | Concern | Covered By View(s) |
 |---|---|
-| Unassigned work | Board (Backlog column), Phase Overview |
+| Unassigned work | Board (🔲 Backlog column), Phase Overview |
 | Blocked items | Blocked & At Risk |
 | AI work not being picked up | Copilot Queue |
 | Phase behind schedule | Roadmap, Velocity Dashboard |
@@ -301,11 +301,13 @@ The following fields **must** be visible as columns in every view to maintain co
 |---|---|
 | **Title** | Identify the issue |
 | **Assignees** | Who is responsible |
-| **Status** | Current workflow state |
-| **Copilot Suitable** | Quick visual: is this AI-assignable? |
+| **Status** | Current workflow state (`🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done` \| `🚫 Blocked` \| `📦 Deferred`) |
+| **Copilot Suitable** | Quick visual: is this AI-assignable? Drives the Copilot Queue and AI productivity KPI |
 | **Phase** | Which phase this belongs to |
 | **Priority** | Triage at a glance |
 | **Size** | Effort estimate + story points |
+
+> **Copilot Suitable** is a first-class field because it is the foundation of the AI productivity measurement. Issues labeled `Copilot: Yes` are the agent's work queue — surfacing this field in every view ensures nothing AI-assignable is missed, and it enables accurate *AI SP ÷ total SP* velocity reporting at each retrospective.
 
 ### Additional fields per view type
 
@@ -324,7 +326,7 @@ The following fields **must** be visible as columns in every view to maintain co
 
 1. Click "+" to add a new view → Select "Board"
 2. Group by: **Status** field
-3. Columns: Backlog → Ready → In Progress → Done
+3. Columns: 🔲 Backlog → ✅ Ready → 🔄 In Progress → 👀 In Review → Done → 🚫 Blocked → 📦 Deferred
 4. Add all required fields as visible columns
 5. Sort: Priority (ascending)
 
@@ -379,7 +381,7 @@ The following fields **must** be visible as columns in every view to maintain co
 ### View 8: Blocked & At Risk
 
 1. Click "+" → Select "Table"
-2. Filter: `Labels contains blocked`
+2. Filter: `Status = 🚫 Blocked`
 3. Sort: Priority (ascending)
 4. PM reviews daily to unblock or escalate
 

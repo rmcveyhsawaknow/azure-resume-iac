@@ -18,6 +18,22 @@ This repository uses **AgentGitOps**, a repeatable workflow that combines AI cod
 
 **👉 [Full AgentGitOps Guide →](bootstrap/README.md)**
 
+### Key Concepts
+
+**Copilot Suitability** is a first-class field in every issue and project view. It determines how much of each task can be delegated to a GitHub Copilot agent and is the primary driver of AI productivity measurement:
+
+| Value | Meaning | When to Use |
+|---|---|---|
+| `Copilot: Yes` | Fully automatable | Code generation, refactoring, test writing, docs, scripting |
+| `Copilot: Partial` | Agent assists, human guides | Requires judgment — human reviews and directs |
+| `Copilot: No` | Human-only | Portal access, credentials, manual verification |
+
+> The **Copilot Queue** project view (filter: `Copilot Suitable = Yes`, sorted by Phase → Priority) is the primary interface for assigning work to AI agents. Tracking which issues carry `Copilot: Yes` enables the Human vs AI productivity KPI: *AI SP delivered ÷ total SP*.
+
+**Issue Status** tracks the lifecycle of every issue through the board. The full status set is:
+
+`🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done` | `🚫 Blocked` | `📦 Deferred`
+
 ### Quick Start
 
 ```bash

@@ -88,9 +88,13 @@ create_label "role: business-driver"    "FEF2C0" "Owned by Business/Functional D
 
 echo ""
 echo "=== Status Labels ==="
-create_label "backlog"    "EDEDED" "In the backlog, not yet started"
-create_label "ready"      "0E8A16" "Groomed and ready to start"
-create_label "blocked"    "B60205" "Blocked by dependency or external factor"
+create_label "🔲 Backlog"       "EDEDED" "In the backlog, not yet started"
+create_label "✅ Ready"          "0E8A16" "Groomed and ready to start"
+create_label "🔄 In Progress"   "0075CA" "Actively being worked on"
+create_label "👀 In Review"     "8A63D2" "Under review (PR open or awaiting feedback)"
+create_label "Done"              "2EA44F" "Completed — no further action required"
+create_label "🚫 Blocked"       "B60205" "Blocked by dependency or external factor"
+create_label "📦 Deferred"      "C5DEF5" "Intentionally deferred to a future phase"
 
 echo ""
 echo "=== Done! All labels created/updated for $REPO ==="

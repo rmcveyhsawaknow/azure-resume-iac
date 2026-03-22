@@ -202,8 +202,8 @@ Use this structure for the backlog CSV file:
 
 ```csv
 task_id,phase,phase_name,task_title,description,depends_on,priority,status,assignee,copilot_suitable,issue_type,labels
-0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,P1 – Critical,todo,,No,planned,assessment;credentials
-0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,P2 – High,todo,,Yes,planned,assessment;azure
+0.1,0,Assessment,Verify Azure SP credential,Test login and check role assignments and expiry,,P1 – Critical,🔲 Backlog,,No,planned,assessment;credentials
+0.2,0,Assessment,Inventory resource groups,List all resume-related resource groups and resources,,P2 – High,🔲 Backlog,,Yes,planned,assessment;azure
 ...
 ```
 
@@ -216,9 +216,9 @@ task_id,phase,phase_name,task_title,description,depends_on,priority,status,assig
 | `phase_name` | Human-readable phase name |
 | `task_title` | Short task title for issue creation |
 | `description` | Detailed description of the work |
-| `depends_on` | Comma-separated list of task IDs this depends on |
+| `depends_on` | Semicolon-separated list of task IDs this depends on (e.g., `0.1;0.2`) |
 | `priority` | `P1 – Critical`, `P2 – High`, `P3 – Medium`, `P4 – Low` (must match label names) |
-| `status` | `todo`, `in_progress`, `done`, `blocked` |
+| `status` | `🔲 Backlog`, `✅ Ready`, `🔄 In Progress`, `👀 In Review`, `Done`, `🚫 Blocked`, `📦 Deferred` |
 | `assignee` | GitHub username |
 | `copilot_suitable` | `Yes`, `Partial`, `No` — indicates if task is suitable for GitHub Copilot agent |
 | `issue_type` | `planned` (original scope) or `gap-analysis-finding` (discovered during assessment); **informational only** — current automation does not read this field |

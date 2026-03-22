@@ -43,6 +43,7 @@ gh auth login --scopes "project,repo,read:org"
 3. Adds custom date fields: Start Date, End Date (for Roadmap timeline)
 4. Adds custom number field: Story Points (for velocity tracking)
 5. Adds all open issues to the project
+6. **Manual step after script:** Update the built-in Status field options in the Project settings to the 7-state taxonomy (see [Custom Fields](#custom-fields))
 
 ### Manual Setup (if script is unavailable)
 
@@ -59,13 +60,16 @@ These fields are created by `bootstrap/setup-github-project.sh` and are **requir
 
 | Field | Type | Options | Purpose |
 |---|---|---|---|
+| **Status** | Single Select (built-in) | 🔲 Backlog, ✅ Ready, 🔄 In Progress, 👀 In Review, Done, 🚫 Blocked, 📦 Deferred | Board columns, lifecycle tracking (configure options manually — see setup script) |
 | **Phase** | Single Select | Phase 0 – Phase N (one per milestone) | Roadmap grouping, phase filtering |
 | **Priority** | Single Select | P1 – Critical, P2 – High, P3 – Medium, P4 – Low | Triage and sort |
 | **Size** | Single Select | S (half-day), M (1–2 days), L (3–5 days), XL (1 week+) | Capacity planning, velocity |
-| **Copilot Suitable** | Single Select | Yes, Partial, No | AI assignment queue |
+| **Copilot Suitable** | Single Select | Yes, Partial, No | AI assignment queue; maps 1:1 to `Copilot: Yes/Partial/No` labels |
 | **Start Date** | Date | — | Roadmap timeline (set on phase initiation issues) |
 | **End Date** | Date | — | Roadmap timeline (set on phase initiation issues) |
 | **Story Points** | Number | — | Velocity tracking (auto-derived from Size: S=1, M=3, L=8, XL=13) |
+
+> **Status field note:** GitHub Projects V2 provides a built-in Status field. After running `setup-github-project.sh`, update the Status options in the Project settings to match the 7-state taxonomy above (delete defaults, add the 7 options in order).
 
 > **Required in every view:** Assignees, Copilot Suitable, Phase, Priority, Size, Status.
 
@@ -222,7 +226,7 @@ Every project should have **at minimum** these views to ensure full coverage:
 
 | Concern | Covered By View(s) |
 |---|---|
-| Unassigned work | Board (Backlog column), Phase Overview |
+| Unassigned work | Board (🔲 Backlog column), Phase Overview |
 | Blocked items | Blocked & At Risk |
 | AI work not being picked up | Copilot Queue |
 | Phase behind schedule | Roadmap, Velocity Dashboard |
@@ -301,11 +305,13 @@ The following fields **must** be visible as columns in every view to maintain co
 |---|---|
 | **Title** | Identify the issue |
 | **Assignees** | Who is responsible |
-| **Status** | Current workflow state |
-| **Copilot Suitable** | Quick visual: is this AI-assignable? |
+| **Status** | Current workflow state (`🔲 Backlog` → `✅ Ready` → `🔄 In Progress` → `👀 In Review` → `Done` \| `🚫 Blocked` \| `📦 Deferred`) |
+| **Copilot Suitable** | Quick visual: is this AI-assignable? Drives the Copilot Queue and AI productivity KPI |
 | **Phase** | Which phase this belongs to |
 | **Priority** | Triage at a glance |
 | **Size** | Effort estimate + story points |
+
+> **Copilot Suitable** is a first-class field because it is the foundation of the AI productivity measurement. Issues labeled `Copilot: Yes` are the agent's work queue — surfacing this field in every view ensures nothing AI-assignable is missed, and it enables accurate *AI SP ÷ total SP* velocity reporting at each retrospective.
 
 ### Additional fields per view type
 
@@ -324,7 +330,7 @@ The following fields **must** be visible as columns in every view to maintain co
 
 1. Click "+" to add a new view → Select "Board"
 2. Group by: **Status** field
-3. Columns: Backlog → Ready → In Progress → Done
+3. Columns: 🔲 Backlog → ✅ Ready → 🔄 In Progress → 👀 In Review → Done → 🚫 Blocked → 📦 Deferred
 4. Add all required fields as visible columns
 5. Sort: Priority (ascending)
 
@@ -379,7 +385,7 @@ The following fields **must** be visible as columns in every view to maintain co
 ### View 8: Blocked & At Risk
 
 1. Click "+" → Select "Table"
-2. Filter: `Labels contains blocked`
+2. Filter: `Status = 🚫 Blocked`
 3. Sort: Priority (ascending)
 4. PM reviews daily to unblock or escalate
 

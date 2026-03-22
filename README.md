@@ -1,20 +1,70 @@
 # Azure Resume IaC
 
+[![Production Deploy](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/prod-full-stack-cloudflare.yml/badge.svg)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/prod-full-stack-cloudflare.yml)
+[![Dev Deploy](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/dev-full-stack-cloudflare.yml/badge.svg)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/dev-full-stack-cloudflare.yml)
+[![Backend CI](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/backend-ci.yml/badge.svg?branch=develop)](https://github.com/rmcveyhsawaknow/azure-resume-iac/actions/workflows/backend-ci.yml)
+
 Personal resume website deployed as a static site on Azure PaaS services, fronted by Cloudflare CDN, with a visitor counter powered by Azure Functions and Cosmos DB. All infrastructure is defined as code using Azure Bicep and deployed via GitHub Actions CI/CD.
 
 **Live Site:** <https://resume.ryanmcvey.me/>
 
 > Extended from the [ACG project](https://learn.acloud.guru/series/acg-projects/view/403) by [Drew Davis](https://github.com/davisdre/azure-resume/) with full Infrastructure as Code to deploy all Azure resources.
 
+---
+
+## 🤖 AgentGitOps — AI-Powered Project Management
+
+This repository uses **AgentGitOps**, a repeatable workflow that combines AI coding agents (GitHub Copilot) with `gh` CLI automation to plan, populate, and burn down a project backlog. The entire `bootstrap/` folder is portable — copy it into any repo to go from goals to executing backlog in hours, not days.
+
+**👉 [Full AgentGitOps Guide →](bootstrap/README.md)**
+
+### Quick Start
+
+```bash
+# 1. Copy bootstrap/ and .github/ISSUE_TEMPLATE/ into your repo
+# 2. Check prerequisites
+./bootstrap/check-prerequisites.sh
+
+# 3. Follow Sessions 0–5 (each includes a copy-paste agent prompt)
+#    See bootstrap/README.md for details
+```
+
+### Workflow at a Glance
+
+| Session | Name | Role | Output |
+|---|---|---|---|
+| 0 | Goal-Focused Backlog Planning | PM / Business Driver | `docs/BACKLOG_PLANNING.md` + `artifacts/backlog.csv` |
+| 1 | Bootstrap — Copilot Instructions | Human | `.github/copilot-instructions.md` |
+| 2 | Backlog Research | Agent | `artifacts/backlog-issues/*.md` + docs |
+| 3 | Issue Population | Human + Agent | GitHub Issues, Labels, Milestones, Project |
+| 4 | Assessment Execution | Human + Agent | Gap analysis findings, assessment artifacts |
+| 5+ | Backlog Burn-Down | Human + Agent | Code changes, PRs, deployments |
+
+### Key Scripts
+
+| Script | Purpose |
+|---|---|
+| [`bootstrap/setup-github-labels.sh`](bootstrap/setup-github-labels.sh) | Create/update all labels (9 categories, idempotent) |
+| [`bootstrap/setup-github-milestones.sh`](bootstrap/setup-github-milestones.sh) | Create milestones with due dates for Roadmap |
+| [`bootstrap/create-backlog-issues.sh`](bootstrap/create-backlog-issues.sh) | Create issues from `.md` files with auto-labels |
+| [`bootstrap/setup-github-project.sh`](bootstrap/setup-github-project.sh) | Create GitHub Project V2 + custom fields + add issues |
+| [`bootstrap/generate-phase-retrospective.sh`](bootstrap/generate-phase-retrospective.sh) | Generate retrospective report with SP velocity and AI KPIs |
+
+> See [`bootstrap/agentgitops-instructions.md`](bootstrap/agentgitops-instructions.md) for the full workflow guide with Mermaid diagrams, role definitions, label taxonomy, and story point capacity model.
+
+---
+
 ## Table of Contents
 
+- [AgentGitOps — AI-Powered Project Management](#-agentgitops--ai-powered-project-management)
 - [Architecture Overview](#architecture-overview)
+- [Tech Stack](#tech-stack)
 - [Repository Structure](#repository-structure)
 - [CI/CD Workflows](#cicd-workflows)
+- [Blue/Green Deployment Strategy](#bluegreen-deployment-strategy)
 - [Required Secrets and Credentials](#required-secrets-and-credentials)
-- [Current Production Stack (v1)](#current-production-stack-v1)
-- [Known Issues](#known-issues)
 - [Development Setup](#development-setup)
+- [Known Issues & Technical Debt](#known-issues--technical-debt)
 - [Documentation](#documentation)
 
 ## Architecture Overview
@@ -47,12 +97,30 @@ Personal resume website deployed as a static site on Azure PaaS services, fronte
 
 **Supporting Services:** Key Vault (secrets), Application Insights (monitoring), App Service Plan (Y1 serverless)
 
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the detailed architecture reference with full resource inventories and Bicep module documentation.
+
+## Tech Stack
+
+| Layer | Technology | Details |
+|---|---|---|
+| **Frontend** | HTML / CSS / JavaScript | Vanilla static site — no build step or framework |
+| **Backend** | C# / .NET 8 (LTS) | Azure Functions v4, isolated worker model |
+| **Database** | Azure Cosmos DB | Serverless, SQL API, single `Counter` container |
+| **Infrastructure** | Azure Bicep | All resources defined as code in `.iac/` |
+| **CI/CD** | GitHub Actions | Automated deploy on push to `main` / `develop` |
+| **CDN / DNS** | Cloudflare (Free) | Proxied CNAME for TLS termination and caching |
+| **Secrets** | Azure Key Vault | Connection strings stored as Key Vault references |
+| **Monitoring** | Application Insights | Frontend + backend telemetry |
+| **Testing** | xUnit v3 + Moq | Backend unit tests in `backend/tests/` |
+| **Project Mgmt** | AgentGitOps | AI-assisted backlog via [`bootstrap/`](bootstrap/) |
+
 ## Repository Structure
 
 ```
 ├── .github/workflows/           # CI/CD pipeline definitions
 │   ├── prod-full-stack-cloudflare.yml   # ACTIVE: Production (main branch)
 │   ├── dev-full-stack-cloudflare.yml    # ACTIVE: Development (develop branch)
+│   ├── backend-ci.yml                   # CI: build + test on backend changes (push & PR)
 │   ├── prod-full-stack-azureCDN.yml     # DISABLED: Prod w/ Azure CDN
 │   └── dev-full-stack-azureCDN.yml      # DISABLED: Dev w/ Azure CDN
 ├── .iac/                        # Azure Bicep templates
@@ -60,13 +128,6 @@ Personal resume website deployed as a static site on Azure PaaS services, fronte
 │   ├── frontend.bicep           # Storage Accounts + App Insights
 │   ├── frontendCdn.bicep        # Azure Front Door (CDN) + DNS
 │   └── modules/                 # Reusable Bicep modules
-│       ├── apm/appinsights.bicep
-│       ├── cdn/cdn.bicep, cdnClassic.bicep
-│       ├── cosmos/cosmos.bicep
-│       ├── dns/azuredns.bicep
-│       ├── functionapp/functionapp.bicep
-│       ├── keyvault/createKeyVaultSecret.bicep
-│       └── storageaccount/sa_staticsite.bicep
 ├── backend/                     # Azure Function (visitor counter)
 │   ├── api/                     # Function App source (.NET 8, isolated worker)
 │   │   ├── GetResumeCounter.cs  # HTTP trigger function
@@ -74,129 +135,125 @@ Personal resume website deployed as a static site on Azure PaaS services, fronte
 │   │   ├── CosmosConstants.cs   # DB/container/document ID constants
 │   │   ├── api.csproj           # Project file (net8.0, Functions v4 isolated)
 │   │   └── host.json            # Function host configuration
-│   └── tests/                   # xUnit tests
-│       ├── TestCounter.cs       # Counter increment test
-│       └── ...                  # Test helpers
+│   └── tests/                   # xUnit v3 tests
+│       └── TestCounter.cs       # Counter unit tests
 ├── frontend/                    # Static resume website
 │   ├── index.html               # Single-page resume
-│   ├── main.js                  # Main SPA logic (counter fetch, text rotation; uses config.js)
-│   ├── config.js                # Injected at deploy time with API endpoint and telemetry config
-│   ├── js/azure_app_insights.js # Application Insights SDK bootstrap (reads settings from config.js)
+│   ├── main.js                  # Visitor counter fetch + text rotation (uses config.js)
+│   ├── config.js                # Injected at deploy time with API endpoint and telemetry
+│   ├── js/azure_app_insights.js # App Insights SDK bootstrap (reads config.js)
 │   ├── css/                     # Stylesheets and font libraries
 │   ├── js/                      # jQuery, plugins, and utilities
-│   ├── images/                  # Profile photo, cert badges, overlays
-│   └── fonts/                   # LibreBaskerville, OpenSans web fonts
+│   └── images/                  # Profile photo, cert badges, overlays
+├── bootstrap/                   # AgentGitOps workflow scripts and guides
+│   ├── README.md                # Quick start + session prompts
+│   ├── agentgitops-instructions.md  # Full workflow guide
+│   └── *.sh                     # Labels, milestones, issues, project, retrospective scripts
+├── scripts/                     # Operational scripts
+│   └── cleanup-stack.sh         # Blue/green stack inventory and purge
 └── docs/                        # Extended documentation
-    ├── ARCHITECTURE.md          # Detailed architecture and resource reference
-    ├── CICD_WORKFLOWS.md        # CI/CD pipeline and credentials guide
-    ├── KNOWN_ISSUES.md          # Known issues and technical debt
-    ├── BACKLOG_PLANNING.md      # Phased backlog planning guide
-    └── ASSESSMENT_COMMANDS.md   # CLI commands for harvesting current state
 ```
 
 ## CI/CD Workflows
 
-Four GitHub Actions workflows exist; two are active (Cloudflare DNS), two are disabled (Azure CDN):
+Two active workflows deploy via Cloudflare DNS; two legacy Azure CDN workflows are disabled:
 
-| Workflow | File | Branch Trigger | Status | DNS Provider |
-|---|---|---|---|---|
-| Production Cloudflare | `prod-full-stack-cloudflare.yml` | `main` | **Active** | Cloudflare |
-| Development Cloudflare | `dev-full-stack-cloudflare.yml` | `develop` | **Active** | Cloudflare |
-| Production Azure CDN | `prod-full-stack-azureCDN.yml` | `disabled` | Disabled | Azure DNS |
-| Development Azure CDN | `dev-full-stack-azureCDN.yml` | `disabled` | Disabled | Azure DNS |
+| Workflow | File | Branch | Status |
+|---|---|---|---|
+| Production Cloudflare | `prod-full-stack-cloudflare.yml` | `main` | **Active** |
+| Development Cloudflare | `dev-full-stack-cloudflare.yml` | `develop` | **Active** |
+| Backend CI | `backend-ci.yml` | Push & PRs to `main`/`develop` | **Active** |
+| Production Azure CDN | `prod-full-stack-azureCDN.yml` | — | Disabled |
+| Development Azure CDN | `dev-full-stack-azureCDN.yml` | — | Disabled |
 
-Each active workflow contains 4 jobs executed sequentially:
+Each full-stack workflow runs 4 jobs sequentially:
 
-1. **changes** — Detects which paths changed (`.iac/`, `backend/`, `frontend/`)
+1. **changes** — Detects which paths changed (`.iac/`, `backend/`, `frontend/`) via `dorny/paths-filter`
 2. **deployIac** — Deploys Bicep templates for backend and frontend infrastructure
 3. **buildDeployBackend** — Builds .NET Function App, runs unit tests, deploys to Azure
-4. **buildDeployFrontend** — Uploads static files to Azure Storage blob containers
+4. **buildDeployFrontend** — Generates `config.js` with runtime settings, uploads static files to Azure Storage
 
-> **Note:** Change detection (`if` conditions) is currently commented out — all jobs run on every push regardless of which paths changed.
+See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for the complete workflow reference.
 
-See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for complete workflow details.
+## Blue/Green Deployment Strategy
+
+Both dev and prod tiers use a blue/green pattern where each new major version deploys a **complete, isolated stack** (resource groups, Cosmos DB, Key Vault, Function App, Storage Account, DNS records). Old stacks are replaced and cleaned up.
+
+The `stackVersion` env var in each workflow determines which stack is live:
+
+| Tier | Workflow | `stackVersion` | Public URL |
+|---|---|---|---|
+| **Prod** | `prod-full-stack-cloudflare.yml` | `v12` | [resume.ryanmcvey.me](https://resume.ryanmcvey.me) |
+| **Dev** | `dev-full-stack-cloudflare.yml` | `v12` | [resumedev.ryanmcvey.me](https://resumedev.ryanmcvey.me) |
+
+**Swap procedure:** Bump `stackVersion` → merge to trigger branch → validate new stack → inventory + purge old stack via [`scripts/cleanup-stack.sh`](scripts/cleanup-stack.sh).
+
+**Resource naming:** `{locationCode}-{appName}-{environment}-{version}-{resourceType}` (e.g., `cus1-resume-be-prod-v12-rg`)
 
 ## Required Secrets and Credentials
 
-The following GitHub repository secrets must be configured:
+| Secret Name | Purpose |
+|---|---|
+| `AZURE_RESUME_GITHUB_SP` | Azure Service Principal JSON for `Azure/login` |
+| `CLOUDFLARE_TOKEN` | Cloudflare API token for DNS record management |
+| `CLOUDFLARE_ZONE` | Zone ID for `ryanmcvey.me` |
 
-| Secret Name | Purpose | How to Create |
-|---|---|---|
-| `AZURE_RESUME_GITHUB_SP` | Azure Service Principal (JSON) | `az ad sp create-for-rbac --name <name> --role contributor --scopes /subscriptions/<subId> --sdk-auth` |
-| `CLOUDFLARE_TOKEN` | Cloudflare API token | Cloudflare Dashboard → My Profile → API Tokens |
-| `CLOUDFLARE_ZONE` | Zone ID for `ryanmcvey.me` | Cloudflare Dashboard → Zone Overview (right sidebar) |
-
-> **⚠️ Credential Status:** The Azure SP credential and Cloudflare tokens likely need to be verified or rotated. The SP credential uses the legacy `--sdk-auth` format which has been deprecated by `Azure/login`. See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for migration guidance.
-
-See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for the full secrets and credentials reference.
-
-## Current Production Stack (v1)
-
-**Environment Variables (from `prod-full-stack-cloudflare.yml`):**
-
-| Variable | Value | Description |
-|---|---|---|
-| `stackVersion` | `v1` | Stack version identifier |
-| `stackEnvironment` | `prod` | Environment tier |
-| `stackLocation` | `eastus` | Azure region |
-| `stackLocationCode` | `cus1` | Location code prefix for resource names |
-| `AppName` | `resume` | Application name (used in resource naming) |
-| `AppBackendName` | `resumectr` | Backend function app name component |
-| `dnsZone` | `ryanmcvey.me` | Custom domain zone |
-| `tagCostCenter` | `azCF` | Cost center tag value |
-| `rgDns` | `glbl-ryanmcveyme-v1-rg` | Pre-existing DNS resource group |
-
-**Derived Resource Names (production):**
-
-| Resource | Name | Type |
-|---|---|---|
-| Backend RG | `cus1-resume-be-prod-v1-rg` | Resource Group |
-| Frontend RG | `cus1-resume-fe-prod-v1-rg` | Resource Group |
-| Cosmos DB | `cus1-resume-prod-v1-cmsdb` | Cosmos DB Account |
-| Function App | `cus1-resumectr-prod-v1-fa` | Function App |
-| Key Vault | `cus1-resume-prod-v1-kv` | Key Vault |
-| Storage (FE) | `cus1resumeprodv1sa` | Storage Account (static site) |
-
-**Resource Naming Convention:** `{locationCode}-{appName}-{environment}-{version}-{resourceType}`
-
-## Known Issues
-
-| Issue | Impact | Details |
-|---|---|---|
-| **Visitor counter not working** | Page counter shows nothing | Azure Function may be stopped, Cosmos DB may be inaccessible, or function key may have changed. See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) |
-| **.NET Core 3.1 end of life** | Build/deploy may fail | Runtime reached EOL Dec 2022. Azure Functions v3 is also deprecated. Needs upgrade to .NET 8+ and Functions v4 |
-| **Hardcoded function URL and key in `main.js`** | Security/maintenance concern | Function authorization code is committed to source control |
-| **Hardcoded App Insights connection string** | Maintenance concern | Instrumentation key is committed in `azure_app_insights.js` |
-| **Deprecated GitHub Actions syntax** | Workflow warnings | Uses `::set-output` (deprecated) instead of `$GITHUB_OUTPUT` |
-| **Legacy `Azure/login` format** | May stop working | Uses `--sdk-auth` JSON format which is deprecated |
-
-See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) for complete details and remediation guidance.
+See [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) for the full credentials reference and creation instructions.
 
 ## Development Setup
 
 ### Prerequisites
 
-- [Visual Studio Code](https://code.visualstudio.com/) with [recommended extensions](.vscode/extensions.json)
-- [Azure Functions Core Tools v4](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
-- [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) (isolated worker model with System.Text.Json)
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [Bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) (bundled with Azure CLI)
+- [Visual Studio Code](https://code.visualstudio.com/) with [recommended extensions](.vscode/extensions.json) (or GitHub Codespaces — devcontainer handles setup automatically)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Azure Functions Core Tools v4](https://learn.microsoft.com/azure/azure-functions/functions-run-local)
+- [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) (includes Bicep CLI)
 
-### Initial Deployment Steps
+### Build & Test
+
+```bash
+# Build backend
+cd backend/api && dotnet build
+
+# Run unit tests
+cd backend/tests && dotnet test
+
+# Run function locally
+cd backend/api && func start
+# → http://localhost:7071/api/GetResumeCounter
+```
+
+See [docs/LOCAL_TESTING.md](docs/LOCAL_TESTING.md) for the full local development guide including Cosmos DB emulator setup and frontend integration testing.
+
+### Deploy Your Own Stack
 
 1. Create an Azure Service Principal and store as GitHub secret `AZURE_RESUME_GITHUB_SP`
-2. Configure Cloudflare API token and zone IDs as GitHub secrets
-3. Update workflow environment variables for your environment
-4. Push to trigger the workflow — Bicep deploys all infrastructure
-5. Frontend configuration (Function App URL, function key, and Application Insights connection string) is injected into `frontend/config.js` at deploy time by the GitHub Actions workflows — no manual edits to frontend JavaScript files are required.
+2. Configure Cloudflare API token and zone ID as GitHub secrets
+3. Update workflow environment variables (`stackVersion`, `AppName`, `dnsZone`, etc.)
+4. Push to `main` (prod) or `develop` (dev) — Bicep deploys all infrastructure automatically
+5. `config.js` is generated at deploy time with the Function App URL, function key, and App Insights connection string — no manual frontend edits required
 
-   > Note: Cosmos DB seed document is created automatically by the deployment workflow (see `scripts/seed-cosmos-db.sh`).
+> **Note:** The Cosmos DB seed document is created automatically by the deployment workflow via `scripts/seed-cosmos-db.sh`.
+
+## Known Issues & Technical Debt
+
+| Issue | Status | Details |
+|---|---|---|
+| **jQuery 1.10.2 / Font Awesome 4.x** | ⚠️ Outdated | Frontend libraries are functional but several major versions behind. Low-priority upgrade. |
+
+> **Resolved in recent phases:** .NET 8 migration (from 3.1 EOL), Functions v4 upgrade, deploy-time `config.js` injection (eliminated hardcoded secrets), GitHub Actions modernization (`$GITHUB_OUTPUT`, pinned action versions, `Azure/login@v2`), change detection re-enabled.
+
+See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) for the complete history and remediation details.
+
 ## Documentation
 
 | Document | Description |
 |---|---|
+| [bootstrap/README.md](bootstrap/README.md) | **AgentGitOps quick start** — session prompts and workflow overview |
+| [bootstrap/agentgitops-instructions.md](bootstrap/agentgitops-instructions.md) | Full AgentGitOps guide with diagrams, roles, labels, and KPIs |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Detailed architecture, resource inventory, and Bicep module reference |
 | [docs/CICD_WORKFLOWS.md](docs/CICD_WORKFLOWS.md) | Complete CI/CD workflow reference and credentials guide |
-| [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | Known issues, technical debt, and remediation guidance |
-| [docs/BACKLOG_PLANNING.md](docs/BACKLOG_PLANNING.md) | Phased backlog planning guide for the content and infrastructure update project |
-| [docs/ASSESSMENT_COMMANDS.md](docs/ASSESSMENT_COMMANDS.md) | Azure CLI and Cloudflare CLI commands for harvesting current deployed state |
+| [docs/LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Local development, build, test, and debug guide |
+| [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | Known issues, technical debt, and remediation history |
+| [docs/BACKLOG_PLANNING.md](docs/BACKLOG_PLANNING.md) | Phased backlog planning guide |
+| [docs/ASSESSMENT_COMMANDS.md](docs/ASSESSMENT_COMMANDS.md) | Azure CLI and Cloudflare commands for harvesting deployed state |

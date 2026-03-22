@@ -103,7 +103,7 @@ My resume site isn't just a resume. It's a working demonstration of how I think 
 
 ### For the "what couldn't the AI do?" question:
 
-> Three things: credentials (creating/rotating Azure service principals and Cloudflare tokens), portal validation (confirming resources exist in the Azure portal), and deployment sign-off (verifying the live site works end-to-end). About 33% of issues were labeled Copilot: No for these reasons. The framework anticipates this — it's not about 100% AI, it's about knowing which 36% is fully automatable.
+> Three things: credentials (creating/rotating Azure service principals and Cloudflare tokens), portal validation (confirming resources exist in the Azure portal), and deployment sign-off (verifying the live site works end-to-end). About one-third of issues (26 of 80 labeled) were tagged Copilot: No for these reasons. On the other end, just over a third (29 issues) were Copilot: Yes — fully delegated to the AI. The framework anticipates this split — it's not about 100% AI, it's about knowing which tasks are fully automatable and which require human judgment.
 
 ### For the "is this actually faster?" question:
 

@@ -213,7 +213,7 @@ This produced a **traceable audit trail** — every metric in this epic report c
 
 ### What Could Improve
 
-1. **Co-authored-by trailer consistency** — Phase 5 showed a 2.7% co-authored ratio despite 65% AI-authored commits, because `copilot-swe-agent[bot]` commits as primary author without trailers. A consistent attribution model would improve metric accuracy.
+1. **Co-authored-by trailer consistency** — Phase 5 showed a 2.7% co-authored-by trailer ratio despite 65% AI-authored commits, because `copilot-swe-agent[bot]` commits as primary author without adding Git co-authored-by trailers. A consistent attribution model would improve metric accuracy.
 2. **Story point estimation** — Issues had T-shirt size labels but SP values were not consistently populated on the Project board, limiting velocity calculations to issue counts rather than weighted SP.
 3. **Gap analysis to issue pipeline** — 28 findings were identified but the mapping from finding → issue was manual. An automated finding-to-issue script would reduce the gap.
 4. **Phase 4 completion rate** — The 71% rate is misleading due to duplicate gap-analysis issues. Deduplication during backlog population would prevent this.

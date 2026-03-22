@@ -120,7 +120,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the detailed architecture r
 ├── .github/workflows/           # CI/CD pipeline definitions
 │   ├── prod-full-stack-cloudflare.yml   # ACTIVE: Production (main branch)
 │   ├── dev-full-stack-cloudflare.yml    # ACTIVE: Development (develop branch)
-│   ├── backend-ci.yml                   # PR CI: build + test on backend changes
+│   ├── backend-ci.yml                   # CI: build + test on backend changes (push & PR)
 │   ├── prod-full-stack-azureCDN.yml     # DISABLED: Prod w/ Azure CDN
 │   └── dev-full-stack-azureCDN.yml      # DISABLED: Dev w/ Azure CDN
 ├── .iac/                        # Azure Bicep templates
@@ -162,7 +162,7 @@ Two active workflows deploy via Cloudflare DNS; two legacy Azure CDN workflows a
 |---|---|---|---|
 | Production Cloudflare | `prod-full-stack-cloudflare.yml` | `main` | **Active** |
 | Development Cloudflare | `dev-full-stack-cloudflare.yml` | `develop` | **Active** |
-| Backend CI | `backend-ci.yml` | PRs to `main`/`develop` | **Active** |
+| Backend CI | `backend-ci.yml` | Push & PRs to `main`/`develop` | **Active** |
 | Production Azure CDN | `prod-full-stack-azureCDN.yml` | — | Disabled |
 | Development Azure CDN | `dev-full-stack-azureCDN.yml` | — | Disabled |
 

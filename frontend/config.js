@@ -16,6 +16,6 @@ var defined_CLARITY_PROJECT_ID = '';
 
 // Stack version and environment — injected by CI/CD from the workflow's stackVersion and
 // stackEnvironment env vars. Displayed in the site footer as a deployment indicator.
-// For local development, these remain empty and the footer shows a "Local Dev" fallback.
+// For local development, these remain empty and no stack info is shown in the footer.
 var defined_STACK_VERSION = '';
 var defined_STACK_ENVIRONMENT = '';

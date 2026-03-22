@@ -1505,6 +1505,9 @@ footer .stack-info {
     color: #838C95;
     letter-spacing: 0.5px;
 }
+footer .stack-info:empty {
+    display: none;
+}
 
 /* social links */
 footer .social-links {

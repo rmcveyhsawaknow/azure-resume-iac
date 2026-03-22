@@ -277,7 +277,7 @@ while IFS= read -r file; do
 
   # Build label arguments
   label_args=()
-  label_args+=("--label" "backlog")
+  label_args+=("--label" "🔲 Backlog")
 
   # Phase label
   if [[ -n "$phase" && -n "$phase_name" ]]; then

@@ -5,38 +5,41 @@
 <title><!-- CANDIDATE_NAME --> — <!-- RESUME_TITLE --></title>
 <style>
 /* ===== FONT EMBEDDING =====
-   Fonts are loaded from the workspace's frontend/css/fonts/opensans/ directory.
-   These file:// URLs work when weasyprint runs inside the Codespace.
-   If fonts fail to load, weasyprint falls back to system sans-serif. -->
+   Fonts are loaded from the repository's frontend/css/fonts/opensans/ directory
+   using paths relative to this template so the HTML remains portable across
+   forks, renamed repositories, local clones, and CI environments.
+   When rendering with WeasyPrint, ensure the HTML file location is used as the
+   base URL or pass --base-url so these relative font paths resolve correctly.
+   If fonts fail to load, WeasyPrint falls back to system sans-serif.
 */
 @font-face {
   font-family: 'OpenSans';
-  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
   font-weight: 400; font-style: normal;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Bold-webfont.ttf') format('truetype');
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Bold-webfont.ttf') format('truetype');
   font-weight: 700; font-style: normal;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Semibold-webfont.ttf') format('truetype');
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Semibold-webfont.ttf') format('truetype');
   font-weight: 600; font-style: normal;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Light-webfont.ttf') format('truetype');
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Light-webfont.ttf') format('truetype');
   font-weight: 300; font-style: normal;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Italic-webfont.ttf') format('truetype');
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Italic-webfont.ttf') format('truetype');
   font-weight: 400; font-style: italic;
 }
 @font-face {
   font-family: 'OpenSans';
-  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-ExtraBold-webfont.ttf') format('truetype');
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-ExtraBold-webfont.ttf') format('truetype');
   font-weight: 800; font-style: normal;
 }
 

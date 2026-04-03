@@ -24,35 +24,54 @@ This reference documents all locations where candidate resume content can be fou
 
 ## Secondary Sources: Binary Resumes
 
-Located in `tmp/` (extracted during skill Step 2):
+The user places resume files into `tmp/` before invoking the skill. The skill dynamically discovers all `.pdf`, `.docx`, and `.doc` files — no specific filenames are required. These provide supplementary detail beyond the live site (additional roles, deeper bullet points, cover letter language).
 
-| File | Format | Variant | Key Differentiator |
-|------|--------|---------|--------------------|
-| `Ryan McVey_Resume_InsightArchitect_2025.docx` | DOCX | Insight Architect | Enterprise architecture focus, data analytics emphasis |
-| `Ryan McVey_Resume_PrivateSector_2024.docx` | DOCX | Private Sector | Aprimo/Teradata progressive career, marketing tech |
-| `Ryan McVey_Resume_PublicSectorLeadership_2024.pdf` | PDF | Public Sector Leadership | Government leadership, policy, NASCIO award emphasis |
-| `Ryan McVey_Resume_PublicSector_2026.pdf` | PDF | Public Sector 2026 | Most current public sector roles, forward-looking |
+**Supported formats:** `.pdf` (converted via `pdftotext`), `.docx` / `.doc` (converted via `pandoc`)
 
-### Extraction Commands
+**Typical resume variants a user might provide:**
 
-```bash
-# DOCX → text
-pandoc "tmp/Ryan McVey_Resume_InsightArchitect_2025.docx" -t plain --wrap=none -o tmp/insight-architect.txt
+| Variant | Key Differentiator |
+|---------|--------------------|
+| Insight / Consulting focus | Enterprise architecture, data analytics, client delivery |
+| Private Sector focus | Progressive SaaS operations career, cloud migration |
+| Public Sector Leadership | Government leadership, policy, NASCIO award emphasis |
+| Public Sector (current) | Most recent roles, forward-looking positioning |
 
-# PDF → text
-pdftotext "tmp/Ryan McVey_Resume_PublicSector_2026.pdf" tmp/public-sector-2026.txt
-```
+> **Note:** `tmp/` is gitignored and ephemeral. Binary resumes contain PII and are never committed to the repository.
 
 ## Certification Data
 
-Authoritative certification details (update as certs renew):
+Authoritative certification details — **single source of truth** for all resume tailoring runs. Update this table as certifications renew or new ones are earned. The skill's Step 4 pre-fills the Certification Details section of `job-input.md` from this data.
 
-| Certification | Issuer | Credential ID | Cert Number | Earned | Expires |
-|--------------|--------|---------------|-------------|--------|---------|
-| Azure Administrator Associate (AZ-104) | Microsoft | E3A915D12B7A92CF | 2072979 | Jul 2023 | Jul 2025 |
-| Azure Fundamentals (AZ-900) | Microsoft | H794-6652 | — | Feb 2021 | No Expiry |
-| Azure AI Fundamentals (AI-900) | Microsoft | I551-4370 | — | Sep 2021 | No Expiry |
-| Azure Data Fundamentals (DP-900) | Microsoft | I545-2254 | — | Sep 2021 | No Expiry |
+### Active Certifications
+
+| Certification | Issuer | Cert Number | Earned | Expires |
+|--------------|--------|-------------|--------|---------|
+| Azure Solutions Architect Expert | Microsoft | 32AB75-C5C6KA | Dec 2021 | Dec 2026 |
+| Azure AI Engineer Associate | Microsoft | 5FAE84-038M4E | Mar 2024 | Mar 2027 |
+| Azure Data Scientist Associate | Microsoft | DAF19E-4A2F44 | Apr 2024 | Apr 2027 |
+| Azure AI Fundamentals | Microsoft | 545E8I-2DD55F | Feb 2024 | No Expiry |
+
+### Retired / Expired Certifications (Historical)
+
+These are no longer active but may be referenced as foundational background on resumes:
+
+| Certification | Issuer | Credential ID | Earned | Expired |
+|--------------|--------|---------------|--------|---------|
+| Azure Administrator Associate (AZ-104) | Microsoft | E3A915D12B7A92CF | Jul 2023 | Jul 2025 |
+| Azure Fundamentals (AZ-900) | Microsoft | H794-6652 | Feb 2021 | No Expiry (retired from active use) |
+| Azure AI Fundamentals (AI-900) | Microsoft | I551-4370 | Sep 2021 | No Expiry (superseded by 2024 renewal) |
+| Azure Data Fundamentals (DP-900) | Microsoft | I545-2254 | Sep 2021 | No Expiry (foundational) |
+| NERC Reliability Coordinator | NERC | — | Jul 2013 | Past / Not Active |
+
+### Military Training Equivalencies (MOS-5974)
+
+Foundational credentials mapped from USMC MOS-5974 via [Marine Corps COOL](https://www.cool.osd.mil/usmc/moc/index.html?moc=5974&tab=cred). Not individually credentialed but represent the breadth of the military technical curriculum:
+
+- CompTIA A+, Network+, Security+
+- Cisco Certified Network Associate (CCNA)
+- Microsoft Certified: Windows Server Hybrid Administrator Associate
+- CISSP, CISM, EC-Council CND
 
 ## Contact & Profile
 

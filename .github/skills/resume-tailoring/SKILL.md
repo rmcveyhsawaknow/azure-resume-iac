@@ -17,34 +17,47 @@ Generate a professional, job-specific PDF resume styled after the live resume si
 
 ## Prerequisites
 
-The user must provide a filled-in job input file. Copy [the template](./templates/job-input-template.md) to `tmp/job-input.md` and complete all sections before invoking this skill. Alternatively, the user may provide job details inline in the chat prompt or via a GitHub Issue created from the resume-generation issue template.
+The user provides job details through one of three methods:
+1. **Pre-filled job input file** — Copy [the template](./templates/job-input-template.md) to `tmp/job-input.md` and complete all sections before invoking this skill.
+2. **Inline in chat** — Provide job title, company, full job description, and any POC notes directly in the chat prompt. The skill will auto-create and populate `tmp/job-input.md`.
+3. **GitHub Issue** — Create an issue from the `resume-generation.yml` template and reference it when invoking the skill. The skill will fetch the issue body and populate `tmp/job-input.md`.
+
+Additionally, the user should place any binary resume files (`.pdf`, `.docx`, `.doc`) into `tmp/` before invoking the skill. These provide supplementary content beyond the live site. The skill discovers all supported files automatically — no specific filenames are required.
 
 ## Procedure
 
-### Step 1 — Install Tools
+### Step 1 — Install Tools & Prepare Workspace
 
 Install document conversion and PDF generation tools. These are required in the Codespace environment (Debian 12):
 
 ```bash
+mkdir -p tmp/
 sudo apt-get update -qq && sudo apt-get install -y -qq pandoc poppler-utils libglib2.0-0 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libharfbuzz0b libfontconfig1 libcairo2
 pip3 install --break-system-packages weasyprint
 ```
 
 Verify: `weasyprint --version` should return without error.
 
-### Step 2 — Parse Binary Resume Files
+> **Note:** The `tmp/` directory is gitignored and ephemeral. All resume inputs (binary resumes, job descriptions) and outputs (PDFs, HTML, application guides) live here and are never committed to the repository.
 
-Convert any `.docx` and `.pdf` resume files in `tmp/` to plain text for content extraction:
+### Step 2 — Discover & Parse Binary Resume Files
+
+Dynamically discover all resume files the user has placed in `tmp/`. The skill is agnostic to filenames — it processes whatever `.pdf`, `.docx`, or `.doc` files are present:
 
 ```bash
-# For each .docx file:
-pandoc "tmp/<filename>.docx" -t plain --wrap=none -o "tmp/<filename>.txt"
+# Discover and convert all supported resume files in tmp/
+for f in tmp/*.docx tmp/*.doc; do
+  [ -f "$f" ] && pandoc "$f" -t plain --wrap=none -o "${f%.*}.txt"
+done
 
-# For each .pdf file:
-pdftotext "tmp/<filename>.pdf" "tmp/<filename>.txt"
+for f in tmp/*.pdf; do
+  [ -f "$f" ] && pdftotext "$f" "${f%.*}.txt"
+done
 ```
 
 Read all generated `.txt` files to extract work history, skills, certifications, education, and other content not present on the live site.
+
+> **No hardcoded filenames.** The user drops their resume variants (any number, any naming convention) into `tmp/` before invoking the skill. The skill discovers and converts them all.
 
 ### Step 3 — Read Live Site Content
 
@@ -58,9 +71,17 @@ Read `frontend/index.html` to extract the current resume content:
 
 This is the **primary content source**. Binary resume files from Step 2 provide supplementary detail (additional roles, deeper bullet points, cover letter language).
 
-### Step 4 — Read Job Input
+### Step 4 — Collect & Read Job Input
 
-Read the user's filled-in job input file (default: `tmp/job-input.md`). Extract:
+The job input file (`tmp/job-input.md`) captures all job-specific details in a structured format. The skill supports three input modes:
+
+1. **Pre-filled file** — If `tmp/job-input.md` already exists and is filled in, read it directly.
+2. **Auto-populate from user input** — If `tmp/job-input.md` does not exist, copy the template from `.github/skills/resume-tailoring/templates/job-input-template.md` to `tmp/job-input.md`, then populate it using details the user provided in the chat prompt (job title, company, JD text, POC notes, requirements).
+3. **Auto-populate from GitHub Issue** — If the user references a GitHub Issue created from the `resume-generation.yml` template, fetch the issue fields via `gh issue view <number> --json body` and populate `tmp/job-input.md` from the structured form data.
+
+For modes 2 and 3, pre-fill the **Certification Details** section from the authoritative data in [resume-sources.md](./references/resume-sources.md) — the user only needs to confirm or adjust.
+
+Extract from the completed `tmp/job-input.md`:
 - **Job title and company** — for resume header title alignment
 - **Full job description** — for keyword extraction and requirement mapping
 - **POC/referral notes** — for contextual framing in summary and role descriptions

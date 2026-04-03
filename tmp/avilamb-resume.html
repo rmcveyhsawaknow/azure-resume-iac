@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ryan McVey — Lead Azure Cloud Architect — Enterprise Infrastructure &amp; Optimization</title>
+<style>
+@font-face {
+  font-family: 'OpenSans';
+  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
+  font-weight: 400; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Bold-webfont.ttf') format('truetype');
+  font-weight: 700; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Semibold-webfont.ttf') format('truetype');
+  font-weight: 600; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Light-webfont.ttf') format('truetype');
+  font-weight: 300; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-Italic-webfont.ttf') format('truetype');
+  font-weight: 400; font-style: italic;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/OpenSans-ExtraBold-webfont.ttf') format('truetype');
+  font-weight: 800; font-style: normal;
+}
+
+@page {
+  size: letter;
+  margin: 0.55in 0.6in 0.55in 0.6in;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'OpenSans', 'Segoe UI', Arial, sans-serif;
+  font-size: 9.2pt;
+  line-height: 1.42;
+  color: #46535d;
+  background: #fff;
+}
+
+:root {
+  --gold:    #C5A028;
+  --navy:    #00205B;
+  --crimson: #BF0A30;
+  --dark:    #1F1F1F;
+  --text:    #46535d;
+  --heading: #313131;
+  --light-bg: #f4f5f7;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 6pt;
+  border-bottom: 2.5pt solid var(--crimson);
+  margin-bottom: 8pt;
+}
+.header-left h1 {
+  font-size: 22pt;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: 0.5pt;
+  margin-bottom: 2pt;
+  line-height: 1.1;
+}
+.header-left .subtitle {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.3pt;
+}
+.header-right {
+  text-align: right;
+  font-size: 8.5pt;
+  line-height: 1.55;
+  color: var(--text);
+  padding-top: 2pt;
+}
+.header-right a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.section-title {
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  border-bottom: 1.5pt solid var(--gold);
+  padding-bottom: 2pt;
+  margin-top: 10pt;
+  margin-bottom: 5pt;
+}
+
+.summary {
+  font-size: 9.2pt;
+  line-height: 1.48;
+  color: var(--text);
+  margin-bottom: 2pt;
+}
+
+.competencies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3pt 0;
+  margin-bottom: 2pt;
+}
+.competencies .col {
+  width: 33.33%;
+  padding-right: 6pt;
+}
+.competencies .item {
+  font-size: 8.5pt;
+  line-height: 1.5;
+  color: var(--heading);
+  padding-left: 8pt;
+  position: relative;
+}
+.competencies .item::before {
+  content: "\25B8";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 8pt;
+}
+
+.role {
+  margin-bottom: 8pt;
+  page-break-inside: avoid;
+}
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2pt;
+}
+.role-title {
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--heading);
+}
+.role-dates {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+.role-company {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 3pt;
+}
+.role-location {
+  font-weight: 400;
+  color: var(--text);
+}
+.role-desc {
+  font-size: 9pt;
+  line-height: 1.45;
+  margin-bottom: 2pt;
+}
+.role ul {
+  padding-left: 14pt;
+  margin-top: 2pt;
+}
+.role li {
+  font-size: 9pt;
+  line-height: 1.42;
+  margin-bottom: 2pt;
+  color: var(--text);
+}
+.role li strong {
+  color: var(--heading);
+}
+
+.cert-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3pt 0;
+}
+.cert-item {
+  width: 50%;
+  font-size: 8.8pt;
+  line-height: 1.5;
+  padding-right: 8pt;
+}
+.cert-name {
+  font-weight: 600;
+  color: var(--heading);
+}
+.cert-meta {
+  font-size: 8pt;
+  color: #7A7A7A;
+}
+
+.edu-entry {
+  margin-bottom: 5pt;
+}
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.edu-school {
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: var(--heading);
+}
+.edu-dates {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--gold);
+}
+.edu-degree {
+  font-size: 9pt;
+  color: var(--navy);
+  font-weight: 600;
+}
+.edu-detail {
+  font-size: 8.8pt;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2pt 0;
+}
+.skills-col {
+  width: 50%;
+  padding-right: 6pt;
+  margin-bottom: 3pt;
+}
+.skills-cat {
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 1pt;
+}
+.skills-list {
+  font-size: 8.5pt;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.footer {
+  margin-top: 8pt;
+  padding-top: 4pt;
+  border-top: 1pt solid #ddd;
+  font-size: 7.5pt;
+  color: #999;
+  text-align: center;
+}
+.footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.clearance-bar {
+  background: var(--light-bg);
+  border-left: 3pt solid var(--navy);
+  padding: 4pt 8pt;
+  margin-top: 6pt;
+  margin-bottom: 2pt;
+  font-size: 8.8pt;
+}
+.clearance-bar strong {
+  color: var(--navy);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>RYAN MCVEY</h1>
+    <div class="subtitle">Lead Azure Cloud Architect — Enterprise Infrastructure &amp; Optimization</div>
+  </div>
+  <div class="header-right">
+    Indianapolis, IN &nbsp;|&nbsp; 317-441-2052<br>
+    rjmcvey2013@gmail.com<br>
+    <a href="https://resume.ryanmcvey.me">resume.ryanmcvey.me</a> &nbsp;|&nbsp;
+    <a href="https://www.linkedin.com/in/ryan-mcvey-897008228/">LinkedIn</a> &nbsp;|&nbsp;
+    <a href="https://github.com/rmcveyhsawaknow/">GitHub</a>
+  </div>
+</div>
+
+<!-- CLEARANCE BAR -->
+<div class="clearance-bar">
+  <strong>U.S. Citizen</strong> &nbsp;|&nbsp; USMC Veteran (Honorable Discharge, Service-Connected) &nbsp;|&nbsp; Previously held DoD Secret Clearance &nbsp;|&nbsp; Public Trust eligible
+</div>
+
+<!-- PROFESSIONAL SUMMARY -->
+<div class="section-title">Professional Summary</div>
+<div class="summary">
+  Enterprise cloud architect with 22+ years of IT experience, including 7+ years as a lead solutions architect operating large-scale Azure environments for state government across Azure Commercial, Azure Government, AWS, and GCP. Proven track record designing and governing enterprise landing zones, hub-and-spoke network architectures, subscription segmentation, and policy-driven compliance frameworks aligned to NIST 800-53 and CIS benchmarks. Deep experience in post-migration optimization, cloud cost management, Reserved Instance modeling, tagging governance, and RBAC enforcement at scale. Career arc spans USMC tactical data systems to federal contracting (DHS/Lockheed Martin) to private-sector cloud operations to state enterprise architecture — now seeking to return to federal service to support VA technology modernization. Certified Azure Solutions Architect Expert with additional AI/ML credentials demonstrating forward-looking technical breadth.
+</div>
+
+<!-- CORE COMPETENCIES -->
+<div class="section-title">Core Competencies</div>
+<div class="competencies">
+  <div class="col">
+    <div class="item">Enterprise Azure Architecture &amp; Governance</div>
+    <div class="item">Landing Zone Design &amp; Subscription Strategy</div>
+    <div class="item">Azure Management Group Hierarchy</div>
+    <div class="item">Cloud Cost Optimization &amp; FinOps</div>
+    <div class="item">Reserved Instance &amp; Savings Plan Modeling</div>
+  </div>
+  <div class="col">
+    <div class="item">Hub-and-Spoke Network Architecture</div>
+    <div class="item">VNET Design, Peering &amp; Private Endpoints</div>
+    <div class="item">CIDR Planning &amp; IP Scarcity Mitigation</div>
+    <div class="item">RBAC, Azure Policy &amp; Least-Privilege Models</div>
+    <div class="item">Hybrid Cloud &amp; ExpressRoute Connectivity</div>
+  </div>
+  <div class="col">
+    <div class="item">Infrastructure as Code (Bicep, Terraform, ARM)</div>
+    <div class="item">Azure Monitor &amp; Enterprise Observability</div>
+    <div class="item">CI/CD Pipelines &amp; GitOps (GitHub Actions)</div>
+    <div class="item">Tagging Governance &amp; Cost Transparency</div>
+    <div class="item">Federal &amp; Regulated Environment Operations</div>
+  </div>
+</div>
+
+<!-- PROFESSIONAL EXPERIENCE -->
+<div class="section-title">Professional Experience</div>
+
+<!-- ROLE 1: Indiana Office of Technology -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title">Technology Architect — Cloud Solutions Enterprise Architect</span>
+    <span class="role-dates">October 2018 – Present</span>
+  </div>
+  <div class="role-company">Indiana Office of Technology (IOT) <span class="role-location">· Indianapolis, IN</span></div>
+  <div class="role-desc">Primary enterprise solutions architect for statewide hybrid cloud operations across Azure Commercial, Azure Government, AWS, and GCP, serving 50+ executive agency workloads with direct architecture and engineering leadership.</div>
+  <ul>
+    <li>Designed and governs the <strong>enterprise landing zone architecture</strong> including <strong>Azure Management Group hierarchy</strong>, <strong>subscription segmentation</strong>, and workload isolation patterns aligned to Azure Cloud Adoption Framework best practices.</li>
+    <li>Architected <strong>hub-and-spoke network model</strong> with centralized connectivity, <strong>VNET peering</strong>, <strong>private endpoints</strong>, and <strong>CIDR planning</strong> enabling hybrid connectivity via <strong>ExpressRoute private peering</strong> over Internet2, improving compliance posture and performance for critical workloads.</li>
+    <li>Enforced <strong>RBAC</strong>, <strong>Azure Policy initiatives</strong>, <strong>tagging governance</strong>, and <strong>least-privilege access models</strong> aligned to <strong>NIST 800-53 rev 5</strong> and CIS benchmarks across all cloud subscriptions.</li>
+    <li>Drove <strong>cloud cost optimization strategy</strong> including resource right-sizing, tag-based cost allocation, <strong>Reserved Instance</strong> analysis, and PowerBI cost dashboards providing real-time spend visibility to agency stakeholders.</li>
+    <li>Led <strong>post-migration optimization</strong> across lift-and-shift and refactored workloads, transitioning agencies from initial IaaS provisioning to mature, policy-driven PaaS operating models.</li>
+    <li>Replaced outsourced cloud management provider with internal operations team; implemented <strong>Azure Monitor</strong>, operational procedures, and structured support models while mentoring junior administrators.</li>
+    <li>Led rapid deployment of <strong>Azure Virtual Desktop</strong> for thousands of state employees during COVID-19, ensuring continuity of government operations at scale.</li>
+    <li>Established statewide <strong>SDLC Management program</strong> standardizing CI/CD pipelines, GitHub Enterprise Cloud governance, and DevSecOps practices across agency engineering teams.</li>
+    <li>Collaborated with cybersecurity and compliance teams to introduce a <strong>compliance management platform</strong> with harvesting and detection rules for identifying and remediating cloud workload security gaps.</li>
+    <li>Architected a secured <strong>AI sandbox with integrated data indexing</strong>, recognized by state leadership (NASCIO award contribution) for enterprise viability and responsible AI experimentation under structured governance.</li>
+  </ul>
+</div>
+
+<!-- ROLE 2: Aprimo (consolidated progressive roles) -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title">Cloud Applications &amp; Systems Engineering Manager</span>
+    <span class="role-dates">March 2012 – April 2018</span>
+  </div>
+  <div class="role-company">Teradata / Aprimo <span class="role-location">· Indianapolis, IN</span></div>
+  <div class="role-desc">Progressive roles from Cloud Systems Engineer to Engineering Manager, overseeing global cloud operations for a SaaS marketing platform across 700+ application servers in 3 global data centers with 30 direct reports and 99.9% SLA targets.</div>
+  <ul>
+    <li>Led enterprise <strong>cloud migration</strong> from on-premises data centers through AWS (CloudFormation, EC2) and ultimately to <strong>Azure</strong>, designing the target architecture including <strong>VNETs</strong>, <strong>NSGs</strong>, Application Gateways, Traffic Manager, and <strong>Azure SQL Elastic Pools</strong>.</li>
+    <li>Established <strong>infrastructure-as-code practices</strong> using Azure PowerShell, ensuring all resources were deployed programmatically to prevent configuration drift and support hot/cold <strong>disaster recovery</strong> across regions.</li>
+    <li>Designed <strong>resource tagging schema and policy</strong> supporting cost reporting, access control, and deployment methodology — a fundamental <strong>FinOps</strong> capability enabling real-time cost visibility via PowerBI dashboards.</li>
+    <li>Implemented <strong>IAM and RBAC</strong> at subscription and resource group levels, extended on-premises Active Directory to <strong>Azure AD</strong>, and documented access control designs for security compliance review.</li>
+    <li>Integrated <strong>Application Insights SDK</strong> into core application lifecycles for real-time diagnostics, exception tracking, and performance metrics; built a standalone MVC portal presenting <strong>APM data</strong> via PowerBI to customers and internal support.</li>
+    <li>Configured <strong>Azure Monitor</strong> resource alerts, logical monitoring dashboards, and health probes on Application Gateway for staged server cutovers with <strong>Live Metrics Stream</strong> monitoring.</li>
+    <li>Reduced quarterly OS patching cycle from 8–12 hours to 3–5 hours across 400+ servers through PowerShell automation and orchestration tooling.</li>
+    <li>Managed <strong>multi-cloud operations</strong> migrating 45 VMware VMs to AWS EC2 (CloudFormation), then re-architecting for Azure after cost and operational analysis — direct <strong>multi-cloud</strong> experience.</li>
+  </ul>
+</div>
+
+<!-- ROLE 3: Lockheed Martin -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title">Senior System Administrator</span>
+    <span class="role-dates">September 2008 – January 2012</span>
+  </div>
+  <div class="role-company">Lockheed Martin Corporation <span class="role-location">· Indianapolis, IN (Federal DHS Contract)</span></div>
+  <div class="role-desc">Tier 2/3 IT services support for the Federal Department of Homeland Security in a regulated, compliance-driven environment.</div>
+  <ul>
+    <li>Established and led a <strong>Tier 2 support team</strong> of 5, managing 500+ weekly administrative tasks and 200+ escalated incidents within SLA-bound IMAC categorizations for a <strong>9,000+ user federal</strong> environment.</li>
+    <li>Administered <strong>200+ physical and 500+ virtual servers</strong> (Windows Server 2008 R2, Exchange 2007) supporting DHS operations across multiple sites.</li>
+    <li>Maintained <strong>access control rights</strong> based on ontological schema and least-privilege principles for a large pool of network resources in a <strong>federal compliance</strong> context.</li>
+    <li>Operated within <strong>federal security and compliance frameworks</strong>, managing IMAC processes, SLA reporting, and structured change management for DHS infrastructure.</li>
+  </ul>
+</div>
+
+<!-- ROLE 4: MISO/Entergy -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title">Open Access Transmission Tariff Administrator</span>
+    <span class="role-dates">April 2013 – December 2013</span>
+  </div>
+  <div class="role-company">MISO / Entergy (via Monument Consulting) <span class="role-location">· Carmel, IN</span></div>
+  <ul>
+    <li>Administered OASIS web application and evaluated multimillion-dollar Transmission Service Requests for <strong>NERC regulatory compliance</strong> of the Bulk Electric System during Entergy's transition to MISO.</li>
+    <li>Certified as a <strong>NERC Reliability Coordinator</strong> — demonstrating ability to operate in highly <strong>regulated environments</strong> with strict compliance and operational readiness requirements.</li>
+  </ul>
+</div>
+
+<!-- ROLE 5: USMC -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title">Tactical Data Systems Administrator (MOS-5974)</span>
+    <span class="role-dates">October 2003 – April 2007</span>
+  </div>
+  <div class="role-company">United States Marine Corps <span class="role-location">· Camp Pendleton, CA</span></div>
+  <div class="role-desc">Subject Matter Expert for C4I tactical data systems supporting joint operations, with responsibilities spanning network infrastructure, IP planning, security administration, and system interoperability for up to 40,000 clients.</div>
+  <ul>
+    <li>Maintained operational readiness of <strong>Theater Battle Management Core System (TBMCS)</strong> and Perimeter Security System — including Exchange, domain controllers, Oracle DB, and terminal servers supporting 40,000 Unix/Windows clients.</li>
+    <li>Planned and implemented <strong>network architectures</strong> including IP schemes, subnets, domain namespace allocation, Cisco router/switch configuration (VLANs, NAT, routing protocols, ACLs), and <strong>VPN concentrator</strong> administration.</li>
+    <li>Operated and tested <strong>tactical data links</strong> in the Marine Tactical Air Command Center in a joint multi-TADIL environment; provided post-test analysis and represented USMC at Joint Certification review panels.</li>
+    <li>Held <strong>DoD Secret clearance</strong>; operated in both garrison and deployed environments with strict security, compliance, and operational readiness requirements.</li>
+  </ul>
+</div>
+
+<!-- ROLE 6: MTC Services (Contractor for USMC) -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title">Tactical Data Systems Administrator / Test Analyst</span>
+    <span class="role-dates">April 2007 – November 2007</span>
+  </div>
+  <div class="role-company">MTC Services Corporation (USMC Contract) <span class="role-location">· Chula Vista, CA</span></div>
+  <ul>
+    <li>Supported the JINTACCS program conducting Link-11, Link-11B, and Link-16 standards conformance testing. Reviewed and generated test scripts, participated in Service Level and Joint Interoperability testing using Mil-Std 6016C, 6011C, and 3011.</li>
+  </ul>
+</div>
+
+<!-- CERTIFICATIONS -->
+<div class="section-title">Certifications</div>
+<div class="cert-grid">
+  <div class="cert-item">
+    <span class="cert-name">Microsoft Certified: Azure Solutions Architect Expert</span><br>
+    <span class="cert-meta">Earned Dec 2021 · Expires Dec 2026 · #32AB75-C5C6KA</span>
+  </div>
+  <div class="cert-item">
+    <span class="cert-name">Microsoft Certified: Azure AI Engineer Associate</span><br>
+    <span class="cert-meta">Earned Mar 2024 · Expires Mar 2027 · #5FAE84-038M4E</span>
+  </div>
+  <div class="cert-item">
+    <span class="cert-name">Microsoft Certified: Azure Data Scientist Associate</span><br>
+    <span class="cert-meta">Earned Apr 2024 · Expires Apr 2027 · #DAF19E-4A2F44</span>
+  </div>
+  <div class="cert-item">
+    <span class="cert-name">Microsoft Certified: Azure AI Fundamentals</span><br>
+    <span class="cert-meta">Earned Feb 2024 · No expiration · #545E8I-2DD55F</span>
+  </div>
+  <div class="cert-item">
+    <span class="cert-name">NERC Reliability Coordinator</span><br>
+    <span class="cert-meta">Earned Jul 2013 · Past (foundational — regulated environments)</span>
+  </div>
+  <div class="cert-item">
+    <span class="cert-name">USMC MOS-5974 Equivalencies (Military Foundation)</span><br>
+    <span class="cert-meta">CompTIA A+, Network+, Security+ · CCNA · CISSP, CISM, CND</span>
+  </div>
+</div>
+
+<!-- EDUCATION -->
+<div class="section-title">Education</div>
+
+<div class="edu-entry">
+  <div class="edu-header">
+    <span class="edu-school">Western Governors University</span>
+    <span class="edu-dates">Incomplete (4 courses remaining)</span>
+  </div>
+  <div class="edu-degree">B.S. Information Technology — Security Emphasis</div>
+</div>
+
+<div class="edu-entry">
+  <div class="edu-header">
+    <span class="edu-school">United States Marine Corps</span>
+    <span class="edu-dates">January 2003 – January 2007</span>
+  </div>
+  <div class="edu-degree">Tactical Data Systems Technology (MOS-5974)</div>
+  <div class="edu-detail">Formal military technical training in tactical data systems administration, network infrastructure, secure communications, and joint operations environments.</div>
+</div>
+
+<!-- TECHNICAL SKILLS -->
+<div class="section-title">Technical Skills</div>
+<div class="skills-grid">
+  <div class="skills-col">
+    <div class="skills-cat">Cloud Platforms</div>
+    <div class="skills-list">Azure (Commercial &amp; Government), AWS, GCP · Azure Virtual Desktop · Azure SQL · Cosmos DB · Azure Functions</div>
+  </div>
+  <div class="skills-col">
+    <div class="skills-cat">IaC, CI/CD &amp; Automation</div>
+    <div class="skills-list">Bicep, Terraform, ARM Templates, CloudFormation · GitHub Actions, Azure DevOps Pipelines · PowerShell, Bash · GitOps Patterns</div>
+  </div>
+  <div class="skills-col">
+    <div class="skills-cat">Networking &amp; Identity</div>
+    <div class="skills-list">Hub-and-Spoke, VNET Peering, Private Endpoints, NAT · ExpressRoute, VPN Gateway, NSGs · RBAC, Azure AD / Entra ID, Okta Federation · CIDR Planning, DNS Management</div>
+  </div>
+  <div class="skills-col">
+    <div class="skills-cat">Security &amp; Compliance</div>
+    <div class="skills-list">Azure Policy, Tagging Governance · NIST 800-53, CIS Benchmarks · Least-Privilege Models · Compliance Management Platforms</div>
+  </div>
+  <div class="skills-col">
+    <div class="skills-cat">Observability &amp; ITSM</div>
+    <div class="skills-list">Azure Monitor, Application Insights, Log Analytics · AppDynamics, Live Metrics Stream · PowerBI Dashboards · ITSM / ITIL Processes</div>
+  </div>
+  <div class="skills-col">
+    <div class="skills-cat">AI/ML &amp; Data</div>
+    <div class="skills-list">Azure AI Services, Azure OpenAI · Azure ML Studio, AI Search · Databricks, Data Factory · RAG Architectures, Data Indexing</div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <a href="https://resume.ryanmcvey.me">resume.ryanmcvey.me</a> &nbsp;|&nbsp;
+  <a href="https://github.com/rmcveyhsawaknow/azure-resume-iac">github.com/rmcveyhsawaknow/azure-resume-iac</a> &nbsp;|&nbsp;
+  <a href="https://www.linkedin.com/in/ryan-mcvey-897008228/">LinkedIn</a>
+</div>
+
+</body>
+</html>

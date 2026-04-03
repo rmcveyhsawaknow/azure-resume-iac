@@ -1,0 +1,240 @@
+RYAN MCVEY
+
+Indianapolis, IN | 317-441-2052
+
+Senior Platform & AI Infrastructure Engineer
+
+rjmcvey2013@gmail.com
+resume.ryanmcvey.me | LinkedIn | GitHub
+
+U.S. Citizen | USMC Veteran | Previously held DoD Secret Clearance | Clearance-eligible
+
+PROFESSIONAL SUMMARY
+Strategic technology leader with 22+ years of experience spanning USMC tactical systems, federal contract support,
+private-sector SaaS operations, and state government enterprise architecture. Leads multi-cloud strategy across Azure,
+AWS, and GCP — from initial migration through mature, policy-driven, cost-optimized operations — with recent focus on
+AI/ML platform enablement, governance framework extension, and agentic workflow integration. Experienced at observing
+technical and business functions to anticipate and align component architecture in a scalable, innovative, cost-effective
+manner while maintaining consistent methodology and observing information security and compliance requirements.
+Brings direct understanding of establishing hybrid multi-cloud presence to support AI/ML capabilities, defining program
+principles for repeatable service pipelines, and aligning technology engineering expansion with existing operational
+expectations. Ready to return to citizen service supporting the U.S. defense mission.
+
+CORE COMPETENCIES
+▸ Multi-Cloud Architecture (Azure / AWS /
+
+GCP)
+▸ AI/ML Platform Engineering & LLM
+
+Integration
+
+▸ Security & Compliance (NIST RMF, CMMC ▸ Agent Orchestration & Agentic
+
+2.0, FedRAMP)
+▸ Zero Trust Architecture & STIG / CIS
+
+Benchmarks
+
+▸ Infrastructure as Code (Bicep, Terraform, ▸ Identity & Access (Entra ID, IAM, Cloud
+
+CloudFormation)
+▸ CI/CD & DevSecOps (GitHub Actions,
+
+Azure DevOps)
+▸ Container Orchestration (Kubernetes,
+
+Docker)
+
+PROFESSIONAL EXPERIENCE
+
+IAM, RBAC)
+▸ API Gateway & Service Mesh (APIM,
+
+MuleSoft)
+▸ RAG Pipelines & Vector Search / Data
+
+Indexing
+
+Workflows
+▸ Observability & APM (App Insights,
+
+Monitor, AppDynamics)
+▸ ServiceNow ITSM & Enterprise Work
+
+Tracking
+▸ Cross-Functional Leadership &
+
+Mentoring (30+ reports)
+▸ Stakeholder Communication & Risk-
+
+Managed Roadmaps
+
+Technology Architect — Cloud Solutions & AI Strategy
+
+Oct 2018 – Present
+
+Indiana Office of Technology (State of Indiana) · Indianapolis, IN
+Primary architect shaping statewide cloud strategy, cybersecurity governance, and AI platform enablement for a 30,000+
+employee government organization across 60+ agencies. Operate across Azure Commercial and US Government tenants with
+AWS and GCP integration.
+• Established enterprise landing zone standards, subscription governance models, and Azure Policy initiatives aligned
+to NIST SP 800-53 Rev 5 and CIS Benchmarks, enabling auditable compliance across all agency cloud workloads.
+• Architected and deployed a secured AI sandbox with integrated data indexing (RAG), formally recognized by state
+leadership for enterprise viability — enabling responsible AI experimentation within structured governance and riskmanaged controls.
+• Led statewide SDLC Management program with GitHub Enterprise Cloud for CI/CD, Azure DevOps for work tracking, and
+infrastructure-as-code patterns enforcing DevSecOps practices at scale.
+• Transitioned legacy ASA perimeter architecture to Azure ExpressRoute with private circuit peering over Internet2,
+delivering resilient hub-and-spoke hybrid connectivity meeting federal-grade reliability requirements.
+• Collaborated with operational security to introduce compliance management platform using harvesting and detection
+rules for automated remediation aligned to NIST-800-53 and CIS frameworks.
+• Rapidly developed Azure Virtual Desktop (AVD) solution supporting statewide remote workforce during COVID-19; later
+evolved the Enhanced Research Environment (ERE) — winner of the 2020 NASCIO Award for Innovative and Emerging
+Technology — into an enterprise analytics platform with Azure Databricks, Data Factory, and Synapse.
+• Replaced outsourced cloud management provider by standing up an internal operations team through the State Earn
+and Learn (SEAL) program, implementing operational monitoring, technical policies, and mentoring junior staff.
+• Partnered with MuleSoft engineers on enterprise API governance strategies and directly implemented scoped Azure API
+Management solutions for cross-agency data interoperability.
+
+Cloud Applications & Systems Engineering Manager
+
+Mar 2012 – Apr 2018
+
+Teradata / Aprimo · Indianapolis, IN
+Progressive career from Cloud Engineer → Lead → Manager across global SaaS operations. Managed 30 direct reports across
+3 global offices while maintaining daily engineering responsibilities.
+• Maintained 99.9% SLA for 140 enterprise applications running on 700+ Windows servers across 3 global data centers,
+driving datacenter-to-cloud migration and ongoing operations.
+• Led multi-cloud migration: architected AWS CloudFormation deployments across 6 global regions, then pivoted to Azure
+based on cost-performance analysis — establishing IaC principles (Azure PowerShell), hot/cold DR, and zero-downtime
+biweekly release management via VSTS.
+• Designed and implemented IAM/RBAC schema integrating on-premises Active Directory with Azure AD, enforcing leastprivilege access at subscription/resource-group level with security team approval.
+• Instrumented Application Insights SDK into application lifecycle; developed standalone MVC telemetry portal with
+PowerBI reports and Azure AD B2C authentication for customer-facing performance visibility.
+• Established resource tagging policy and PowerBI cost dashboards providing real-time ROI visibility, eliminating quarterly
+manual reporting.
+• Implemented Azure SQL Elastic Pools, Application Gateway with Traffic Manager, VPN Gateway hybrid networking, and
+NSG segmentation across dev/staging/production environments.
+• Reduced quarterly OS patching from 8-12 hours to 3-5 hours across 470 servers using custom PowerShell orchestration
+supporting zero-day response segmentation.
+• Performed root cause analysis leveraging SIEM telemetry (SecureVue), application traces, and APM data; implemented
+SAML2 SSO integrations and security vulnerability remediation.
+
+Open Access Transmission Tariff Administrator
+
+Apr 2013 – Dec 2013
+
+MISO / Entergy (via Monument Consulting) · Carmel, IN
+• Administered Bulk Electric System operations during Entergy's transition to Midwest ISO (MISO), evaluating Transmission
+Service Requests valued at $20M+ per Entergy Tariff. Earned NERC Reliability Coordinator certification — demonstrating
+ability to rapidly master complex regulated operational domains.
+
+Senior Service Desk Analyst / System Administrator
+
+Sep 2008 – Jan 2012
+
+Lockheed Martin Corporation (DHS Contract) · Indianapolis, IN
+• Established and led Tier 2/3 support team within IT Service Desk supporting the Federal Department of Homeland
+Security — 9,000+ user base, 700+ physical/virtual servers, 500 weekly administrative tasks and 200 escalated incidents
+within defined SLAs.
+• Managed access control, identity provisioning, and compliance-driven infrastructure operations for Windows Server/
+Exchange environment supporting federal staff from intern to director-level security classifications.
+
+Tactical Data Systems Administrator (MOS-5974)
+
+Oct 2003 – Nov 2007
+
+United States Marine Corps & MTC Services (JINTACCS) · Camp Pendleton, CA / Chula Vista, CA
+Secret Security Clearance — Active duty and post-service contractor support for USMC tactical C4I systems.
+• Subject Matter Expert for Theater Battle Management Core System (TBMCS) — Exchange, domain controller, Oracle
+DB, web host — facilitating up to 40,000 Unix/Windows clients. Administered network planning (IP schema, subnets,
+DNS), Cisco routers/switches (VLANs, NAT, ACLs), and Perimeter Security System (VPN, ISA proxy).
+• Operated tactical data links in the Marine Tactical Air Command Center in a joint multi-TADIL environment (Link-11,
+Link-11B, Link-16). Performed real-time analysis of all tactical data link messages; represented Marine Corps at Service
+Level and Joint Certification test review panels.
+• Supported Common Aviation Command and Control System (CAC2S) and annual FEDOS exercises, configuring mail
+services for automated Air Tasking Order (ATO) distribution with VPN/proxy security controls.
+• Post-service: supported JINTACCS program at MCTSSA for Link-11/11B/16 standards conformance testing using Mil-Std
+6016C, 6011C, and 3011 — identifying interoperability issues documented as Problem Trouble Reports.
+
+CERTIFICATIONS
+Microsoft Certified: Azure Solutions Architect Expert
+
+Microsoft Certified: Azure AI Engineer Associate
+
+Earned Dec 2021 · Expires Dec 2026 · #32AB75-C5C6KA
+
+Earned Mar 2024 · Expires Mar 2027 · #5FAE84-038M4E
+
+Microsoft Certified: Azure Data Scientist Associate
+
+Microsoft Certified: Azure AI Fundamentals
+
+Earned Apr 2024 · Expires Apr 2027 · #DAF19E-4A2F44
+
+Earned Feb 2024 · No expiration · #545E8I-2DD55F
+
+NERC Reliability Coordinator
+
+USMC MOS-5974 Equivalencies (Foundational)
+
+Earned Jul 2013 · Regulatory certification (past; demonstrates
+
+CompTIA A+, Network+, Security+ · Cisco CCNA · ISC2 CISSP · ISACA
+
+compliance discipline)
+
+CISM · EC-Council CND
+
+EDUCATION
+Western Governors University
+
+2012 – 2016
+
+Bachelor of Science, Information Technology — Security Emphasis (Coursework Completed)
+Completed majority of degree requirements (capstone and 2 courses remaining). Curriculum: information assurance and
+security, IT project management, risk management, compliance frameworks, technical writing, Linux systems administration.
+22+ years of equivalent professional experience across military, federal, and enterprise environments.
+
+Marine Corps Communication & Electronics School (MCCES)
+
+Feb 2004 – Jan 2005
+
+Military Technical Training — MOS-5974 Tactical Data Systems
+Electronics/circuitry theory and repair, fiber optics, cable manufacturing, and Tactical Data Systems (C4I) equipment repair and
+administration. Twentynine Palms, CA.
+
+TECHNICAL SKILLS
+
+Cloud Platforms
+
+AI/ML & Data
+
+Azure (Commercial & Government), AWS (EC2, CloudFormation,
+S3), GCP · Azure ExpressRoute, VPN Gateway, Application
+Gateway, Traffic Manager
+
+Azure OpenAI, AI Search, Databricks, Data Factory, Synapse · RAG
+pipelines, vector search, data indexing · PowerBI · Agent
+orchestration frameworks
+
+IaC, CI/CD & Automation
+
+Security & Compliance
+
+Bicep, ARM, Terraform, CloudFormation · GitHub Actions, GitHub NIST SP 800-53, RMF/ATO, CMMC 2.0, FedRAMP, STIG, CIS
+Enterprise Cloud, Azure DevOps · PowerShell, Bash · Docker,
+Benchmarks · Zero Trust · Azure Policy · Key Vault, KMS · RBAC,
+Kubernetes
+Entra ID, IAM
+Observability & ITSM
+
+Networking & Identity
+
+Azure Monitor, Application Insights, Cisco AppDynamics ·
+Hub-and-spoke, ExpressRoute, Internet2, VPN · Cisco IOS (VLANs,
+ServiceNow · SIEM (SecureVue) · Custom telemetry dashboards & NAT, ACLs) · Entra ID, Azure AD B2C, SAML2 SSO · DNS, NSG, F5
+APM integration
+LTM
+resume.ryanmcvey.me | github.com/rmcveyhsawaknow/azure-resume-iac | LinkedIn
+
+

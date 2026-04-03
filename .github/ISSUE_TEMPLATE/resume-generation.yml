@@ -1,0 +1,135 @@
+name: Resume Generation
+description: "Request a tailored PDF resume and application form guide for a specific job posting"
+title: "[Resume] {company} — {job_title}"
+labels: ["type: technical-task", "Copilot: Yes", "role: ai-copilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Resume Generation Request
+
+        Use this template to request a tailored PDF resume and application form guide.
+        The `.github/skills/resume-tailoring/` Copilot Skill automates generation.
+
+        ### Workflow (Codespace)
+
+        1. Open a Codespace on the branch containing this issue
+        2. Fill in the fields below and submit this issue
+        3. Open Copilot Chat and invoke: `/resume-tailoring`
+        4. Paste the job description and any POC notes when prompted
+        5. Review the generated PDF in `tmp/` and the application guide `.md`
+        6. Iterate as needed, then close this issue
+
+  - type: input
+    id: job_title
+    attributes:
+      label: Job Title
+      description: "Exact title from the posting"
+      placeholder: "Senior Principal Agentic Platform Engineer"
+    validations:
+      required: true
+
+  - type: input
+    id: company
+    attributes:
+      label: Company
+      description: "Hiring organization"
+      placeholder: "V2X"
+    validations:
+      required: true
+
+  - type: input
+    id: requisition_id
+    attributes:
+      label: Requisition / Job ID
+      description: "Req ID from the posting (if available)"
+      placeholder: "AGENT017307"
+
+  - type: input
+    id: posting_url
+    attributes:
+      label: Posting URL
+      description: "Link to the job listing"
+      placeholder: "https://example.com/jobs/12345"
+
+  - type: textarea
+    id: job_description
+    attributes:
+      label: Job Description
+      description: "Paste the full job description text here"
+      placeholder: "Paste the complete job description..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Key Requirements / Keywords
+      description: "Required skills, qualifications, or keywords to target"
+      placeholder: |
+        - Kubernetes, Docker, Terraform
+        - Active Secret clearance
+        - 10+ years experience
+
+  - type: textarea
+    id: poc_notes
+    attributes:
+      label: POC / Referral Notes
+      description: "Notes from any conversations with recruiters, hiring managers, or referrals"
+      placeholder: "Met hiring manager at conference; they emphasized cloud migration experience..."
+
+  - type: input
+    id: interview_round
+    attributes:
+      label: Interview Round
+      description: "Which interview stage this briefing is for (leave blank for initial application)"
+      placeholder: "Round 1 — Phone Screen"
+
+  - type: textarea
+    id: interview_contacts
+    attributes:
+      label: Interview Contacts
+      description: "People involved in the interview process — one per line: Name | Title | Role in Process | Email/Phone | Notes"
+      placeholder: |
+        Jane Smith | Senior Recruiter | Recruiter | jane.smith@company.com | Initial screen scheduled
+        John Doe | Engineering Director | Hiring Manager | | Panel lead for Round 2
+
+  - type: dropdown
+    id: resume_length
+    attributes:
+      label: Target Resume Length
+      description: "Page count target for the PDF"
+      options:
+        - "2 pages (concise)"
+        - "3-4 pages (comprehensive)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: resume_variant
+    attributes:
+      label: Resume Variant Emphasis
+      description: "Which career narrative to emphasize"
+      options:
+        - "Balanced (auto-detect from job description)"
+        - "Public Sector / Government Leadership"
+        - "Private Sector / Enterprise Tech"
+        - "Insight Architect / Data & Analytics"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: "Anything else the skill should consider (e.g., specific projects to highlight, certs to de-emphasize, custom sections)"
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ### Outputs (filled by Copilot after generation)
+
+        - **PDF**: `tmp/{Candidate}_{Company}_{ReqID}_Resume.pdf`
+        - **Guide**: `tmp/{company}-application-guide.md`
+        - **Keyword coverage**: _verified / not yet checked_

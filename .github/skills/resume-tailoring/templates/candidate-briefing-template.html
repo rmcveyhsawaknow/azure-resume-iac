@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Candidate Briefing — <!-- CANDIDATE_NAME --> — <!-- COMPANY --></title>
+<style>
+/* ===== FONT EMBEDDING ===== */
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../frontend/css/fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
+  font-weight: 400; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../frontend/css/fonts/opensans/OpenSans-Bold-webfont.ttf') format('truetype');
+  font-weight: 700; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../frontend/css/fonts/opensans/OpenSans-Semibold-webfont.ttf') format('truetype');
+  font-weight: 600; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../frontend/css/fonts/opensans/OpenSans-Light-webfont.ttf') format('truetype');
+  font-weight: 300; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../frontend/css/fonts/opensans/OpenSans-Italic-webfont.ttf') format('truetype');
+  font-weight: 400; font-style: italic;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../frontend/css/fonts/opensans/OpenSans-ExtraBold-webfont.ttf') format('truetype');
+  font-weight: 800; font-style: normal;
+}
+
+/* ===== PAGE SETUP ===== */
+@page {
+  size: letter;
+  margin: 0.6in 0.65in 0.6in 0.65in;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'OpenSans', 'Segoe UI', Arial, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.5;
+  color: #46535d;
+  background: #fff;
+}
+
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --gold:    #C5A028;
+  --navy:    #00205B;
+  --crimson: #BF0A30;
+  --text:    #46535d;
+  --heading: #313131;
+  --light-bg: #f4f5f7;
+}
+
+/* ===== HEADER ===== */
+.briefing-header {
+  border-bottom: 2.5pt solid var(--crimson);
+  padding-bottom: 6pt;
+  margin-bottom: 10pt;
+}
+.briefing-header h1 {
+  font-size: 16pt;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 2pt;
+}
+.briefing-header .briefing-subtitle {
+  font-size: 10pt;
+  font-weight: 600;
+  color: var(--gold);
+}
+.briefing-header .briefing-meta {
+  font-size: 8.5pt;
+  color: var(--text);
+  margin-top: 4pt;
+}
+
+/* ===== SECTION HEADINGS ===== */
+.b-section {
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.8pt;
+  border-bottom: 1.5pt solid var(--gold);
+  padding-bottom: 2pt;
+  margin-top: 12pt;
+  margin-bottom: 6pt;
+}
+
+/* ===== ROLE SNAPSHOT ===== */
+.snapshot {
+  background: var(--light-bg);
+  border-left: 3pt solid var(--navy);
+  padding: 6pt 10pt;
+  margin-bottom: 8pt;
+  font-size: 9pt;
+}
+.snapshot table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.snapshot td {
+  padding: 2pt 6pt 2pt 0;
+  vertical-align: top;
+}
+.snapshot td:first-child {
+  font-weight: 600;
+  color: var(--heading);
+  width: 30%;
+  white-space: nowrap;
+}
+
+/* ===== KEY MESSAGES ===== */
+.key-messages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4pt 0;
+  margin-bottom: 4pt;
+}
+.key-msg {
+  width: 50%;
+  padding-right: 8pt;
+  padding-left: 10pt;
+  position: relative;
+  font-size: 9.2pt;
+  line-height: 1.45;
+  color: var(--heading);
+  margin-bottom: 3pt;
+}
+.key-msg::before {
+  content: "\2605";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 8pt;
+}
+
+/* ===== ALIGNMENT MATRIX ===== */
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.8pt;
+  margin-bottom: 4pt;
+}
+.matrix th {
+  background: var(--navy);
+  color: #fff;
+  padding: 4pt 6pt;
+  text-align: left;
+  font-weight: 600;
+  font-size: 8.5pt;
+}
+.matrix td {
+  padding: 4pt 6pt;
+  border-bottom: 0.5pt solid #ddd;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.matrix tr:nth-child(even) td {
+  background: #fafafa;
+}
+.matrix td:first-child {
+  font-weight: 600;
+  color: var(--navy);
+  width: 35%;
+}
+
+/* ===== CONVERSATION STARTERS ===== */
+.convo-item {
+  margin-bottom: 6pt;
+  page-break-inside: avoid;
+}
+.convo-topic {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--heading);
+  margin-bottom: 1pt;
+}
+.convo-detail {
+  font-size: 8.8pt;
+  color: var(--text);
+  line-height: 1.45;
+  padding-left: 10pt;
+  border-left: 2pt solid var(--gold);
+}
+
+/* ===== QUESTIONS ===== */
+.question-list {
+  padding-left: 14pt;
+}
+.question-list li {
+  font-size: 9pt;
+  line-height: 1.5;
+  margin-bottom: 3pt;
+  color: var(--text);
+}
+.question-list li strong {
+  color: var(--heading);
+}
+
+/* ===== JOB POSTING REFERENCE ===== */
+.posting-ref {
+  background: var(--light-bg);
+  border-left: 3pt solid var(--gold);
+  padding: 6pt 10pt;
+  margin-bottom: 8pt;
+  font-size: 9pt;
+}
+.posting-ref table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.posting-ref td {
+  padding: 2pt 6pt 2pt 0;
+  vertical-align: top;
+}
+.posting-ref td:first-child {
+  font-weight: 600;
+  color: var(--heading);
+  width: 30%;
+  white-space: nowrap;
+}
+.posting-ref a {
+  color: var(--navy);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+/* ===== INTERVIEW CONTACTS ===== */
+.contacts {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8.8pt;
+  margin-bottom: 4pt;
+}
+.contacts th {
+  background: var(--navy);
+  color: #fff;
+  padding: 4pt 6pt;
+  text-align: left;
+  font-weight: 600;
+  font-size: 8.5pt;
+}
+.contacts td {
+  padding: 4pt 6pt;
+  border-bottom: 0.5pt solid #ddd;
+  vertical-align: top;
+  line-height: 1.4;
+}
+.contacts tr:nth-child(even) td {
+  background: #fafafa;
+}
+.contacts td:first-child {
+  font-weight: 600;
+  color: var(--navy);
+}
+
+/* ===== NOTES AREA ===== */
+.notes-area {
+  background: var(--light-bg);
+  border: 1pt dashed #ccc;
+  border-radius: 3pt;
+  padding: 8pt 10pt;
+  min-height: 100pt;
+  margin-top: 6pt;
+}
+.notes-area .notes-header {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 4pt;
+}
+.notes-line {
+  border-bottom: 0.5pt solid #ddd;
+  height: 18pt;
+}
+
+/* ===== FOOTER ===== */
+.b-footer {
+  margin-top: 10pt;
+  padding-top: 4pt;
+  border-top: 1pt solid #ddd;
+  font-size: 7.5pt;
+  color: #999;
+  text-align: center;
+}
+.b-footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+<!-- ====================================================================================
+     CANDIDATE BRIEFING TEMPLATE — Interview-day preparation document.
+
+     INSTRUCTIONS FOR THE AGENT:
+     Replace all PLACEHOLDER comments with actual content from job-input.md and the
+     merged content from Steps 2-5 of the resume-tailoring skill.
+     Target: 2-3 pages. Keep compact but comprehensive.
+     This document is for the candidate's personal use — not submitted to the employer.
+     ==================================================================================== -->
+
+<!-- ==================== HEADER ==================== -->
+<div class="briefing-header">
+  <h1>Candidate Briefing</h1>
+  <div class="briefing-subtitle"><!-- CANDIDATE_NAME --> — <!-- POSITION_TITLE --></div>
+  <div class="briefing-meta">
+    <!-- COMPANY --> &nbsp;|&nbsp; <!-- INTERVIEW_ROUND (e.g., "Round 2 — Technical Panel" or "Initial Application") --> &nbsp;|&nbsp; Interview Date: __________________ &nbsp;|&nbsp; Interviewer(s): __________________
+  </div>
+</div>
+
+<!-- ==================== ROLE SNAPSHOT ==================== -->
+<div class="b-section">Role Snapshot</div>
+<div class="snapshot">
+  <table>
+    <tr><td>Company</td><td><!-- COMPANY --></td></tr>
+    <tr><td>Position</td><td><!-- POSITION_TITLE --></td></tr>
+    <tr><td>Location</td><td><!-- LOCATION --></td></tr>
+    <tr><td>Compensation</td><td><!-- COMP_RANGE --></td></tr>
+    <tr><td>Position Type</td><td><!-- POSITION_TYPE (e.g., Full-time, Contract-to-Hire, 6M C2H) --></td></tr>
+    <tr><td>Requisition ID</td><td><!-- REQ_ID --></td></tr>
+  </table>
+</div>
+
+<!-- ==================== JOB POSTING REFERENCE ==================== -->
+<div class="b-section">Job Posting Reference</div>
+<div class="posting-ref">
+  <table>
+    <tr><td>Posting URL</td><td><a href="<!-- POSTING_URL -->"><!-- POSTING_URL --></a></td></tr>
+    <tr><td>Posted Date</td><td><!-- POSTED_DATE --></td></tr>
+    <tr><td>Source</td><td><!-- POSTING_SOURCE (e.g., Company careers portal, LinkedIn, Indeed, Recruiter referral) --></td></tr>
+  </table>
+  <!-- POSTING_REF — Populate from job-input.md Target Position fields.
+       If Posting URL is not available, replace the link with "URL not available — search company careers page."
+       If Posted Date is unknown, use "Not listed." -->
+</div>
+
+<!-- ==================== INTERVIEW CONTACTS ==================== -->
+<div class="b-section">Interview Contacts</div>
+<table class="contacts">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Title / Role</th>
+      <th>Role in Process</th>
+      <th>Contact</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- CONTACTS_ROWS — One row per interview contact from job-input.md "Interview Contacts" table.
+         If no contacts are identified (cold application), insert a single row:
+         <tr><td colspan="5" style="text-align:center; font-style:italic; color:#999;">No contacts identified — update before interview</td></tr>
+         Also extract any contacts mentioned in POC/Referral Notes into this table. -->
+  </tbody>
+</table>
+
+<!-- ==================== CANDIDATE KEY MESSAGES ==================== -->
+<div class="b-section">Key Messages to Convey</div>
+<div class="key-messages">
+  <!-- KEY_MESSAGES — 4-6 items from "Key Messages to Convey" in job-input.md.
+       Each as: <div class="key-msg">Bold, concise statement</div>
+       These are what the candidate MUST communicate during the interview. -->
+</div>
+
+<!-- ==================== COMPETENCY ALIGNMENT MATRIX ==================== -->
+<div class="b-section">Competency Alignment</div>
+<table class="matrix">
+  <thead>
+    <tr>
+      <th>JD Requirement</th>
+      <th>Your Experience / Evidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- MATRIX_ROWS — One row per major JD requirement area.
+         Col 1: JD requirement keyword/phrase.
+         Col 2: Specific experience from resume that demonstrates the competency.
+         Target: 6-10 rows covering the most critical requirements. -->
+  </tbody>
+</table>
+
+<!-- ==================== CONVERSATION STARTERS ==================== -->
+<div class="b-section">Conversation Starters &amp; Follow-Up Topics</div>
+
+<!-- CONVO_ITEMS — 4-6 items. For each:
+     <div class="convo-item">
+       <div class="convo-topic">"When they ask about [TOPIC]..."</div>
+       <div class="convo-detail">Reference [specific project/achievement]. Key points: [details]. Transition to: [follow-up topic].</div>
+     </div>
+     These are agent-generated prompts based on JD + candidate's experience from resume artifacts. -->
+
+<!-- ==================== PREPARED QUESTIONS ==================== -->
+<div class="b-section">Questions for the Interviewer</div>
+<ul class="question-list">
+  <!-- QUESTIONS — From "Questions for the Interviewer" in job-input.md + agent-suggested additions.
+       Each as: <li><strong>Category:</strong> Question text</li>
+       Target: 6-8 questions across categories (Tech Stack, Team Structure, Success Criteria, Culture, Growth). -->
+</ul>
+
+<!-- ==================== LOGISTICS & NOTES ==================== -->
+<div class="b-section">Interview Notes</div>
+<div class="notes-area">
+  <div class="notes-header">Action Items &amp; Follow-Up</div>
+  <div class="notes-line"></div>
+  <div class="notes-line"></div>
+  <div class="notes-line"></div>
+  <div class="notes-line"></div>
+  <div class="notes-line"></div>
+  <div class="notes-line"></div>
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="b-footer">
+  <em>Prepared for personal use — not for submission</em> &nbsp;|&nbsp;
+  <a href="https://resume.ryanmcvey.me">resume.ryanmcvey.me</a>
+</div>
+
+</body>
+</html>

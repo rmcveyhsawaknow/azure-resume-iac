@@ -1,7 +1,7 @@
 name: Resume Generation
 description: "Request a tailored PDF resume and application form guide for a specific job posting"
 title: "[Resume] {company} — {job_title}"
-labels: ["type: resume-generation", "Copilot: Yes", "role: ai-copilot"]
+labels: ["type: technical-task", "Copilot: Yes", "role: ai-copilot"]
 body:
   - type: markdown
     attributes:

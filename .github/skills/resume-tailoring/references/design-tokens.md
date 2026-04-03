@@ -46,7 +46,7 @@ Located at `frontend/css/fonts/opensans/`:
 | 700 Bold | `OpenSans-Bold-webfont.ttf` |
 | 800 ExtraBold | `OpenSans-ExtraBold-webfont.ttf` |
 
-Embed via `@font-face` with `file:///workspaces/azure-resume-iac/frontend/css/fonts/opensans/<filename>` URLs.
+Embed via `@font-face` using relative URLs such as `frontend/css/fonts/opensans/<filename>`, and run WeasyPrint with `--base-url` set to the repository root (or the directory containing the HTML/assets) so font paths resolve correctly across local environments, forks, and Codespaces.
 
 ## Page Layout
 

@@ -42,3 +42,9 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.log
+
+# Resume artifacts — ephemeral workspace (contains PII, not for public repo)
+# Binary resumes, generated PDFs, application guides, and job input files
+# are created at runtime by the resume-tailoring skill and should not be committed.
+tmp/
+!tmp/.gitkeep

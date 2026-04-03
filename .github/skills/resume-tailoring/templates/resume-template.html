@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title><!-- CANDIDATE_NAME --> — <!-- RESUME_TITLE --></title>
+<style>
+/* ===== FONT EMBEDDING =====
+   Fonts are loaded from the repository's frontend/css/fonts/opensans/ directory
+   using paths relative to this template so the HTML remains portable across
+   forks, renamed repositories, local clones, and CI environments.
+   When rendering with WeasyPrint, ensure the HTML file location is used as the
+   base URL or pass --base-url so these relative font paths resolve correctly.
+   If fonts fail to load, WeasyPrint falls back to system sans-serif.
+*/
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Regular-webfont.ttf') format('truetype');
+  font-weight: 400; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Bold-webfont.ttf') format('truetype');
+  font-weight: 700; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Semibold-webfont.ttf') format('truetype');
+  font-weight: 600; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Light-webfont.ttf') format('truetype');
+  font-weight: 300; font-style: normal;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-Italic-webfont.ttf') format('truetype');
+  font-weight: 400; font-style: italic;
+}
+@font-face {
+  font-family: 'OpenSans';
+  src: url('../../../../frontend/css/fonts/opensans/OpenSans-ExtraBold-webfont.ttf') format('truetype');
+  font-weight: 800; font-style: normal;
+}
+
+/* ===== PAGE SETUP ===== */
+@page {
+  size: letter;
+  margin: 0.55in 0.6in 0.55in 0.6in;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'OpenSans', 'Segoe UI', Arial, sans-serif;
+  font-size: 9.2pt;
+  line-height: 1.42;
+  color: #46535d;
+  background: #fff;
+}
+
+/* ===== DESIGN TOKENS (from resume.ryanmcvey.me) ===== */
+:root {
+  --gold:    #C5A028;  /* Links, accents, date text, section divider borders */
+  --navy:    #00205B;  /* Section headings, company names, skill categories */
+  --crimson: #BF0A30;  /* Header name underline border */
+  --dark:    #1F1F1F;
+  --text:    #46535d;  /* Body text */
+  --heading: #313131;  /* Role titles, cert names, school names */
+  --light-bg: #f4f5f7; /* Clearance bar background */
+}
+
+/* ===== HEADER ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 6pt;
+  border-bottom: 2.5pt solid var(--crimson);
+  margin-bottom: 8pt;
+}
+.header-left h1 {
+  font-size: 22pt;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: 0.5pt;
+  margin-bottom: 2pt;
+  line-height: 1.1;
+}
+.header-left .subtitle {
+  font-size: 10.5pt;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.3pt;
+}
+.header-right {
+  text-align: right;
+  font-size: 8.5pt;
+  line-height: 1.55;
+  color: var(--text);
+  padding-top: 2pt;
+}
+.header-right a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+/* ===== SECTION HEADINGS ===== */
+.section-title {
+  font-size: 10.5pt;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  border-bottom: 1.5pt solid var(--gold);
+  padding-bottom: 2pt;
+  margin-top: 10pt;
+  margin-bottom: 5pt;
+}
+
+/* ===== PROFESSIONAL SUMMARY ===== */
+.summary {
+  font-size: 9.2pt;
+  line-height: 1.48;
+  color: var(--text);
+  margin-bottom: 2pt;
+}
+
+/* ===== CORE COMPETENCIES GRID ===== */
+.competencies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3pt 0;
+  margin-bottom: 2pt;
+}
+.competencies .col {
+  width: 33.33%;
+  padding-right: 6pt;
+}
+.competencies .item {
+  font-size: 8.5pt;
+  line-height: 1.5;
+  color: var(--heading);
+  padding-left: 8pt;
+  position: relative;
+}
+.competencies .item::before {
+  content: "\25B8";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 8pt;
+}
+
+/* ===== INTERVIEW TASKBOARD (print copy only — omit for ATS upload) ===== */
+.taskboard {
+  background: var(--light-bg);
+  border-left: 3pt solid var(--navy);
+  padding: 6pt 10pt 6pt 10pt;
+  margin-top: 6pt;
+  margin-bottom: 2pt;
+  page-break-inside: avoid;
+  display: flex;
+  gap: 10pt;
+}
+.taskboard .tb-col {
+  flex: 1;
+}
+.taskboard .tb-heading {
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5pt;
+  margin-bottom: 4pt;
+  border-bottom: 1pt solid var(--gold);
+  padding-bottom: 2pt;
+}
+.taskboard .tb-item {
+  font-size: 8.5pt;
+  line-height: 1.45;
+  padding-left: 10pt;
+  position: relative;
+  margin-bottom: 2pt;
+  color: var(--heading);
+}
+.taskboard .tb-col:first-child .tb-item::before {
+  content: "\2605";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 7pt;
+}
+.taskboard .tb-col:last-child .tb-item::before {
+  content: "\25A2";
+  position: absolute;
+  left: 0;
+  color: var(--navy);
+  font-size: 8pt;
+}
+
+/* ===== EXPERIENCE ===== */
+.role {
+  margin-bottom: 8pt;
+  page-break-inside: avoid;
+}
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 2pt;
+}
+.role-title {
+  font-size: 10pt;
+  font-weight: 700;
+  color: var(--heading);
+}
+.role-dates {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--gold);
+  white-space: nowrap;
+}
+.role-company {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 3pt;
+}
+.role-location {
+  font-weight: 400;
+  color: var(--text);
+}
+.role-desc {
+  font-size: 9pt;
+  line-height: 1.45;
+  margin-bottom: 2pt;
+}
+.role ul {
+  padding-left: 14pt;
+  margin-top: 2pt;
+}
+.role li {
+  font-size: 9pt;
+  line-height: 1.42;
+  margin-bottom: 2pt;
+  color: var(--text);
+}
+.role li strong {
+  color: var(--heading);
+}
+
+/* ===== CERTIFICATIONS ===== */
+.cert-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3pt 0;
+}
+.cert-item {
+  width: 50%;
+  font-size: 8.8pt;
+  line-height: 1.5;
+  padding-right: 8pt;
+}
+.cert-name {
+  font-weight: 600;
+  color: var(--heading);
+}
+.cert-meta {
+  font-size: 8pt;
+  color: #7A7A7A;
+}
+
+/* ===== EDUCATION ===== */
+.edu-entry {
+  margin-bottom: 5pt;
+}
+.edu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.edu-school {
+  font-size: 9.5pt;
+  font-weight: 700;
+  color: var(--heading);
+}
+.edu-dates {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--gold);
+}
+.edu-degree {
+  font-size: 9pt;
+  color: var(--navy);
+  font-weight: 600;
+}
+.edu-detail {
+  font-size: 8.8pt;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+/* ===== TECHNICAL SKILLS ===== */
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2pt 0;
+}
+.skills-col {
+  width: 50%;
+  padding-right: 6pt;
+  margin-bottom: 3pt;
+}
+.skills-cat {
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 1pt;
+}
+.skills-list {
+  font-size: 8.5pt;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  margin-top: 8pt;
+  padding-top: 4pt;
+  border-top: 1pt solid #ddd;
+  font-size: 7.5pt;
+  color: #999;
+  text-align: center;
+}
+.footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+/* ===== CLEARANCE BAR ===== */
+.clearance-bar {
+  background: var(--light-bg);
+  border-left: 3pt solid var(--navy);
+  padding: 4pt 8pt;
+  margin-top: 6pt;
+  margin-bottom: 2pt;
+  font-size: 8.8pt;
+}
+.clearance-bar strong {
+  color: var(--navy);
+}
+</style>
+</head>
+<body>
+
+<!-- ====================================================================================
+     RESUME TEMPLATE — Parameterized for the resume-tailoring skill.
+     
+     INSTRUCTIONS FOR THE AGENT:
+     Replace all PLACEHOLDER comments with actual content.
+     Remove any sections that are not applicable (e.g., clearance bar if not relevant).
+     Adjust font sizes (body 9-9.5pt) and margins (0.5-0.65in) if page count needs tuning.
+     ==================================================================================== -->
+
+<!-- ==================== HEADER ==================== -->
+<div class="header">
+  <div class="header-left">
+    <h1><!-- CANDIDATE_NAME_UPPER --></h1>
+    <div class="subtitle"><!-- RESUME_TITLE - aligned to target role but not identical to job title --></div>
+  </div>
+  <div class="header-right">
+    <!-- LOCATION --> &nbsp;|&nbsp; <!-- PHONE --><br>
+    <!-- EMAIL --><br>
+    <a href="https://resume.ryanmcvey.me">resume.ryanmcvey.me</a> &nbsp;|&nbsp;
+    <a href="<!-- LINKEDIN_URL -->">LinkedIn</a> &nbsp;|&nbsp;
+    <a href="<!-- GITHUB_URL -->">GitHub</a>
+  </div>
+</div>
+
+<!-- ==================== CLEARANCE BAR (remove if not applicable) ==================== -->
+<div class="clearance-bar">
+  <strong>U.S. Citizen</strong> &nbsp;|&nbsp; USMC Veteran &nbsp;|&nbsp; Previously held DoD Secret Clearance &nbsp;|&nbsp; Clearance-eligible
+</div>
+
+<!-- ==================== PROFESSIONAL SUMMARY ==================== -->
+<div class="section-title">Professional Summary</div>
+<div class="summary">
+  <!-- PROFESSIONAL_SUMMARY — 3-5 sentences. Merge career narrative with JD-specific positioning.
+       Include: years of experience, career arc (USMC → private → public), key domain expertise,
+       recent focus areas aligned to JD, POC/referral context if applicable, closing statement. -->
+</div>
+
+<!-- ==================== CORE COMPETENCIES ==================== -->
+<div class="section-title">Core Competencies</div>
+<div class="competencies">
+  <div class="col">
+    <!-- COMPETENCY_COL_1 — 5 items, each wrapped in: <div class="item">Keyword phrase</div> -->
+  </div>
+  <div class="col">
+    <!-- COMPETENCY_COL_2 — 5 items -->
+  </div>
+  <div class="col">
+    <!-- COMPETENCY_COL_3 — 5 items -->
+  </div>
+</div>
+
+<!-- ==================== INTERVIEW TASKBOARD (print copy only — omit for ATS upload) ==================== -->
+<div class="taskboard">
+  <div class="tb-col">
+    <div class="tb-heading">Key Points for Interviewer</div>
+    <!-- TASKBOARD_KEY_POINTS — 4-6 items from "Key Messages to Convey" in job-input.md,
+         tailored to the specific JD. Each as: <div class="tb-item">Bold, concise statement</div>
+         Focus on differentiators the candidate MUST communicate during the interview. -->
+  </div>
+  <div class="tb-col">
+    <div class="tb-heading">Follow-Up &amp; Notes</div>
+    <!-- TASKBOARD_FOLLOWUP — 3-4 items as checkbox-style reminders. Each as:
+         <div class="tb-item">Action or follow-up item</div>
+         Examples: "Ask about team structure", "Mention [cert] timeline", "Request next steps" -->
+  </div>
+</div>
+
+<!-- ==================== PROFESSIONAL EXPERIENCE ==================== -->
+<div class="section-title">Professional Experience</div>
+
+<!-- ROLE_1 — Most recent / current role. Repeat this block for each role (typically 4-5 roles). -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title"><!-- ROLE_1_TITLE --></span>
+    <span class="role-dates"><!-- ROLE_1_DATES --></span>
+  </div>
+  <div class="role-company"><!-- ROLE_1_COMPANY --> <span class="role-location">· <!-- ROLE_1_LOCATION --></span></div>
+  <div class="role-desc"><!-- ROLE_1_SUMMARY — 1-2 sentence overview of the role scope --></div>
+  <ul>
+    <!-- ROLE_1_BULLETS — 4-8 bullet points, each as <li> elements.
+         Lead with JD-relevant accomplishments. Bold key terms with <strong>. -->
+  </ul>
+</div>
+
+<!-- ROLE_2 -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title"><!-- ROLE_2_TITLE --></span>
+    <span class="role-dates"><!-- ROLE_2_DATES --></span>
+  </div>
+  <div class="role-company"><!-- ROLE_2_COMPANY --> <span class="role-location">· <!-- ROLE_2_LOCATION --></span></div>
+  <div class="role-desc"><!-- ROLE_2_SUMMARY --></div>
+  <ul>
+    <!-- ROLE_2_BULLETS -->
+  </ul>
+</div>
+
+<!-- ROLE_3 -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title"><!-- ROLE_3_TITLE --></span>
+    <span class="role-dates"><!-- ROLE_3_DATES --></span>
+  </div>
+  <div class="role-company"><!-- ROLE_3_COMPANY --> <span class="role-location">· <!-- ROLE_3_LOCATION --></span></div>
+  <ul>
+    <!-- ROLE_3_BULLETS -->
+  </ul>
+</div>
+
+<!-- ROLE_4 -->
+<div class="role">
+  <div class="role-header">
+    <span class="role-title"><!-- ROLE_4_TITLE --></span>
+    <span class="role-dates"><!-- ROLE_4_DATES --></span>
+  </div>
+  <div class="role-company"><!-- ROLE_4_COMPANY --> <span class="role-location">· <!-- ROLE_4_LOCATION --></span></div>
+  <div class="role-desc"><!-- ROLE_4_SUMMARY --></div>
+  <ul>
+    <!-- ROLE_4_BULLETS -->
+  </ul>
+</div>
+
+<!-- Add ROLE_5, ROLE_6 blocks as needed. Remove unused role blocks. -->
+
+<!-- ==================== CERTIFICATIONS ==================== -->
+<div class="section-title">Certifications</div>
+<div class="cert-grid">
+  <!-- CERT_ITEMS — Each certification as a .cert-item div:
+       <div class="cert-item">
+         <span class="cert-name">Certification Name</span><br>
+         <span class="cert-meta">Earned Mon YYYY · Expires Mon YYYY · #CertNumber</span>
+       </div>
+       Include active certs prominently; list foundational/expired certs with context. -->
+</div>
+
+<!-- ==================== EDUCATION ==================== -->
+<div class="section-title">Education</div>
+
+<!-- EDU_1 -->
+<div class="edu-entry">
+  <div class="edu-header">
+    <span class="edu-school"><!-- EDU_1_SCHOOL --></span>
+    <span class="edu-dates"><!-- EDU_1_DATES --></span>
+  </div>
+  <div class="edu-degree"><!-- EDU_1_DEGREE --></div>
+  <div class="edu-detail"><!-- EDU_1_DETAIL --></div>
+</div>
+
+<!-- EDU_2 (add more as needed, remove if not applicable) -->
+<div class="edu-entry">
+  <div class="edu-header">
+    <span class="edu-school"><!-- EDU_2_SCHOOL --></span>
+    <span class="edu-dates"><!-- EDU_2_DATES --></span>
+  </div>
+  <div class="edu-degree"><!-- EDU_2_DEGREE --></div>
+  <div class="edu-detail"><!-- EDU_2_DETAIL --></div>
+</div>
+
+<!-- ==================== TECHNICAL SKILLS ==================== -->
+<div class="section-title">Technical Skills</div>
+<div class="skills-grid">
+  <!-- SKILLS_ITEMS — 4-6 categories, each as a .skills-col div:
+       <div class="skills-col">
+         <div class="skills-cat">Category Name</div>
+         <div class="skills-list">Tool1, Tool2, Framework3 · Platform4, Service5</div>
+       </div>
+       Categories typically: Cloud Platforms, AI/ML & Data, IaC & CI/CD & Automation,
+       Security & Compliance, Observability & ITSM, Networking & Identity -->
+</div>
+
+<!-- ==================== FOOTER ==================== -->
+<div class="footer">
+  <a href="https://resume.ryanmcvey.me">resume.ryanmcvey.me</a> &nbsp;|&nbsp;
+  <a href="<!-- GITHUB_REPO_URL -->"><!-- GITHUB_REPO_DISPLAY --></a> &nbsp;|&nbsp;
+  <a href="<!-- LINKEDIN_URL -->">LinkedIn</a>
+</div>
+
+</body>
+</html>

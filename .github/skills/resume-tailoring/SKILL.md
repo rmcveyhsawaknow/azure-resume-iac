@@ -77,11 +77,11 @@ The job input file (`tmp/job-input.md`) captures all job-specific details in a s
 
 1. **Pre-filled file** — If `tmp/job-input.md` already exists and is filled in, read it directly.
 2. **Auto-populate from user input** — If `tmp/job-input.md` does not exist, copy the template from `.github/skills/resume-tailoring/templates/job-input-template.md` to `tmp/job-input.md`, then populate it using details the user provided in the chat prompt (job title, company, JD text, POC notes, requirements).
-3. **Auto-populate from GitHub Issue** — If the user references a GitHub Issue created from the `resume-generation.yml` template, fetch the issue fields via `gh issue view <number> --json body` and populate `tmp/job-input.md` from the structured form data.
+3. **Auto-populate from GitHub Issue** — If the user references a GitHub Issue created from the `resume-generation.yml` template, fetch the issue body text via `gh issue view <number> --json body`. That command returns the rendered markdown issue body, not inherently structured JSON form fields, so parse the markdown body using the expected template headings/sections before populating `tmp/job-input.md`. If actual issue form field data is available through GraphQL or another GitHub API surface, that may be used instead.
 
 For modes 2 and 3, pre-fill the **Certification Details** section from the authoritative data in [resume-sources.md](./references/resume-sources.md) — the user only needs to confirm or adjust.
 
-Extract from the completed `tmp/job-input.md`:
+After `tmp/job-input.md` has been completed or normalized from the parsed issue markdown, extract:
 - **Job title and company** — for resume header title alignment
 - **Full job description** — for keyword extraction and requirement mapping
 - **POC/referral notes** — for contextual framing in summary and role descriptions

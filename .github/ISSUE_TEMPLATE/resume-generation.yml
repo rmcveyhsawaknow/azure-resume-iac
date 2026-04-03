@@ -78,6 +78,22 @@ body:
       description: "Notes from any conversations with recruiters, hiring managers, or referrals"
       placeholder: "Met hiring manager at conference; they emphasized cloud migration experience..."
 
+  - type: input
+    id: interview_round
+    attributes:
+      label: Interview Round
+      description: "Which interview stage this briefing is for (leave blank for initial application)"
+      placeholder: "Round 1 — Phone Screen"
+
+  - type: textarea
+    id: interview_contacts
+    attributes:
+      label: Interview Contacts
+      description: "People involved in the interview process — one per line: Name | Title | Role in Process | Email/Phone | Notes"
+      placeholder: |
+        Jane Smith | Senior Recruiter | Recruiter | jane.smith@company.com | Initial screen scheduled
+        John Doe | Engineering Director | Hiring Manager | | Panel lead for Round 2
+
   - type: dropdown
     id: resume_length
     attributes:

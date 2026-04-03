@@ -38,12 +38,74 @@
 
 ---
 
-## Requirements and Expectations
+## Interview Process & Contacts
 
-> *(optional)* Any personal requirements or expectations for the position (e.g., remote work, compensation, relocation, travel, clearance status). These are **not** included in the resume but inform positioning and emphasis.
+> *(optional)* Track which interview round this application is at and who is involved. This feeds the **Interview Round** indicator and **Interview Contacts** table in the Candidate Briefing PDF. Update this section each time you advance to a new round.
+
+| Field | Value |
+|---|---|
+| **Interview Round** | *(e.g., "Round 1 — Phone Screen", "Round 2 — Technical Panel", "Round 3 — Hiring Manager Final", or "Initial Application" if not yet interviewing)* |
+
+### Interview Contacts
+
+> List anyone involved in the interview process — recruiters, hiring managers, panel members, referrals. If applying cold, leave blank or note "No contacts identified yet."
+
+| Name | Title / Role | Relationship to Process | Email / Phone | Notes |
+|---|---|---|---|---|
+| | | *(e.g., Recruiter, Hiring Manager, Panel Member, HR Coordinator)* | | |
+| | | | | |
+| | | | | |
+
+---
+
+## Candidate Objectives & Interview Context
+
+> *(optional but recommended)* This section feeds the **Interview Taskboard** on page 1 of the resume and the **Candidate Briefing PDF**. The more you provide, the more actionable those outputs become. These details are **not** placed in the ATS-upload resume — they appear only in the candidate's personal print copy and briefing document.
+
+### Must-Haves
+
+> Non-negotiable requirements for accepting this position.
 
 ```
-(Describe your requirements and expectations here)
+(e.g., Remote work required, minimum compensation $X, no relocation, travel ≤ 25%, clearance-eligible, etc.)
+```
+
+### Key Messages to Convey
+
+> What do you want the interviewer to walk away knowing about you? List 3-6 bold, concise statements. These become the "Key Points" on the resume taskboard and the "Candidate Key Messages" in the briefing PDF.
+
+```
+(e.g., "I architect production multi-agent AI systems, not just prototypes"
+       "I can relocate to follow my spouse's military orders"
+       "I bring 20+ years spanning military, private sector, and government")
+```
+
+### Tools / Platforms / Tech Stack Priorities
+
+> Technologies you want to use on the job or are excited about. Helps the agent emphasize the right skills.
+
+```
+(e.g., Azure AI Foundry, Semantic Kernel, GitHub Copilot, Bicep, Terraform, etc.)
+```
+
+### Questions for the Interviewer
+
+> Prepared questions you want to ask during the interview. These appear in the Candidate Briefing PDF.
+
+```
+(e.g., "What does the current AI/ML tech stack look like?"
+       "How is the team structured — centralized platform or embedded?"
+       "What does success look like in the first 90 days?")
+```
+
+### Personal Context
+
+> *(optional)* Family situation, motivation narrative, lifestyle context that informs positioning. Not included in any output document but helps the agent frame the narrative.
+
+```
+(e.g., "Spouse is Active Duty Navy — need location flexibility"
+       "Veteran transitioning focus areas — want to be challenged"
+       "Looking for long-term growth, not just a contract")
 ```
 
 ---

@@ -147,6 +147,53 @@ body {
   font-size: 8pt;
 }
 
+/* ===== INTERVIEW TASKBOARD (print copy only — omit for ATS upload) ===== */
+.taskboard {
+  background: var(--light-bg);
+  border-left: 3pt solid var(--navy);
+  padding: 6pt 10pt 6pt 10pt;
+  margin-top: 6pt;
+  margin-bottom: 2pt;
+  page-break-inside: avoid;
+  display: flex;
+  gap: 10pt;
+}
+.taskboard .tb-col {
+  flex: 1;
+}
+.taskboard .tb-heading {
+  font-size: 8.5pt;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.5pt;
+  margin-bottom: 4pt;
+  border-bottom: 1pt solid var(--gold);
+  padding-bottom: 2pt;
+}
+.taskboard .tb-item {
+  font-size: 8.5pt;
+  line-height: 1.45;
+  padding-left: 10pt;
+  position: relative;
+  margin-bottom: 2pt;
+  color: var(--heading);
+}
+.taskboard .tb-col:first-child .tb-item::before {
+  content: "\2605";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 7pt;
+}
+.taskboard .tb-col:last-child .tb-item::before {
+  content: "\25A2";
+  position: absolute;
+  left: 0;
+  color: var(--navy);
+  font-size: 8pt;
+}
+
 /* ===== EXPERIENCE ===== */
 .role {
   margin-bottom: 8pt;
@@ -350,6 +397,22 @@ body {
   </div>
   <div class="col">
     <!-- COMPETENCY_COL_3 — 5 items -->
+  </div>
+</div>
+
+<!-- ==================== INTERVIEW TASKBOARD (print copy only — omit for ATS upload) ==================== -->
+<div class="taskboard">
+  <div class="tb-col">
+    <div class="tb-heading">Key Points for Interviewer</div>
+    <!-- TASKBOARD_KEY_POINTS — 4-6 items from "Key Messages to Convey" in job-input.md,
+         tailored to the specific JD. Each as: <div class="tb-item">Bold, concise statement</div>
+         Focus on differentiators the candidate MUST communicate during the interview. -->
+  </div>
+  <div class="tb-col">
+    <div class="tb-heading">Follow-Up &amp; Notes</div>
+    <!-- TASKBOARD_FOLLOWUP — 3-4 items as checkbox-style reminders. Each as:
+         <div class="tb-item">Action or follow-up item</div>
+         Examples: "Ask about team structure", "Mention [cert] timeline", "Request next steps" -->
   </div>
 </div>
 

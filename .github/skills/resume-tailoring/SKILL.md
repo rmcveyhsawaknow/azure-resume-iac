@@ -1,6 +1,6 @@
 ---
 name: resume-tailoring
-description: "Generate a job-specific styled PDF resume and application form guide. Use when: applying for a job, tailoring resume to a job description, generating resume PDF, filling out job application forms, creating application guide. Inputs: job description, POC notes, requirements. Outputs: styled PDF resume matching resume.ryanmcvey.me color scheme, copy-paste application form guide."
+description: "Generate a job-specific styled PDF resume, candidate briefing, and application form guide. Use when: applying for a job, tailoring resume to a job description, generating resume PDF, preparing for interviews, filling out job application forms, creating application guide. Inputs: job description, POC notes, requirements. Outputs: styled PDF resume matching resume.ryanmcvey.me color scheme, candidate briefing PDF for interview prep, copy-paste application form guide."
 argument-hint: "Path to filled-in job-input file (e.g., tmp/job-input.md)"
 ---
 
@@ -85,7 +85,15 @@ Extract from the completed `tmp/job-input.md`:
 - **Job title and company** — for resume header title alignment
 - **Full job description** — for keyword extraction and requirement mapping
 - **POC/referral notes** — for contextual framing in summary and role descriptions
-- **Requirements and expectations** — for positioning statements
+- **Candidate Objectives & Interview Context** — structured sub-fields that drive the taskboard and briefing:
+  - *Must-Haves* — non-negotiable requirements (compensation, clearance, location, benefits)
+  - *Key Messages to Convey* — 3-6 bold statements the candidate must communicate; feeds the resume taskboard + briefing key messages
+  - *Tools / Platforms / Tech Stack Priorities* — technologies to emphasize
+  - *Questions for the Interviewer* — feeds the briefing "Prepared Questions" section
+  - *Personal Context* — optional background (not included in any output files)
+- **Interview Process & Contacts** — structured fields that drive the briefing header and contacts sections:
+  - *Interview Round* — which stage of the interview pipeline (e.g., "Round 1 — Phone Screen", "Round 2 — Technical Panel"); defaults to "Initial Application" if not specified
+  - *Interview Contacts* — table of people involved in the process (Name, Title, Role in Process, Email/Phone, Notes); also auto-populated from POC/Referral Notes when structured contacts aren't provided
 - **Certification details** — exact cert numbers and dates for the form guide
 - **Target resume length** — 2 pages (concise) or 3-4 pages (comprehensive)
 
@@ -98,6 +106,8 @@ Consolidate content from Steps 2-4:
 3. **Prioritize content** — lead with the most JD-relevant accomplishments per role
 4. **Fill gaps** — use binary resume content to surface additional relevant experience not on the live site
 5. **Frame the narrative** — weave POC meeting context and company-specific positioning into summary and role descriptions
+6. **Synthesize taskboard content** — distill "Key Messages to Convey" into 4-6 concise talking points for the resume taskboard's left column; generate 3-4 follow-up/action items for the right column
+7. **Build briefing talking points** — from the competency alignment matrix and JD requirements, generate conversation starters, structured Q&A prompts, and the interviewer questions list for the candidate briefing PDF
 
 ### Step 6 — Generate Styled HTML Resume
 
@@ -121,11 +131,14 @@ Create `tmp/<company>-resume.html` using the [resume template](./templates/resum
 2. **Clearance bar** — U.S. Citizen, USMC Veteran, clearance status (if applicable)
 3. **Professional Summary** — 3-5 sentences merging career narrative with JD-specific positioning
 4. **Core Competencies** — 3-column grid of keyword-rich items mapping to JD required/desired skills
-5. **Professional Experience** — Roles with JD-aligned bullet points; consolidate progressive roles at same company
-6. **Certifications** — Active certs with dates/numbers; foundational expired certs noted as background
-7. **Education** — Formal and military training
-8. **Technical Skills** — Categorized 2-column grid (Cloud Platforms, AI/ML, IaC & CI/CD, Security & Compliance, Observability, Networking & Identity)
-9. **Footer** — Links to resume site, GitHub, LinkedIn
+5. **Interview Taskboard** *(print copy only — omit for ATS upload)* — Two-column panel: left column "Key Points for Interviewer" (4-6 ★ items from Key Messages), right column "Follow-Up & Notes" (3-4 ☐ checkbox items). Fills the page-1 gap between competencies and experience.
+6. **Professional Experience** — Roles with JD-aligned bullet points; consolidate progressive roles at same company
+7. **Certifications** — Active certs with dates/numbers; foundational expired certs noted as background
+8. **Education** — Formal and military training
+9. **Technical Skills** — Categorized 2-column grid (Cloud Platforms, AI/ML, IaC & CI/CD, Security & Compliance, Observability, Networking & Identity)
+10. **Footer** — Links to resume site, GitHub, LinkedIn
+
+> **ATS Note:** The taskboard (section 5) is intended for the candidate's printed interview copy. When uploading to an ATS portal, the agent should note that the taskboard adds visual richness but the PDF text remains fully selectable and keyword-rich.
 
 ### Step 7 — Generate PDF
 
@@ -142,7 +155,34 @@ weasyprint tmp/<company>-resume.html tmp/<output-filename>.pdf
 
 If page count is wrong, adjust font sizes (body 9-9.5pt range), margins (0.5-0.65in), or content density.
 
-### Step 8 — Generate Application Form Guide
+### Step 8a — Generate Candidate Briefing PDF
+
+Create `tmp/<company>-briefing.html` using the [candidate briefing template](./templates/candidate-briefing-template.html) as the structural basis.
+
+Populate the template with content from Steps 2-5:
+
+1. **Role Snapshot** — Company, position, location, compensation (from job-input.md)
+2. **Job Posting Reference** — Posting URL (clickable), posted date, and source (from job-input.md Target Position fields). If URL is unavailable, note "URL not available — search company careers page." Gives the candidate one-glance access to the original listing.
+3. **Interview Contacts** — Table of people involved in the interview process (Name, Title, Role in Process, Contact, Notes) from the "Interview Process & Contacts" section in job-input.md. For cold applications with no contacts, display: "No contacts identified — update before interview." Also extract any contacts mentioned in POC/Referral Notes into this table.
+4. **Key Messages to Convey** — 4-6 items from "Key Messages to Convey" in job-input.md, tailored to JD alignment
+5. **Competency Alignment Matrix** — 6-10 rows mapping major JD requirements to the candidate's specific experience/evidence
+6. **Conversation Starters** — 4-6 agent-generated prompts based on JD + candidate experience ("When they ask about [topic]...")
+7. **Prepared Questions** — From "Questions for the Interviewer" in job-input.md + agent-suggested additions (6-8 questions across categories)
+8. **Notes area** — Blank lines for handwritten interview notes
+
+**Interview Round** is displayed in the header metadata line alongside Company and Interview Date (e.g., "Booz Allen Hamilton | Round 2 — Technical Panel | Interview Date: ___"). When no round is specified, display "Initial Application / Round TBD."
+
+Generate PDF:
+
+```bash
+weasyprint tmp/<company>-briefing.html tmp/Ryan_McVey_<Company>_<Role>_Candidate_Briefing.pdf
+```
+
+Verify: `pdfinfo tmp/Ryan_McVey_<Company>_<Role>_Candidate_Briefing.pdf | grep Pages` — target 2-3 pages.
+
+> **This document is for the candidate's personal use only — not submitted to the employer.**
+
+### Step 8b — Generate Application Form Guide
 
 Create `tmp/<company>-application-guide.md` using the [application guide template](./templates/application-guide-template.md) as the structural basis.
 
@@ -161,15 +201,30 @@ For each section, substitute content from Steps 2-5:
 
 ### Step 9 — Final Verification Checklist
 
+**Resume PDF:**
 - [ ] PDF opens correctly and is the target page count
 - [ ] All JD required-skill keywords appear in the PDF text
 - [ ] PDF text is selectable (not rasterized) for ATS compatibility
 - [ ] Colors render: Gold accents, Navy headings, Crimson header border
+- [ ] Interview Taskboard present on page 1 (Key Points + Follow-Up columns)
+- [ ] No PII errors (correct name, email, phone, address)
+
+**Candidate Briefing PDF:**
+- [ ] Briefing is 2-3 pages
+- [ ] Job Posting Reference section has clickable URL (or "URL not available" note)
+- [ ] Interview Contacts table populated (or "No contacts identified" placeholder for cold applications)
+- [ ] Interview Round displayed in header meta line
+- [ ] Competency Alignment Matrix has 6-10 rows with specific evidence
+- [ ] Conversation Starters reference actual projects/achievements
+- [ ] Prepared Questions are role-specific (not generic)
+
+**Application Form Guide:**
 - [ ] Work Experience descriptions ≤ 2000 characters each
 - [ ] Education descriptions ≤ 1500 characters each
 - [ ] Application guide has all 6 sections populated
 - [ ] Certification numbers and dates match user-provided data
-- [ ] No PII errors (correct name, email, phone, address)
+
+**All Outputs:**
 - [ ] Output files listed to user with paths
 
 ## Output Files
@@ -180,6 +235,8 @@ All output files are written to `tmp/`:
 |------|-------------|
 | `tmp/<company>-resume.html` | Source HTML (can be opened in browser for preview/adjustment) |
 | `tmp/<OutputFilename>.pdf` | Final styled PDF resume for upload |
+| `tmp/<company>-briefing.html` | Candidate briefing source HTML |
+| `tmp/Ryan_McVey_<Company>_<Role>_Candidate_Briefing.pdf` | Interview-day prep document (personal use only) |
 | `tmp/<company>-application-guide.md` | Copy-paste guide for all application form fields |
 
 ## Content Sources

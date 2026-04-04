@@ -84,16 +84,40 @@ Benefits include the following:
 
 > Insider context from existing V2X employee relationship and current role alignment.
 
-```
-I worked with current V2X employee Bryan Zaczek in his prior position with State of Indiana
-Management Performance Hub. I work as lead cloud and AI enablement architect within the Office
-of Technology. During this time and carrying on since, I have worked to enable many AI area
-alignment capabilities for business and engineering utilization by many executive agencies.
-This includes development of an AI Readiness intake for use case alignment to applicable AI
-focus area (Productivity and Collaboration, Information Systems, SaaS integration). I am
-currently in the phases of agent framework evaluations for alignment to organizational needs
-and capabilities.
-```
+I worked with current V2X employee Bryan Zaczek in his prior position with State of Indiana Management Performance Hub. I work as lead cloud and AI enablement architect within the Office of Technology. During this time and carrying on since, I have worked to enable many AI area alignment capabilities for business and engineering utilization by many executive agencies.
+
+This includes development of an AI Readiness intake for use case alignment to applicable AI focus area (Productivity and Collaboration, Information Systems, SaaS integration). I am currently in the phases of agent framework evaluations for alignment to organizational needs and capabilities.
+
+
+### V2X Current State Assessment
+
+> **Organizational Context:** Insights into V2X's current cloud and AI capabilities, strategic gaps, and platform evolution roadmap.
+
+**Current Infrastructure & AI Services:**
+- Limited Cloud Service Provider (CSP) implementation footprint across AWS, Azure, and GCP
+- Dated/legacy LLM endpoints; limited integration with modern managed AI services (Azure OpenAI, Amazon Bedrock, Google Vertex AI)
+- Existing information systems and services requiring integration within a governed AI services ecosystem
+- No unified service mesh, API gateway, or multi-cloud orchestration layer currently in place
+
+**Strategic Objective:**
+Establish a **hybrid multi-cloud core services platform** that enables:
+- Agnostic selection and routing across LLM models and agent orchestration services
+- Governed, compliant AI services ecosystem aligned to mission requirements
+- Integration and modernization of legacy information systems
+- Foundation for agentic (autonomous, goal-oriented) AI workloads at scale
+
+**Enablement Phases Required:**
+1. **Assessment & Discovery:** Existing SDLC practices, infrastructure hosting models, Identity and Security posture, service requirements, budget capabilities, compliance obligations
+2. **Architecture & Design:** Multi-cloud infrastructure patterns, service mesh, managed AI service integrations, RAG/vector store strategy, agent framework evaluation
+3. **Phase Backlog Development:** Prioritized roadmap of capability buildout, with clear sequencing from foundational services → integrated platforms → agentic workloads
+4. **Presentation & Revision:** Stakeholder alignment, risk identification, resource planning, executive approval
+5. **Expeditious Implementation:** Delivery of Phase 1 core services, continuous integration of subsequent phases
+
+**Key Implications for this Role:**
+- Opportunity to lead the foundational platform strategy and execution from greenfield perspective
+- Responsibility for bridging legacy systems with modern cloud-native, AI-centric architecture
+- Need to establish governance frameworks, IaC standards, and security-by-design principles across all phases
+- Cross-agency/program coordination and compliance-hardened deployments at scale
 
 ---
 

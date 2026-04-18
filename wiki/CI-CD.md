@@ -30,7 +30,7 @@
 | Production Azure CDN | `prod-full-stack-azureCDN.yml` | — | Disabled |
 | Development Azure CDN | `dev-full-stack-azureCDN.yml` | — | Disabled |
 
-All workflows are triggered by `push` events filtered by path patterns (`.iac/**`, `backend/**`, `frontend/**`, `wiki/**`).
+Workflows in this repo use a mix of triggers, including `push`, `pull_request`, and `workflow_dispatch`; path filters such as `.iac/**`, `backend/**`, `frontend/**`, and `wiki/**` are used where applicable.
 
 ## Active Workflows
 

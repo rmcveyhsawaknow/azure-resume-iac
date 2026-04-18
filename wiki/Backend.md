@@ -61,7 +61,7 @@ public MultiResponse Run(
     [CosmosDBInput(...)] Counter counter)
 {
     counter.Count += 1;
-    return new MultiResponse { Document = counter, HttpResponse = ... };
+    return new MultiResponse { UpdatedCounter = counter, HttpResponse = ... };
 }
 ```
 

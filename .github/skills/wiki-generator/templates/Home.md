@@ -39,8 +39,8 @@
 ### For Reviewers
 
 - [[Security]] — secret handling and vuln reporting
-- [[Project Management]] — workflow, labels, project board
-- [[Glossary]] — repo-specific terms
+- [[Project Management]] — workflow, labels, project board _(remove this link if that page is not generated)_
+- [[Glossary]] — repo-specific terms _(remove this link if that page is not generated)_
 
 ---
 

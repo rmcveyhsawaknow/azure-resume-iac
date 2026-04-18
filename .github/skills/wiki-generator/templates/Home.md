@@ -26,7 +26,7 @@
 - [[Frontend]] — static site / SPA layout
 - [[Testing]] — running tests locally and in CI
 - [[Contributing]] — branching, conventions, PR flow
-- [[Skills and Agents]] — Copilot agent skills available in this repo
+- [[Skills and Agents]] *(optional — remove this link if that page is not generated)* — Copilot agent skills available in this repo
 
 ### For Operators
 

@@ -23,5 +23,5 @@
 ### 👥 Project
 
 - [[Contributing]]
-- [[Project Management]]
-- [[Skills and Agents]]
+- Project Management *(optional: add `[[Project Management]]` if this page is generated)*
+- Skills and Agents *(optional: add `[[Skills and Agents]]` if this page is generated)*

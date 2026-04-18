@@ -157,7 +157,7 @@ Verification checklist:
 Once validated, commit the `wiki/` directory and push to your branch. Then either:
 
 1. **Manually**: Go to **Actions → Publish Wiki → Run workflow** in the GitHub UI.
-2. **Automatically**: Merge to the default branch — the [`publish-wiki.yml`](../../workflows/publish-wiki.yml) workflow runs on push when files under `wiki/**` change and mirrors the contents to `<owner>/<repo>.wiki.git`.
+2. **Automatically**: Merge to `main` — the [`publish-wiki.yml`](../../workflows/publish-wiki.yml) workflow runs on push when files under `wiki/**` change and mirrors the contents to `<owner>/<repo>.wiki.git`. If you reuse this skill in a repository that publishes from a different branch, update the workflow's `branches` list accordingly.
 
 The wiki UI updates within seconds of a successful workflow run.
 

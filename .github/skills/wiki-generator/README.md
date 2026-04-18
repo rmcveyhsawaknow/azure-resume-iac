@@ -15,7 +15,7 @@ This skill addresses the gap with two pieces:
 | Piece | Role |
 |---|---|
 | **`SKILL.md`** (this skill) | Tells the Copilot agent how to *generate* idiomatic wiki pages from your repo's existing content (README, `docs/`, IaC, code, workflows). Output is staged in `wiki/` so it lives under version control. |
-| **`.github/workflows/publish-wiki.yml`** | A GitHub Actions workflow that *mirrors* the contents of `wiki/` into `<owner>/<repo>.wiki.git`. Triggered on push to the default branch (when `wiki/**` changes) or manually via `workflow_dispatch`. |
+| **`.github/workflows/publish-wiki.yml`** | A GitHub Actions workflow that *mirrors* the contents of `wiki/` into `<owner>/<repo>.wiki.git`. It is typically triggered on pushes to the branch configured in the workflow (for example `main`) when `wiki/**` changes, or manually via `workflow_dispatch`. If you reuse this skill in a repo that merges to a different branch (for example `develop`), update the workflow trigger branches to match your repo or run it manually. |
 
 Together they form a **docs-as-code** pipeline for the wiki: you author/regenerate wiki content as part of normal PRs, and the workflow handles the mechanical sync to the wiki UI.
 

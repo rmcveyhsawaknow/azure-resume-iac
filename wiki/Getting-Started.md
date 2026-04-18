@@ -54,7 +54,7 @@ If you prefer working on your own machine, install these prerequisites:
 # Build the backend
 cd backend/api && dotnet build
 
-# Run unit tests (8 xUnit tests)
+# Run unit tests (9 xUnit tests)
 cd backend/tests && dotnet test
 ```
 

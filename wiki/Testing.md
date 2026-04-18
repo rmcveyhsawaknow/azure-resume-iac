@@ -8,9 +8,9 @@
 
 ## Overview
 
-The project uses **xUnit v3** with **Moq** for backend unit tests. Tests live in `backend/tests/` and validate the visitor counter logic without connecting to a live Cosmos DB instance.
+The project uses **xUnit v3** with **Moq** for backend unit tests. Tests live in `backend/tests/` and validate the `GetResumeCounter` Azure Function behavior without connecting to a live Cosmos DB instance.
 
-There are **8 unit tests** covering the `Counter` model behavior.
+There are **8 unit tests** covering the function response contract and counter initialization behavior.
 
 ## Running Tests
 
@@ -28,17 +28,18 @@ You can also use the VS Code task:
 
 ## What's Tested
 
-`TestCounter.cs` validates:
+`TestCounter.cs` primarily validates `GetResumeCounter` behavior:
 
-| Test | What it checks |
+| Test area | What it checks |
 |---|---|
-| Counter starts at 0 | `new Counter()` has `Count == 0` |
-| Counter increments from 0 | `Count` goes from 0 to 1 |
-| Counter increments from N | `Count` goes from any value to N+1 |
-| Counter has correct ID | `Id` property round-trips correctly |
-| Counter JSON serialization | Lowercase `id` and `count` in JSON output |
+| Successful HTTP response | The function returns a successful response when the counter is retrieved |
+| Status code | The HTTP status code matches the expected success result |
+| Response headers | The response includes the expected headers for the API output |
+| JSON response body | The body contains the expected counter payload, including `id` and `count` |
+| Counter initialization | The function handles null or uninitialized counter data correctly |
+| Mocked data access | Dependencies are mocked so the tests run fully in-memory without a live Cosmos DB instance |
 
-Tests use Moq to mock dependencies so they run entirely in-memory — no Cosmos DB connection needed.
+Tests use Moq to isolate the function from external services while still verifying the response contract returned to the frontend.
 
 ## Test Project Structure
 

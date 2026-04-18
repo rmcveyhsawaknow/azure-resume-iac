@@ -275,3 +275,5 @@ See [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) for the complete history and re
 | [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | Known issues, technical debt, and remediation history |
 | [docs/BACKLOG_PLANNING.md](docs/BACKLOG_PLANNING.md) | Phased backlog planning guide |
 | [docs/ASSESSMENT_COMMANDS.md](docs/ASSESSMENT_COMMANDS.md) | Azure CLI and Cloudflare commands for harvesting deployed state |
+| [.github/skills/wiki-generator/README.md](.github/skills/wiki-generator/README.md) | **Wiki Generator skill** — generate the GitHub Wiki from repo content; companion [`publish-wiki.yml`](.github/workflows/publish-wiki.yml) workflow mirrors `wiki/` to the wiki UI |
+| [.github/skills/resume-tailoring/SKILL.md](.github/skills/resume-tailoring/SKILL.md) | Resume Tailoring skill — generate a job-specific styled PDF resume and application guide |

@@ -1,0 +1,146 @@
+name: Publish Wiki
+
+# Mirrors the contents of the repo's `wiki/` directory to the GitHub Wiki
+# (which lives in a separate `<owner>/<repo>.wiki.git` repository).
+#
+# Companion to the `wiki-generator` Copilot agent skill at
+# `.github/skills/wiki-generator/`. The skill writes markdown pages into `wiki/`;
+# this workflow publishes them to the wiki UI.
+#
+# Prerequisite: the wiki must be initialized once via the GitHub UI
+# (Repository → Wiki → Create the first page → Save). Until that is done, the
+# `<repo>.wiki.git` repository does not exist and this workflow will fail.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'wiki/**'
+      - '.github/workflows/publish-wiki.yml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'If true, validate and diff but do not push to the wiki.'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-wiki-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Mirror wiki/ to GitHub Wiki
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: source
+
+      - name: Validate wiki/ directory has publishable content
+        id: validate
+        working-directory: source
+        run: |
+          set -euo pipefail
+          if [ ! -d wiki ] || [ ! -f wiki/Home.md ]; then
+            echo "::notice::No publishable wiki content yet (wiki/Home.md missing). Skipping publish. Run the wiki-generator skill to populate wiki/."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          page_count=$(find wiki -maxdepth 1 -type f -name '*.md' ! -name '.*' | wc -l | tr -d ' ')
+          echo "page_count=$page_count" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "Validated $page_count wiki pages (including Home.md)."
+
+      - name: Scan for accidentally committed secrets
+        if: ${{ steps.validate.outputs.skip != 'true' }}
+        working-directory: source
+        run: |
+          set -euo pipefail
+          # Conservative regex set — surfaces obvious credentials. CodeQL / secret scanning
+          # remain the authoritative scanners; this is a fast pre-publish guardrail.
+          if grep -rEn \
+              -e 'AKIA[0-9A-Z]{16}' \
+              -e 'ghp_[A-Za-z0-9]{36}' \
+              -e 'ghs_[A-Za-z0-9]{36}' \
+              -e 'xox[baprs]-[A-Za-z0-9-]{10,}' \
+              -e '-----BEGIN [A-Z ]*PRIVATE KEY-----' \
+              wiki/; then
+            echo "::error::Potential secret detected in wiki/. Aborting publish."
+            exit 1
+          fi
+          echo "No obvious secrets detected in wiki/."
+
+      - name: Check out wiki repository
+        if: ${{ steps.validate.outputs.skip != 'true' }}
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: ${{ github.repository }}.wiki
+          path: wiki-repo
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync wiki/ contents into wiki repo
+        if: ${{ steps.validate.outputs.skip != 'true' }}
+        working-directory: wiki-repo
+        run: |
+          set -euo pipefail
+          # Mirror sync: anything in source/wiki/ becomes the wiki contents.
+          # Use `git rm` + `git clean` to remove tracked and untracked files (preserving .git
+          # via `git`'s built-in awareness) so removed pages are also removed from the wiki.
+          git rm -rf . >/dev/null 2>&1 || true
+          git clean -fdx
+          cp -R ../source/wiki/. .
+          ls -la
+
+      - name: Show diff
+        if: ${{ steps.validate.outputs.skip != 'true' }}
+        working-directory: wiki-repo
+        run: |
+          set -euo pipefail
+          git status
+          git --no-pager diff --stat || true
+
+      - name: Commit and push to wiki
+        if: ${{ steps.validate.outputs.skip != 'true' && github.event.inputs.dry_run != 'true' }}
+        working-directory: wiki-repo
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to publish — wiki is already in sync."
+            exit 0
+          fi
+          git commit -m "docs(wiki): publish from ${COMMIT_SHA} (run ${RUN_ID}, by @${ACTOR})"
+          # Push to whichever branch the wiki uses as default (historically `master`,
+          # newer wikis may use `main`). actions/checkout checked out the default branch
+          # into HEAD; push back to the same upstream branch.
+          default_branch=$(git rev-parse --abbrev-ref HEAD)
+          git push origin "HEAD:${default_branch}"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Publish Wiki Summary"
+            echo ""
+            echo "- **Source repo:** ${{ github.repository }}"
+            echo "- **Wiki repo:** ${{ github.repository }}.wiki"
+            echo "- **Pages validated:** ${{ steps.validate.outputs.page_count || 'n/a' }}"
+            echo "- **Dry run:** ${{ github.event.inputs.dry_run || 'false' }}"
+            echo "- **Triggered by:** @${{ github.actor }} (event: ${{ github.event_name }})"
+          } >> "$GITHUB_STEP_SUMMARY"

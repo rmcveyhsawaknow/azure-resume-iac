@@ -10,7 +10,7 @@
 - [Backend](Backend)
 - [Frontend](Frontend)
 - [Infrastructure](Infrastructure)
-- [CI CD](CI-CD)
+- [CI/CD](CI-CD)
 - [Deployment](Deployment)
 - [Configuration](Configuration)
 

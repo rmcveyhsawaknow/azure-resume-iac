@@ -40,7 +40,7 @@ backend/
 │   └── local.settings.example.json  # Template for local dev
 └── tests/
     ├── tests.csproj            # xUnit v3 test project
-    └── TestCounter.cs          # 8 unit tests with Moq
+    └── TestCounter.cs          # 9 unit tests with Moq
 ```
 
 ## The GetResumeCounter Function

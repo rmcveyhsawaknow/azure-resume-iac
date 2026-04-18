@@ -59,9 +59,8 @@ If you discover a security vulnerability in this project, please open an issue (
 
 ## CI/CD Security Practices
 
-- All third-party GitHub Actions are pinned to commit SHAs (not mutable tags)
-- `dorny/paths-filter` replaced with SHA-pinned version
-- Direct `curl` calls replaced the third-party `rez0n/create-dns-record` action to reduce supply chain risk
+- GitHub Actions in workflows are pinned to specific released versions; some still use major-version tags (for example, `actions/checkout@v4`) rather than commit SHAs
+- Cloudflare API interactions in workflows use direct `curl` calls with secrets from GitHub Secrets
 - Environment protection rules require reviewer approval before production deploys
 - Branch protection prevents force pushes and requires PR review
 

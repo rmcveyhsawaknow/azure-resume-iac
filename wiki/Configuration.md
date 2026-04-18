@@ -65,7 +65,7 @@ Key Vault references use the `@Microsoft.KeyVault(SecretUri=...)` syntax — Cos
 
 ## Frontend Runtime Config
 
-`frontend/config.js` is **generated at deploy time** by the CI/CD workflow (not committed to source). It provides:
+`frontend/config.js` is committed to source control as a placeholder template and is then **overwritten at deploy time** by the CI/CD workflow with environment-specific values. It provides:
 
 | Variable | Example | Purpose |
 |---|---|---|
@@ -75,7 +75,7 @@ Key Vault references use the `@Microsoft.KeyVault(SecretUri=...)` syntax — Cos
 | `defined_STACK_VERSION` | `v12` | Stack version for footer display |
 | `defined_STACK_ENVIRONMENT` | `prod` | Environment for footer display |
 
-The workflow generates this file using a shell heredoc that expands environment variables:
+The committed placeholder file is replaced during deployment using a shell heredoc that expands environment variables:
 
 ```bash
 cat > frontend/config.js <<EOF

@@ -17,6 +17,9 @@ namespace Company.Function
 
         [Function("GetResumeCounter")]
         public MultiResponse Run(
+            // Anonymous auth is intentional: AuthorizationLevel.Function caused HTTP 401/404 in the browser
+            // because the frontend has no secure runtime mechanism to supply the key. The compensating control
+            // is a Cloudflare rate-limiting rule — see scripts/backlog-issues/5.16.md and docs/KNOWN_ISSUES.md.
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req,
             [CosmosDBInput(
                 databaseName: CosmosConstants.COSMOS_DB_DATABASE_NAME,
